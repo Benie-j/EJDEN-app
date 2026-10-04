@@ -1,0 +1,214 @@
+/* Écran scanner de code-barres (partagé : ajouter / modifier un produit) */
+
+/* =========================================================
+   Scanner de code-barres
+   ========================================================= */
+
+.barcode-scanner {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+
+    display: flex;
+    flex-direction: column;
+
+    background: #000;
+
+    color: #fff;
+}
+
+.barcode-scanner[hidden] {
+    display: none;
+}
+
+
+/* En-tête */
+
+.scanner-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    min-height: 64px;
+    padding:
+        env(safe-area-inset-top)
+        16px
+        12px;
+
+    background: #000;
+}
+
+.scanner-header h2 {
+    margin: 0;
+
+    font-size: 17px;
+    font-weight: 700;
+}
+
+
+/* Bouton fermer */
+
+.scanner-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 42px;
+    height: 42px;
+
+    padding: 0;
+
+    border: 0;
+    border-radius: 50%;
+
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+
+    cursor: pointer;
+}
+
+.scanner-close svg {
+    width: 20px;
+    height: 20px;
+
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+}
+
+
+/* Zone caméra */
+
+.scanner-view {
+    position: relative;
+
+    flex: 1;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+}
+
+.scanner-view video {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+}
+
+
+/* Cadre de visée */
+
+.scanner-frame {
+    position: absolute;
+
+    width: min(78vw, 340px);
+    height: 180px;
+
+    pointer-events: none;
+}
+
+
+/* Coins */
+
+.corner {
+    position: absolute;
+
+    width: 30px;
+    height: 30px;
+
+    border-color: #fff;
+    border-style: solid;
+}
+
+.corner.top-left {
+    top: 0;
+    left: 0;
+
+    border-width: 3px 0 0 3px;
+}
+
+.corner.top-right {
+    top: 0;
+    right: 0;
+
+    border-width: 3px 3px 0 0;
+}
+
+.corner.bottom-left {
+    bottom: 0;
+    left: 0;
+
+    border-width: 0 0 3px 3px;
+}
+
+.corner.bottom-right {
+    right: 0;
+    bottom: 0;
+
+    border-width: 0 3px 3px 0;
+}
+
+
+/* Message */
+
+.scanner-status {
+    margin: 0;
+
+    padding:
+        16px
+        20px
+        calc(20px + env(safe-area-inset-bottom));
+
+    text-align: center;
+
+    font-size: 14px;
+    line-height: 1.5;
+
+    color: rgba(255, 255, 255, 0.85);
+
+    background: #000;
+}
+
+
+/* Message d'erreur dans le scanner */
+
+.scanner-status.is-error {
+    background: var(--error, #D64545);
+    color: #fff;
+}
+
+
+/* Bouton lampe (affiché seulement si le téléphone la gère) */
+
+.scanner-torch {
+    margin-left: auto;
+
+    min-height: 42px;
+    padding: 0 16px;
+
+    border: 0;
+    border-radius: 21px;
+
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+
+    font: inherit;
+    font-size: 14px;
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+.scanner-torch[hidden] {
+    display: none;
+}
+
+.scanner-torch.is-on {
+    background: #D98A16;
+}
