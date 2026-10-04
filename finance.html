@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'"
+    >
+    <meta name="referrer" content="no-referrer">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    >
+
+    <title>Finances | EJDEN</title>
+
+    <link rel="stylesheet" href="css/modules.css">
+    <link rel="stylesheet" href="css/finances.css">
+</head>
+
+<body>
+
+    <main class="module-page">
+
+        <header class="module-header">
+
+            <a
+                href="dashboard.html"
+                class="back-button"
+                aria-label="Retour au tableau de bord"
+            >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M15 18l-6-6 6-6"></path>
+                </svg>
+            </a>
+
+            <div class="module-title">
+                <span>FINANCES</span>
+                <h1>Vue d'ensemble</h1>
+            </div>
+
+        </header>
+
+        <nav class="period-chips" id="periodChips" aria-label="Période"></nav>
+
+        <section class="module-section custom-period" id="customPeriod" hidden>
+
+            <div class="custom-period-fields">
+                <div class="field">
+                    <label for="periodFrom">Du</label>
+                    <input type="date" id="periodFrom">
+                </div>
+
+                <div class="field">
+                    <label for="periodTo">Au</label>
+                    <input type="date" id="periodTo">
+                </div>
+            </div>
+
+            <button type="button" class="primary-button" id="applyPeriod">
+                Appliquer
+            </button>
+
+        </section>
+
+        <p class="period-caption" id="periodCaption"></p>
+
+        <div id="financesContent" aria-live="polite"></div>
+
+    </main>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script type="module" src="js/finances.js"></script>
+
+</body>
+
+</html>
