@@ -1,0 +1,69 @@
+name: Build EJDEN Android APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Récupérer EJDEN
+        uses: actions/checkout@v6
+
+      - name: Installer Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Installer les dépendances
+        run: npm ci
+
+      - name: Compiler TypeScript
+        run: npm run build
+
+      - name: Préparer les fichiers web
+        run: |
+          rm -rf www android
+          mkdir -p www
+          cp ./*.html www/
+          cp -r css js www/
+
+      - name: Créer le projet Android
+        run: npx cap add android
+
+      - name: Synchroniser Capacitor
+        run: npx cap sync android
+
+      - name: Installer Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Installer Android SDK
+        uses: android-actions/setup-android@v4
+        with:
+          packages: 'platforms;android-36 build-tools;36.0.0'
+
+      - name: Configurer Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Construire APK Debug
+        working-directory: android
+        run: ./gradlew assembleDebug --no-daemon
+
+      - name: Publier l'APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: EJDEN-debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
