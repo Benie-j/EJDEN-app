@@ -1,0 +1,39 @@
+/* =========================================================
+   EJDEN — Champ « Catégorie » des formulaires produit
+   ========================================================= */
+
+.category-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+
+    margin-top: 10px;
+}
+
+.category-chip {
+    min-height: 36px;
+    max-width: 100%;
+    padding: 0 14px;
+
+    border: 1px solid var(--border, #E3EAED);
+    border-radius: 18px;
+
+    background: var(--surface, #FFFFFF);
+    color: var(--text-secondary, #68777D);
+
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    cursor: pointer;
+}
+
+.category-chip.is-selected {
+    border-color: var(--primary, #176B87);
+    background: var(--primary-soft, #EAF4F7);
+    color: var(--primary, #176B87);
+}

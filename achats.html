@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'"
+    >
+    <meta name="referrer" content="no-referrer">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    >
+
+    <title>Achats | EJDEN</title>
+
+    <link rel="stylesheet" href="css/modules.css">
+    <link rel="stylesheet" href="css/achats.css">
+</head>
+
+<body>
+
+    <main class="module-page">
+
+        <header class="module-header">
+
+            <a
+                href="fournisseurs.html"
+                class="back-button"
+                aria-label="Retour"
+            >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M15 18l-6-6 6-6"></path>
+                </svg>
+            </a>
+
+            <div class="module-title">
+                <span>GESTION</span>
+                <h1>Achats</h1>
+            </div>
+
+            <a href="fournisseurs.html" class="header-link">Fournisseurs</a>
+
+        </header>
+
+        <section class="module-section" id="purchaseFormSection">
+
+            <h2>Nouvel achat</h2>
+
+            <p class="form-note" id="purchaseBlocked" hidden></p>
+
+            <form id="purchaseForm" autocomplete="off" novalidate>
+
+                <div class="field">
+                    <label for="purchaseSupplier">Fournisseur</label>
+
+                    <select id="purchaseSupplier"></select>
+                </div>
+
+                <h3 class="detail-title">Produits livrés</h3>
+
+                <div id="purchaseLines"></div>
+
+                <button type="button" class="secondary-button wide" id="addLineButton">
+                    ＋ Ajouter un produit
+                </button>
+
+                <label class="check-row">
+                    <input type="checkbox" id="updatePrices" checked>
+                    <span>Mettre à jour le prix d'achat des produits</span>
+                </label>
+
+                <div class="purchase-total">
+                    <span>Total de l'achat</span>
+                    <strong id="purchaseTotal">0 FCFA</strong>
+                </div>
+
+                <div class="field">
+                    <label for="purchasePaid">Payé maintenant (FCFA)</label>
+
+                    <input
+                        type="number"
+                        id="purchasePaid"
+                        inputmode="numeric"
+                        min="0"
+                        step="1"
+                        placeholder="0"
+                    >
+
+                    <p class="form-note" id="purchaseDue">
+                        Le reste sera une dette envers le fournisseur.
+                    </p>
+                </div>
+
+                <div class="field">
+                    <label for="purchaseNote">Note (facultatif)</label>
+
+                    <input
+                        type="text"
+                        id="purchaseNote"
+                        maxlength="80"
+                        placeholder="Ex. : facture n° 245"
+                    >
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="primary-button" id="purchaseSubmit">
+                        Enregistrer l'achat
+                    </button>
+                </div>
+
+            </form>
+
+        </section>
+
+        <section id="purchasesEmpty" class="empty-state" hidden>
+            <strong>Aucun achat</strong>
+            <p>Les achats enregistrés apparaîtront ici.</p>
+        </section>
+
+        <section id="purchasesList"></section>
+
+    </main>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script type="module" src="js/achats.js"></script>
+
+</body>
+
+</html>

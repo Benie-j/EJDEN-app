@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'"
+    >
+    <meta name="referrer" content="no-referrer">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    >
+
+    <title>Dépenses | EJDEN</title>
+
+    <link rel="stylesheet" href="css/modules.css">
+</head>
+
+<body>
+
+    <main class="module-page">
+
+        <header class="module-header">
+
+            <a
+                href="dashboard.html"
+                class="back-button"
+                aria-label="Retour au tableau de bord"
+            >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M15 18l-6-6 6-6"></path>
+                </svg>
+            </a>
+
+            <div class="module-title">
+                <span>FINANCES</span>
+                <h1>Dépenses</h1>
+            </div>
+
+        </header>
+
+        <section class="summary-grid" aria-live="polite">
+
+            <div class="summary-card">
+                <span>Aujourd'hui</span>
+                <strong id="summaryToday">0</strong>
+                <small>FCFA</small>
+            </div>
+
+            <div class="summary-card">
+                <span>Ce mois-ci</span>
+                <strong id="summaryMonth">0</strong>
+                <small>FCFA</small>
+            </div>
+
+        </section>
+
+        <section class="module-section" id="expenseFormSection">
+
+            <h2>Nouvelle dépense</h2>
+
+            <form id="expenseForm" autocomplete="off" novalidate>
+
+                <div class="field">
+                    <label for="expenseLabel">Description</label>
+
+                    <input
+                        type="text"
+                        id="expenseLabel"
+                        maxlength="80"
+                        placeholder="Ex. : Transport de marchandises"
+                    >
+                </div>
+
+                <div class="field">
+                    <label for="expenseAmount">Montant (FCFA)</label>
+
+                    <input
+                        type="number"
+                        id="expenseAmount"
+                        inputmode="numeric"
+                        min="1"
+                        step="1"
+                        placeholder="Ex. : 5000"
+                    >
+                </div>
+
+                <div class="field">
+                    <label for="expenseCategory">Catégorie</label>
+
+                    <select id="expenseCategory"></select>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="primary-button">
+                        Enregistrer la dépense
+                    </button>
+                </div>
+
+            </form>
+
+        </section>
+
+        <section id="expensesEmpty" class="empty-state" hidden>
+            <strong>Aucune dépense</strong>
+            <p>Les dépenses enregistrées apparaîtront ici.</p>
+        </section>
+
+        <section id="expensesList"></section>
+
+    </main>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script type="module" src="js/depenses.js"></script>
+
+</body>
+
+</html>

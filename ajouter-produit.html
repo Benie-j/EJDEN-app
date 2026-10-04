@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'"
+    >
+    <meta name="referrer" content="no-referrer">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Ajouter un produit | EJDEN</title>
+
+    <link
+        rel="stylesheet"
+        href="css/ajouter-produit.css"
+    >
+    <link rel="stylesheet" href="css/category-field.css">
+</head>
+
+<body>
+  <div
+    id="notification"
+    class="notification"
+    role="status"
+    aria-live="polite"
+></div>
+
+    <header class="page-header">
+
+        <a
+            href="produits.html"
+            class="back-button"
+            aria-label="Retour aux produits"
+        >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M15 18L9 12L15 6"></path>
+            </svg>
+        </a>
+
+        <h1>Ajouter un produit</h1>
+
+        <div class="header-spacer"></div>
+
+    </header>
+
+
+    <main class="page-content">
+
+        <form id="productForm">
+
+            <!-- Photo -->
+
+            <section class="form-section">
+
+                <div class="section-title">
+                    <h2>Photo du produit</h2>
+                    <span>Facultatif</span>
+                </div>
+
+                <label
+    for="productPhoto"
+    class="photo-upload"
+    id="photoUpload"
+>
+
+    <div
+        class="photo-preview"
+        id="photoPreview"
+    >
+        <svg
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+        >
+            <path d="M4 5h16v14H4z"></path>
+            <circle cx="9" cy="10" r="1.5"></circle>
+            <path d="M4 16l5-5 4 4 2-2 5 5"></path>
+        </svg>
+    </div>
+
+    <div class="photo-content">
+
+        <strong id="photoTitle">
+            Ajouter une photo
+        </strong>
+
+        <span id="photoDescription">
+            Appareil photo ou galerie
+        </span>
+
+    </div>
+
+    <input
+        type="file"
+        id="productPhoto"
+        name="photo"
+        accept="image/*"
+    >
+
+</label>
+
+            </section>
+
+
+            <!-- Informations -->
+
+            <section class="form-section">
+
+                <div class="section-title">
+                    <h2>Informations</h2>
+                </div>
+
+                <div class="field">
+
+                    <label for="productName">
+                        Nom du produit
+                    </label>
+
+                    <input
+                        type="text"
+                        id="productName"
+                        name="name"
+                        placeholder="Ex. Coca-Cola 50 cl"
+                        autocomplete="off"
+                        required
+                    >
+
+                </div>
+
+                <div class="field">
+
+                    <label for="productCategory">
+                        Catégorie (facultatif)
+                    </label>
+
+                    <input
+                        type="text"
+                        id="productCategory"
+                        name="category"
+                        maxlength="40"
+                        placeholder="Ex. Boissons"
+                        autocomplete="off"
+                    >
+
+                    <div
+                        class="category-chips"
+                        id="categoryChips"
+                        role="group"
+                        aria-label="Catégories existantes"
+                    ></div>
+
+                </div>
+
+
+            </section>
+
+
+            <!-- Prix -->
+
+            <section class="form-section">
+
+                <div class="section-title">
+                    <h2>Prix</h2>
+                </div>
+
+                <div class="field">
+
+                    <label for="purchasePrice">
+                        Prix d'achat
+                    </label>
+
+                    <div class="input-with-suffix">
+                        <input
+                            type="number"
+                            id="purchasePrice"
+                            name="purchasePrice"
+                            placeholder="0"
+                            min="0"
+                            step="1"
+                            required
+                        >
+
+                        <span>FCFA</span>
+                    </div>
+
+                </div>
+
+
+                <div class="field">
+
+                    <label for="salePrice">
+                        Prix de vente
+                    </label>
+
+                    <div class="input-with-suffix">
+                        <input
+                            type="number"
+                            id="salePrice"
+                            name="salePrice"
+                            placeholder="0"
+                            min="0"
+                            step="1"
+                            required
+                        >
+
+                        <span>FCFA</span>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- Stock -->
+
+            <section class="form-section">
+
+                <div class="section-title">
+                    <h2>Stock</h2>
+                </div>
+
+                <div class="field">
+
+                    <label for="initialStock">
+                        Stock initial
+                    </label>
+
+                    <input
+                        type="number"
+                        id="initialStock"
+                        name="initialStock"
+                        placeholder="0"
+                        min="0"
+                        step="1"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <div class="label-row">
+
+                        <label for="stockThreshold">
+                            Seuil d'alerte
+                        </label>
+
+                        <span>Facultatif</span>
+
+                    </div>
+
+                    <input
+                        type="number"
+                        id="stockThreshold"
+                        name="stockThreshold"
+                        placeholder="Ex. 5"
+                        min="0"
+                        step="1"
+                    >
+
+                    <p class="field-help">
+                        EJDEN vous avertira lorsque le stock atteindra ce niveau.
+                    </p>
+
+                </div>
+
+            </section>
+
+
+            <!-- Code-barres -->
+
+<section class="form-section">
+
+    <div class="section-title">
+        <h2>Code-barres</h2>
+        <span>Facultatif</span>
+    </div>
+
+    <div class="barcode-input-wrapper">
+
+        <div class="barcode-input">
+
+            <svg
+                class="barcode-icon"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+            >
+                <path d="M4 5v14"></path>
+                <path d="M7 5v14"></path>
+                <path d="M10 5v14"></path>
+                <path d="M14 5v14"></path>
+                <path d="M17 5v14"></path>
+                <path d="M20 5v14"></path>
+            </svg>
+
+            <input
+                type="text"
+                id="barcode"
+                name="barcode"
+                placeholder="Saisir le code-barres"
+                inputmode="numeric"
+                autocomplete="off"
+            >
+
+            <button
+                type="button"
+                id="scanBarcode"
+                class="scan-button"
+            >
+                <svg
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                >
+                    <path d="M4 7V5a1 1 0 0 1 1-1h2"></path>
+                    <path d="M17 4h2a1 1 0 0 1 1 1v2"></path>
+                    <path d="M20 17v2a1 1 0 0 1-1 1h-2"></path>
+                    <path d="M7 20H5a1 1 0 0 1-1-1v-2"></path>
+                    <path d="M7 9v6"></path>
+                    <path d="M10 9v6"></path>
+                    <path d="M13 9v6"></path>
+                    <path d="M16 9v6"></path>
+                </svg>
+
+                <span>Scanner</span>
+            </button>
+
+        </div>
+
+        <p class="barcode-help">
+            Saisissez le code ou utilisez l'appareil photo pour le scanner.
+        </p>
+
+    </div>
+
+</section>
+
+
+            <!-- Actions -->
+
+            <div class="form-actions">
+
+                <a
+                    href="produits.html"
+                    class="cancel-button"
+                >
+                    Annuler
+                </a>
+
+                <button
+                    type="submit"
+                    class="save-button"
+                >
+                    Enregistrer le produit
+                </button>
+
+            </div>
+
+        </form>
+
+    </main>
+
+<!-- Scanner de code-barres -->
+<div
+    id="barcodeScanner"
+    class="barcode-scanner"
+    hidden
+    aria-hidden="true"
+>
+
+    <div class="scanner-header">
+
+        <button
+            type="button"
+            id="closeScanner"
+            class="scanner-close"
+            aria-label="Fermer le scanner"
+        >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M6 6l12 12"></path>
+                <path d="M18 6L6 18"></path>
+            </svg>
+        </button>
+
+        <h2>Scanner un code-barres</h2>
+
+    </div>
+
+    <div class="scanner-view">
+
+        <video
+            id="barcodeVideo"
+            autoplay
+            playsinline
+            muted
+        ></video>
+
+        <div class="scanner-frame" aria-hidden="true">
+            <span class="corner top-left"></span>
+            <span class="corner top-right"></span>
+            <span class="corner bottom-left"></span>
+            <span class="corner bottom-right"></span>
+        </div>
+
+    </div>
+
+    <p id="scannerStatus" class="scanner-status">
+        Placez le code-barres dans le cadre.
+    </p>
+
+</div>
+
+<script type="module" src="js/ajouter-produit.js"></script>
+</body>
+</html>

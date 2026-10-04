@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'"
+    >
+    <meta name="referrer" content="no-referrer">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    >
+
+    <title>Fournisseurs | EJDEN</title>
+
+    <link rel="stylesheet" href="css/modules.css">
+    <link rel="stylesheet" href="css/achats.css">
+</head>
+
+<body>
+
+    <main class="module-page">
+
+        <header class="module-header">
+
+            <a
+                href="dashboard.html"
+                class="back-button"
+                aria-label="Retour"
+            >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M15 18l-6-6 6-6"></path>
+                </svg>
+            </a>
+
+            <div class="module-title">
+                <span>GESTION</span>
+                <h1>Fournisseurs</h1>
+            </div>
+
+            <a href="achats.html" class="header-link">Achats</a>
+
+        </header>
+
+        <section class="summary-grid" aria-live="polite">
+
+            <div class="summary-card">
+                <span>Fournisseurs</span>
+                <strong id="summarySuppliers">0</strong>
+            </div>
+
+            <div class="summary-card">
+                <span>Total à payer</span>
+                <strong id="summaryDebt">0</strong>
+                <small>FCFA</small>
+            </div>
+
+        </section>
+
+        <section class="module-section" id="supplierFormSection">
+
+            <h2 id="supplierFormTitle">Nouveau fournisseur</h2>
+
+            <form id="supplierForm" autocomplete="off" novalidate>
+
+                <div class="field">
+                    <label for="supplierName">Nom du fournisseur</label>
+
+                    <input
+                        type="text"
+                        id="supplierName"
+                        maxlength="80"
+                        placeholder="Ex. : Grossiste Koffi"
+                    >
+                </div>
+
+                <div class="field">
+                    <label for="supplierPhone">Téléphone (facultatif)</label>
+
+                    <input
+                        type="tel"
+                        id="supplierPhone"
+                        maxlength="20"
+                        inputmode="tel"
+                        placeholder="Ex. : +225 05 00 00 00 00"
+                    >
+                </div>
+
+                <div class="form-actions">
+
+                    <button type="submit" class="primary-button" id="supplierSubmit">
+                        Ajouter le fournisseur
+                    </button>
+
+                    <button
+                        type="button"
+                        class="secondary-button"
+                        id="supplierCancelEdit"
+                        hidden
+                    >
+                        Annuler
+                    </button>
+
+                </div>
+
+            </form>
+
+        </section>
+
+        <section class="module-search">
+
+            <input
+                type="search"
+                id="supplierSearch"
+                placeholder="Rechercher un fournisseur..."
+                autocomplete="off"
+                maxlength="80"
+                aria-label="Rechercher un fournisseur"
+            >
+
+        </section>
+
+        <section id="suppliersEmpty" class="empty-state" hidden>
+            <strong id="suppliersEmptyTitle">Aucun fournisseur</strong>
+            <p id="suppliersEmptyText">Les fournisseurs que vous ajoutez apparaîtront ici.</p>
+        </section>
+
+        <section id="suppliersList"></section>
+
+    </main>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script type="module" src="js/fournisseurs.js"></script>
+
+</body>
+
+</html>

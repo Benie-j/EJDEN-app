@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'"
+    >
+    <meta name="referrer" content="no-referrer">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    >
+
+    <title>Historique des ventes | EJDEN</title>
+
+    <link rel="stylesheet" href="css/historique-ventes.css">
+    <link rel="stylesheet" href="css/credit.css">
+</head>
+
+<body>
+
+    <main class="history-page">
+
+        <!-- EN-TÊTE -->
+        <header class="history-header">
+
+            <a
+                href="dashboard.html"
+                class="back-button"
+                aria-label="Retour au tableau de bord"
+            >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M15 18l-6-6 6-6"></path>
+                </svg>
+            </a>
+
+            <div class="history-title">
+                <span>COMMERCE</span>
+                <h1>Historique des ventes</h1>
+            </div>
+
+            <a
+                href="ventes.html"
+                class="header-action"
+                aria-label="Nouvelle vente"
+            >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 5v14"></path>
+                    <path d="M5 12h14"></path>
+                </svg>
+            </a>
+
+        </header>
+
+
+        <!-- RECHERCHE -->
+        <section class="history-search">
+
+            <input
+                type="search"
+                id="historySearch"
+                placeholder="Produit, client ou n° de vente..."
+                autocomplete="off"
+                maxlength="80"
+                aria-label="Rechercher une vente"
+            >
+
+        </section>
+
+
+        <!-- FILTRES -->
+        <section class="history-filters" aria-label="Filtrer les ventes">
+
+            <button type="button" class="filter-button active" data-filter="all">
+                Toutes
+            </button>
+
+            <button type="button" class="filter-button" data-filter="today">
+                Aujourd'hui
+            </button>
+
+            <button type="button" class="filter-button" data-filter="paid">
+                Payées
+            </button>
+
+            <button type="button" class="filter-button" data-filter="credit">
+                À crédit
+            </button>
+
+            <button type="button" class="filter-button" data-filter="cancelled">
+                Annulées
+            </button>
+
+        </section>
+
+
+        <!-- RÉSUMÉ (suit la recherche et le filtre) -->
+        <section class="history-summary" aria-live="polite">
+
+            <div>
+                <span>Ventes</span>
+                <strong id="summaryCount">0</strong>
+            </div>
+
+            <div>
+                <span>Total</span>
+                <strong id="summaryTotal">0</strong>
+                <small>FCFA</small>
+            </div>
+
+            <div>
+                <span>Reste dû</span>
+                <strong id="summaryRemaining">0</strong>
+                <small>FCFA</small>
+            </div>
+
+        </section>
+
+
+        <!-- ÉTAT VIDE -->
+        <section class="history-empty" id="historyEmpty" hidden>
+
+            <strong id="historyEmptyTitle">Aucune vente</strong>
+
+            <p id="historyEmptyText">
+                Les ventes enregistrées apparaîtront ici.
+            </p>
+
+            <a href="ventes.html" class="empty-action">
+                Nouvelle vente
+            </a>
+
+        </section>
+
+
+        <!-- LISTE -->
+        <section class="history-list" id="historyList"></section>
+
+    </main>
+
+    <div class="history-toast" id="historyToast" role="status" aria-live="polite"></div>
+
+    <script type="module" src="js/historique-ventes.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,229 @@
+/* =========================================================
+   MENU « PLUS » — feuille des modules par catégorie
+========================================================= */
+
+.more-overlay {
+
+    position: fixed;
+    inset: 0;
+    z-index: 2500;
+
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+
+    background: rgba(10, 18, 22, 0.45);
+
+    opacity: 0;
+    visibility: hidden;
+
+    transition: opacity .22s ease, visibility .22s ease;
+}
+
+.more-overlay.is-open {
+
+    opacity: 1;
+    visibility: visible;
+}
+
+.more-panel {
+
+    width: 100%;
+    max-width: 560px;
+    max-height: 85vh;
+
+    display: flex;
+    flex-direction: column;
+
+    border-radius: 22px 22px 0 0;
+
+    background: var(--surface);
+    color: var(--text);
+
+    box-shadow: 0 -12px 40px rgba(0, 0, 0, .18);
+
+    transform: translateY(24px);
+
+    transition: transform .22s ease;
+}
+
+.more-overlay.is-open .more-panel {
+
+    transform: translateY(0);
+}
+
+.more-header {
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    padding: 18px 18px 12px;
+}
+
+.more-header h2 {
+
+    font-size: 17px;
+}
+
+.more-close {
+
+    width: 40px;
+    height: 40px;
+
+    border: 1px solid var(--border);
+    border-radius: 50%;
+
+    background: var(--surface);
+    color: var(--text);
+
+    font-size: 14px;
+
+    cursor: pointer;
+}
+
+.more-body {
+
+    overflow-y: auto;
+
+    padding: 0 18px calc(24px + env(safe-area-inset-bottom, 0px));
+
+    overscroll-behavior: contain;
+}
+
+.more-category + .more-category {
+
+    margin-top: 18px;
+}
+
+.more-category h3 {
+
+    margin-bottom: 8px;
+
+    color: var(--text-secondary);
+
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+.more-grid {
+
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.more-tile {
+
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    min-height: 58px;
+    padding: 10px 12px;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+
+    background: var(--surface);
+    color: var(--text);
+
+    font: inherit;
+    text-align: left;
+    text-decoration: none;
+
+    cursor: pointer;
+}
+
+.more-tile:active {
+
+    background: var(--primary-soft);
+}
+
+.more-tile.is-soon {
+
+    opacity: .6;
+}
+
+.more-tile-icon {
+
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background: var(--primary-soft);
+    color: var(--primary);
+
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.more-tile-text {
+
+    min-width: 0;
+}
+
+.more-tile-text strong {
+
+    display: block;
+
+    font-size: 13px;
+}
+
+.more-tile-text small {
+
+    display: block;
+
+    margin-top: 2px;
+
+    color: var(--text-secondary);
+
+    font-size: 10px;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.more-tile-badge {
+
+    position: absolute;
+    top: 6px;
+    right: 6px;
+
+    padding: 2px 6px;
+
+    border-radius: 999px;
+
+    background: var(--warning-soft);
+    color: var(--warning);
+
+    font-size: 8px;
+    font-weight: 700;
+}
+
+@media (min-width: 640px) {
+
+    .more-overlay {
+
+        align-items: center;
+    }
+
+    .more-panel {
+
+        border-radius: 22px;
+    }
+}

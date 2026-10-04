@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+
+
+    <meta
+        http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'"
+    >
+    <meta name="referrer" content="no-referrer">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Produits | EJDEN</title>
+
+    <link
+        rel="stylesheet"
+        href="css/produits.css"
+    >
+</head>
+
+<body>
+
+    <main class="products-page">
+
+        <!-- EN-TÊTE -->
+        <header class="products-header">
+
+            <a
+                href="dashboard.html"
+                class="back-button"
+                aria-label="Retour au tableau de bord"
+            >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M15 18l-6-6 6-6"></path>
+                </svg>
+            </a>
+
+            <div class="products-header-title">
+
+                <span>GESTION</span>
+
+                <h1>Produits</h1>
+
+            </div>
+
+            <button
+                type="button"
+                class="header-action"
+                aria-label="Ajouter un produit"
+                id="addProductHeader"
+            >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 5v14"></path>
+                    <path d="M5 12h14"></path>
+                </svg>
+            </button>
+
+        </header>
+
+
+        <!-- RECHERCHE -->
+        <section class="products-tools">
+
+            <div class="search-box">
+
+                <svg
+                    class="search-icon"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                >
+                    <circle
+                        cx="11"
+                        cy="11"
+                        r="7"
+                    ></circle>
+
+                    <path d="M16 16l5 5"></path>
+                </svg>
+
+                <input
+                    type="search"
+                    id="productSearch"
+                    placeholder="Rechercher un produit..."
+                    autocomplete="off"
+                >
+
+                <button
+                    type="button"
+                    class="scan-button"
+                    id="scanBarcode"
+                    aria-label="Scanner un code-barres"
+                >
+                    <svg
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                    >
+                        <path d="M4 7V4h3"></path>
+                        <path d="M17 4h3v3"></path>
+                        <path d="M20 17v3h-3"></path>
+                        <path d="M7 20H4v-3"></path>
+                        <path d="M8 9v6"></path>
+                        <path d="M11 9v6"></path>
+                        <path d="M14 9v6"></path>
+                        <path d="M17 9v6"></path>
+                    </svg>
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- FILTRES -->
+        <section
+            class="products-filters"
+            aria-label="Filtrer les produits"
+        >
+
+            <button
+                type="button"
+                class="filter-button active"
+                data-filter="all"
+            >
+                Tous
+            </button>
+
+            <button
+                type="button"
+                class="filter-button"
+                data-filter="available"
+            >
+                En stock
+            </button>
+
+            <button
+                type="button"
+                class="filter-button"
+                data-filter="low"
+            >
+                Stock faible
+            </button>
+
+            <button
+                type="button"
+                class="filter-button"
+                data-filter="out"
+            >
+                Rupture
+            </button>
+
+        </section>
+
+
+        <!-- RÉSUMÉ -->
+        <section class="products-summary">
+
+            <div class="products-section-header">
+
+                <div>
+                    <h2>Mes produits</h2>
+
+                    <span id="productsCount">
+                        0 produit
+                    </span>
+                </div>
+
+
+                <!-- MODE D'AFFICHAGE -->
+                <div
+                    class="view-switcher"
+                    role="group"
+                    aria-label="Mode d'affichage des produits"
+                >
+
+                    <button
+                        type="button"
+                        class="view-button active"
+                        id="gridViewButton"
+                        aria-label="Afficher les produits en grille"
+                        aria-pressed="true"
+                    >
+
+                        <svg
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                        >
+                            <rect
+                                x="4"
+                                y="4"
+                                width="6"
+                                height="6"
+                                rx="1"
+                            ></rect>
+
+                            <rect
+                                x="14"
+                                y="4"
+                                width="6"
+                                height="6"
+                                rx="1"
+                            ></rect>
+
+                            <rect
+                                x="4"
+                                y="14"
+                                width="6"
+                                height="6"
+                                rx="1"
+                            ></rect>
+
+                            <rect
+                                x="14"
+                                y="14"
+                                width="6"
+                                height="6"
+                                rx="1"
+                            ></rect>
+                        </svg>
+
+                        <span>Grille</span>
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="view-button"
+                        id="listViewButton"
+                        aria-label="Afficher les produits en liste"
+                        aria-pressed="false"
+                    >
+
+                        <svg
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                        >
+                            <path d="M5 6h14"></path>
+                            <path d="M5 12h14"></path>
+                            <path d="M5 18h14"></path>
+                        </svg>
+
+                        <span>Liste</span>
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- ORGANISATION : tous ensemble / par catégorie -->
+            <div
+                class="grouping-tabs"
+                role="group"
+                aria-label="Organisation des produits"
+            >
+
+                <button
+                    type="button"
+                    class="grouping-tab active"
+                    id="groupAllButton"
+                    aria-pressed="true"
+                >
+                    Tous
+                </button>
+
+                <button
+                    type="button"
+                    class="grouping-tab"
+                    id="groupCategoryButton"
+                    aria-pressed="false"
+                >
+                    Par catégorie
+                </button>
+
+            </div>
+
+
+        </section>
+
+
+        <!-- ÉTAT VIDE -->
+        <section
+            class="empty-products"
+            id="emptyState"
+            aria-live="polite"
+        >
+
+            <div class="empty-products-icon">
+
+                <svg
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                >
+                    <path d="M4 7h16v13H4z"></path>
+                    <path d="M8 7V4h8v3"></path>
+                    <path d="M8 12h8"></path>
+                </svg>
+
+            </div>
+
+            <strong>
+                Aucun produit
+            </strong>
+
+            <p>
+                Ajoutez votre premier produit
+                pour commencer à gérer votre stock.
+            </p>
+
+            <button
+                type="button"
+                class="empty-action"
+                id="addFirstProduct"
+            >
+                Ajouter un produit
+            </button>
+
+        </section>
+
+
+        <!-- AUCUN RÉSULTAT -->
+        <section
+            class="no-results"
+            id="noResults"
+            aria-live="polite"
+            hidden
+        >
+
+            <div class="no-results-icon">
+
+                <svg
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                >
+                    <circle
+                        cx="11"
+                        cy="11"
+                        r="6"
+                    ></circle>
+
+                    <path d="M16 16l4 4"></path>
+                </svg>
+
+            </div>
+
+            <strong>
+                Aucun résultat
+            </strong>
+
+            <p>
+                Aucun produit ne correspond
+                à votre recherche ou à ce filtre.
+            </p>
+
+        </section>
+
+
+        <!-- LISTE DES PRODUITS -->
+        <section
+            class="product-list grid-view"
+            id="productList"
+            aria-live="polite"
+        >
+        </section>
+
+
+        <!-- ACTION PRINCIPALE -->
+        <section class="products-action">
+
+            <button
+                type="button"
+                class="primary-action"
+                id="addProductButton"
+            >
+
+                <svg
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                >
+                    <path d="M12 5v14"></path>
+                    <path d="M5 12h14"></path>
+                </svg>
+
+                <span>
+                    Ajouter un produit
+                </span>
+
+            </button>
+
+        </section>
+
+    </main>
+
+
+    <!-- Scanner de code-barres -->
+    <div
+        id="barcodeScanner"
+        class="barcode-scanner"
+        hidden
+        aria-hidden="true"
+    >
+    
+        <div class="scanner-header">
+    
+            <button
+                type="button"
+                id="closeScanner"
+                class="scanner-close"
+                aria-label="Fermer le scanner"
+            >
+                <svg
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                >
+                    <path d="M6 6l12 12"></path>
+                    <path d="M18 6L6 18"></path>
+                </svg>
+            </button>
+    
+            <h2>Scanner un code-barres</h2>
+    
+        </div>
+    
+    
+        <div class="scanner-view">
+    
+            <video
+                id="barcodeVideo"
+                autoplay
+                playsinline
+                muted
+            ></video>
+    
+    
+            <div
+                class="scanner-frame"
+                aria-hidden="true"
+            >
+                <span class="corner top-left"></span>
+                <span class="corner top-right"></span>
+                <span class="corner bottom-left"></span>
+                <span class="corner bottom-right"></span>
+            </div>
+    
+        </div>
+    
+    
+        <p
+            id="scannerStatus"
+            class="scanner-status"
+        >
+            Placez le code-barres dans le cadre.
+        </p>
+    
+    </div>
+
+
+    <!-- NOTIFICATION -->
+    <div
+        class="products-notification"
+        id="productsNotification"
+        role="status"
+        aria-live="polite"
+    >
+        <span id="productsNotificationText"></span>
+    </div>
+
+
+    <script
+        type="module"
+        src="js/produits.js"
+    ></script>
+
+</body>
+
+</html>

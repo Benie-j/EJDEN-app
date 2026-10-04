@@ -1,0 +1,270 @@
+/* =========================================================
+   EJDEN — PARAMÈTRES
+   ========================================================= */
+
+:root {
+    --primary: #176B87;
+
+    --background: #F6F9FA;
+    --surface: #FFFFFF;
+
+    --text: #172126;
+    --text-secondary: #68777D;
+
+    --border: #E3EAED;
+
+    --shadow-soft: 0 8px 24px rgba(23, 33, 38, 0.06);
+
+    --radius-sm: 10px;
+    --radius-md: 16px;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+[hidden] {
+    display: none !important;
+}
+
+body {
+    min-height: 100vh;
+
+    background: var(--background);
+    color: var(--text);
+
+    font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    -webkit-font-smoothing: antialiased;
+}
+
+button,
+input {
+    font: inherit;
+}
+
+.settings-page {
+    width: 100%;
+    max-width: 560px;
+    margin: 0 auto;
+
+    padding:
+        calc(14px + env(safe-area-inset-top, 0px))
+        16px
+        calc(32px + env(safe-area-inset-bottom, 0px));
+}
+
+.settings-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    margin-bottom: 18px;
+}
+
+.back-button {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+
+    background: var(--surface);
+    color: var(--text);
+
+    text-decoration: none;
+}
+
+.back-button svg {
+    width: 20px;
+    height: 20px;
+
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.settings-title span {
+    display: block;
+
+    color: var(--primary);
+
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .08em;
+}
+
+.settings-title h1 {
+    font-size: 20px;
+    line-height: 1.2;
+}
+
+.settings-section {
+    margin-bottom: 14px;
+    padding: 16px;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+
+    background: var(--surface);
+}
+
+.settings-section h2 {
+    font-size: 15px;
+}
+
+.settings-help {
+    margin: 4px 0 14px;
+
+    color: var(--text-secondary);
+
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.field + .field {
+    margin-top: 12px;
+}
+
+.field label {
+    display: block;
+
+    margin-bottom: 6px;
+
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.field input {
+    width: 100%;
+    height: 46px;
+
+    padding: 0 14px;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+
+    background: var(--surface);
+    color: var(--text);
+
+    font-size: 14px;
+}
+
+.field input:focus {
+    outline: 2px solid var(--primary);
+    outline-offset: 1px;
+}
+
+.field input.is-invalid {
+    border-color: #D64545;
+}
+
+.receipt-preview {
+    margin-top: 10px;
+    padding: 12px;
+
+    border-radius: var(--radius-sm);
+
+    background: var(--background);
+    color: var(--text);
+
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.save-button {
+    width: 100%;
+    height: 50px;
+
+    border: 0;
+    border-radius: var(--radius-sm);
+
+    background: var(--primary);
+    color: #fff;
+
+    font-size: 15px;
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+.settings-toast {
+    position: fixed;
+    left: 50%;
+    bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+    z-index: 3000;
+
+    width: max-content;
+    max-width: min(420px, calc(100% - 32px));
+
+    padding: 11px 16px;
+
+    transform: translate(-50%, 12px);
+
+    opacity: 0;
+    pointer-events: none;
+
+    border-radius: var(--radius-sm);
+
+    background: var(--text);
+    color: var(--surface);
+
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+
+    box-shadow: var(--shadow-soft);
+
+    transition: opacity .2s ease, transform .2s ease;
+}
+
+.settings-toast.is-visible {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --background: #10181C;
+        --surface: #172126;
+
+        --text: #F0F4F5;
+        --text-secondary: #9BA9AE;
+
+        --border: #29373D;
+    }
+}
+
+
+.settings-greeting {
+    margin-top: 14px;
+    padding: 10px 12px;
+
+    border-radius: var(--radius-sm);
+
+    background: var(--background);
+    color: var(--text-secondary);
+
+    font-size: 12px;
+}
+
+.settings-greeting:empty {
+    display: none;
+}

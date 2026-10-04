@@ -1,0 +1,108 @@
+/* =========================================================
+   EJDEN — COMMANDES (en plus de modules.css et achats.css)
+   ========================================================= */
+
+.orders-kind {
+    margin-bottom: 14px;
+}
+
+.orders-kind button.is-active {
+    background: var(--primary-soft);
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.summary-card.is-alert {
+    background: var(--danger-soft);
+    border-color: var(--danger);
+    color: var(--danger);
+}
+
+.summary-card.is-alert span {
+    color: var(--danger);
+}
+
+.order-filters {
+    display: flex;
+    gap: 8px;
+
+    margin: 4px 0 14px;
+
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.order-filters::-webkit-scrollbar {
+    display: none;
+}
+
+.filter-button {
+    flex-shrink: 0;
+
+    height: 38px;
+    padding: 0 16px;
+
+    border: 1px solid var(--border);
+    border-radius: 999px;
+
+    background: var(--surface);
+    color: var(--text-secondary);
+
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.filter-button.active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+}
+
+.badge.is-overdue {
+    background: var(--danger-soft);
+    color: var(--danger);
+}
+
+.badge.is-ready {
+    background: var(--primary-soft);
+    color: var(--primary);
+}
+
+.badge.is-done {
+    background: var(--success-soft);
+    color: var(--success);
+}
+
+.badge.is-cancelled {
+    background: var(--danger-soft);
+    color: var(--danger);
+}
+
+.stock-short {
+    color: var(--danger);
+    font-weight: 700;
+}
+
+.order-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    margin-top: 14px;
+}
+
+.action-button.is-primary {
+    border-color: var(--primary);
+    background: var(--primary);
+    color: #fff;
+}
+
+.order-panel {
+    margin-top: 4px;
+}
+
+.order-panel[hidden] {
+    display: none;
+}

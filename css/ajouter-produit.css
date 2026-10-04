@@ -1,0 +1,658 @@
+:root {
+    --primary: #176B87;
+    --primary-dark: #12566C;
+    --primary-soft: #EAF4F7;
+
+    --background: #F6F9FA;
+    --surface: #FFFFFF;
+
+    --text: #172126;
+    --text-secondary: #68777D;
+
+    --border: #E3EAED;
+
+    --error: #D64545;
+
+    --radius: 16px;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    min-height: 100%;
+}
+
+body {
+    min-height: 100vh;
+    background: var(--background);
+    color: var(--text);
+    font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+
+/* =========================
+   HEADER
+========================= */
+
+.page-header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+
+    height: 64px;
+
+    display: flex;
+    align-items: center;
+
+    padding:
+        0
+        16px;
+
+    background: rgba(255, 255, 255, 0.94);
+    border-bottom: 1px solid var(--border);
+
+    backdrop-filter: blur(12px);
+}
+
+.page-header h1 {
+    flex: 1;
+
+    font-size: 18px;
+    font-weight: 700;
+
+    text-align: center;
+
+    white-space: nowrap;
+}
+
+.back-button {
+    width: 40px;
+    height: 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: var(--text);
+    text-decoration: none;
+
+    border-radius: 12px;
+}
+
+.back-button:active {
+    background: var(--primary-soft);
+}
+
+.back-button svg {
+    width: 22px;
+    height: 22px;
+
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.header-spacer {
+    width: 40px;
+}
+
+
+/* =========================
+   CONTENU
+========================= */
+
+.page-content {
+    width: 100%;
+    max-width: 600px;
+
+    margin: 0 auto;
+
+    padding:
+        20px
+        16px
+        calc(32px + env(safe-area-inset-bottom));
+}
+
+
+/* =========================
+   FORMULAIRE
+========================= */
+
+#productForm {
+    display: flex;
+    flex-direction: column;
+
+    gap: 14px;
+}
+
+.form-section {
+    background: var(--surface);
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+
+    padding: 18px 16px;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 16px;
+}
+
+.section-title h2 {
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.section-title span,
+.label-row span {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+
+/* =========================
+   PHOTO
+========================= */
+
+.photo-upload {
+    min-height: 88px;
+
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    padding: 14px;
+
+    border: 1.5px dashed var(--border);
+    border-radius: 14px;
+
+    background: var(--background);
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.photo-upload:active {
+    background: var(--primary-soft);
+    border-color: var(--primary);
+}
+
+.photo-icon {
+    width: 52px;
+    height: 52px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 14px;
+
+    background: var(--primary-soft);
+    color: var(--primary);
+}
+
+.photo-icon svg {
+    width: 25px;
+    height: 25px;
+
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.photo-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.photo-text strong {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.photo-text span {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.photo-upload input {
+    display: none;
+}
+
+.photo-preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 48px;
+    height: 48px;
+
+    flex-shrink: 0;
+
+    overflow: hidden;
+
+    color: var(--primary);
+
+    background: var(--primary-soft);
+
+    border-radius: 12px;
+}
+
+.photo-preview svg {
+    width: 24px;
+    height: 24px;
+
+    fill: none;
+    stroke: currentColor;
+
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.photo-preview img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+    object-position: center;
+}
+
+/* =========================
+   CHAMPS
+========================= */
+
+.field {
+    display: flex;
+    flex-direction: column;
+
+    gap: 8px;
+
+    margin-bottom: 16px;
+}
+
+.field:last-child {
+    margin-bottom: 0;
+}
+
+.field label,
+.label-row label {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.label-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.field input {
+    width: 100%;
+    height: 48px;
+
+    padding: 0 14px;
+
+    border: 1px solid var(--border);
+    border-radius: 12px;
+
+    background: var(--background);
+
+    color: var(--text);
+
+    font-family: inherit;
+    font-size: 15px;
+
+    outline: none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+.field input::placeholder {
+    color: #9AA7AC;
+}
+
+.field input:focus {
+    background: var(--surface);
+
+    border-color: var(--primary);
+
+    box-shadow:
+        0 0 0 3px
+        rgba(23, 107, 135, 0.10);
+}
+
+
+/* =========================
+   PRIX
+========================= */
+
+.input-with-suffix {
+    position: relative;
+}
+
+.input-with-suffix input {
+    padding-right: 68px;
+}
+
+.input-with-suffix span {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    font-size: 12px;
+    font-weight: 600;
+
+    color: var(--text-secondary);
+
+    pointer-events: none;
+}
+
+
+/* =========================
+   AIDE
+========================= */
+
+.field-help {
+    font-size: 11px;
+    line-height: 1.5;
+
+    color: var(--text-secondary);
+}
+
+
+/* =========================
+   CODE-BARRES
+========================= */
+
+.barcode-input-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.barcode-input {
+    min-height: 52px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 4px 5px 4px 14px;
+
+    border: 1px solid var(--border);
+    border-radius: 14px;
+
+    background: var(--background);
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+.barcode-input:focus-within {
+    background: var(--surface);
+
+    border-color: var(--primary);
+
+    box-shadow:
+        0 0 0 3px
+        rgba(23, 107, 135, 0.10);
+}
+
+.barcode-icon {
+    width: 21px;
+    height: 21px;
+
+    flex-shrink: 0;
+
+    fill: none;
+    stroke: var(--text-secondary);
+    stroke-width: 1.7;
+    stroke-linecap: round;
+}
+
+.barcode-input input {
+    min-width: 0;
+    flex: 1;
+
+    height: 42px;
+
+    border: none;
+    outline: none;
+
+    background: transparent;
+
+    color: var(--text);
+
+    font-family: inherit;
+    font-size: 14px;
+}
+
+.barcode-input input::placeholder {
+    color: #9AA7AC;
+}
+
+.scan-button {
+    min-width: 92px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 6px;
+
+    border: none;
+    border-radius: 10px;
+
+    background: var(--primary);
+    color: white;
+
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        transform 0.1s ease;
+}
+
+.scan-button:active {
+    background: var(--primary-dark);
+    transform: scale(0.97);
+}
+
+.scan-button svg {
+    width: 18px;
+    height: 18px;
+
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.barcode-help {
+    padding-left: 2px;
+
+    font-size: 11px;
+    line-height: 1.4;
+
+    color: var(--text-secondary);
+}
+
+/* =========================
+   ACTIONS
+========================= */
+
+.form-actions {
+    display: flex;
+    flex-direction: column;
+
+    gap: 10px;
+
+    margin-top: 4px;
+}
+
+.cancel-button,
+.save-button {
+    width: 100%;
+    min-height: 50px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 13px;
+
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+
+    text-decoration: none;
+
+    cursor: pointer;
+}
+
+.cancel-button {
+    border: 1px solid var(--border);
+
+    background: var(--surface);
+    color: var(--text);
+}
+
+.cancel-button:active {
+    background: var(--background);
+}
+
+.save-button {
+    border: none;
+
+    background: var(--primary);
+    color: white;
+
+    box-shadow:
+        0 5px 14px
+        rgba(23, 107, 135, 0.18);
+}
+
+.save-button:active {
+    background: var(--primary-dark);
+}
+
+
+/* =========================
+   DARK MODE
+========================= */
+
+@media (prefers-color-scheme: dark) {
+
+    :root {
+        --background: #101719;
+        --surface: #182124;
+
+        --text: #F1F5F6;
+        --text-secondary: #9BA9AE;
+
+        --border: #29363A;
+
+        --primary-soft: #17343E;
+    }
+
+    .page-header {
+        background: rgba(24, 33, 36, 0.94);
+    }
+
+    .field input {
+        background: #11191C;
+    }
+
+    .field input:focus {
+        background: var(--surface);
+    }
+
+    .photo-upload {
+        background: #11191C;
+    }
+
+    .cancel-button {
+        background: var(--surface);
+        color: var(--text);
+    }
+}
+.notification {
+    position: fixed;
+
+    left: 16px;
+    right: 16px;
+    bottom: calc(20px + env(safe-area-inset-bottom));
+
+    z-index: 100;
+
+    padding: 14px 16px;
+
+    border-radius: 13px;
+
+    background: var(--text);
+    color: black;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    text-align: center;
+
+    opacity: 0;
+    visibility: hidden;
+
+    transform: translateY(20px);
+
+    transition:
+        opacity 0.2s ease,
+        visibility 0.2s ease,
+        transform 0.2s ease;
+}
+
+.notification.show {
+    opacity: 1;
+    visibility: visible;
+
+    transform: translateY(0);
+}

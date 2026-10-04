@@ -1,0 +1,831 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+
+
+    <meta
+        http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'"
+    >
+    <meta name="referrer" content="no-referrer">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    >
+
+    <meta
+        name="theme-color"
+        content="#F6F9FA"
+    >
+
+    <title>Nouvelle vente | EJDEN</title>
+
+    <link
+        rel="stylesheet"
+        href="ventes.css"
+    >
+</head>
+
+<body>
+
+    <main class="sales-page">
+
+        <!-- =========================
+             EN-TÊTE
+        ========================== -->
+
+        <header class="sales-header">
+
+            <button
+                type="button"
+                class="header-button"
+                id="salesBackButton"
+                aria-label="Retour au tableau de bord"
+            >
+                <svg
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                >
+                    <path d="M15 18l-6-6 6-6"></path>
+                </svg>
+            </button>
+
+            <div class="sales-header-title">
+                <span>Nouvelle vente</span>
+                <small id="salesStatus">En cours</small>
+            </div>
+
+            <button
+                type="button"
+                class="header-button"
+                id="salesHistoryButton"
+                aria-label="Historique des ventes"
+            >
+                <svg
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                >
+                    <path d="M3 12a9 9 0 1 0 3-6.7"></path>
+                    <path d="M3 4v6h6"></path>
+                    <path d="M12 7v5l3 2"></path>
+                </svg>
+            </button>
+
+        </header>
+
+
+        <!-- =========================
+             CATALOGUE
+        ========================== -->
+
+        <section
+            class="catalogue-section"
+            aria-labelledby="catalogueTitle"
+        >
+
+            <div class="search-area">
+
+                <div class="search-box">
+
+                    <svg
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                    >
+                        <circle
+                            cx="11"
+                            cy="11"
+                            r="6.5"
+                        ></circle>
+
+                        <path
+                            d="M16 16l5 5"
+                        ></path>
+                    </svg>
+
+                    <input
+                        type="search"
+                        id="productSearch"
+                        placeholder="Rechercher un produit"
+                        autocomplete="off"
+                        enterkeyhint="search"
+                    >
+
+                    <button
+                        type="button"
+                        class="search-clear"
+                        id="clearProductSearch"
+                        aria-label="Effacer la recherche"
+                        hidden
+                    >
+                        <svg
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                        >
+                            <path d="M6 6l12 12"></path>
+                            <path d="M18 6L6 18"></path>
+                        </svg>
+                    </button>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="scanner-button"
+                    id="scanProductButton"
+                    aria-label="Scanner un code-barres"
+                >
+                    <svg
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                    >
+                        <path d="M4 7V5a1 1 0 0 1 1-1h2"></path>
+                        <path d="M17 4h2a1 1 0 0 1 1 1v2"></path>
+                        <path d="M20 17v2a1 1 0 0 1-1 1h-2"></path>
+                        <path d="M7 20H5a1 1 0 0 1-1-1v-2"></path>
+                        <path d="M7 8v8"></path>
+                        <path d="M10 8v8"></path>
+                        <path d="M13 8v8"></path>
+                        <path d="M17 8v8"></path>
+                    </svg>
+
+                    <span>Scanner</span>
+                </button>
+
+            </div>
+
+
+            <div class="catalogue-heading">
+
+                <div>
+                    <h1 id="catalogueTitle">
+                        Produits
+                    </h1>
+
+                    <p id="productResultCount">
+                        Aucun produit
+                    </p>
+                </div>
+
+            </div>
+
+
+            <!-- Liste alimentée par ventes.ts -->
+            <div
+                class="product-list"
+                id="productList"
+            >
+                <div class="products-empty">
+                    <div class="empty-icon">
+                        <svg
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                        >
+                            <path d="M4 5h16v14H4z"></path>
+                            <path d="M8 9h8"></path>
+                            <path d="M8 13h5"></path>
+                        </svg>
+                    </div>
+
+                    <strong>Aucun produit disponible</strong>
+
+                    <span>
+                        Ajoutez d'abord vos produits pour commencer une vente.
+                    </span>
+
+                    <a
+                        href="ajouter-produit.html"
+                        class="empty-action"
+                    >
+                        Ajouter un produit
+                    </a>
+                </div>
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             BARRE PANIER
+             TOUJOURS ACCESSIBLE
+        ========================== -->
+
+        <button
+            type="button"
+            class="cart-bar"
+            id="openCartButton"
+            aria-controls="cartPanel"
+            aria-expanded="false"
+        >
+
+            <div class="cart-bar-left">
+
+                <div class="cart-bar-icon">
+                    <svg
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                    >
+                        <path d="M4 5h2l2 11h10l2-8H7"></path>
+                        <circle
+                            cx="10"
+                            cy="20"
+                            r="1.2"
+                        ></circle>
+                        <circle
+                            cx="18"
+                            cy="20"
+                            r="1.2"
+                        ></circle>
+                    </svg>
+                </div>
+
+                <div class="cart-bar-info">
+                    <strong>Panier</strong>
+                    <span id="cartCount">
+                        0 article
+                    </span>
+                </div>
+
+            </div>
+
+
+            <div class="cart-bar-right">
+
+                <strong id="cartBarTotal">
+                    0 F
+                </strong>
+
+                <svg
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                >
+                    <path d="M9 18l6-6-6-6"></path>
+                </svg>
+
+            </div>
+
+        </button>
+
+
+        <!-- =========================
+             VOILE
+        ========================== -->
+
+        <div
+            class="cart-overlay"
+            id="cartOverlay"
+            hidden
+        ></div>
+
+
+        <!-- =========================
+             PANIER
+             INDÉPENDANT DU CATALOGUE
+        ========================== -->
+
+        <section
+            class="cart-panel"
+            id="cartPanel"
+            aria-labelledby="cartPanelTitle"
+            aria-hidden="true"
+        >
+
+            <div class="cart-panel-header">
+
+                <button
+                    type="button"
+                    class="panel-back-button"
+                    id="closeCartButton"
+                    aria-label="Fermer le panier"
+                >
+                    <svg
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                    >
+                        <path d="M15 18l-6-6 6-6"></path>
+                    </svg>
+                </button>
+
+                <div>
+                    <h2 id="cartPanelTitle">
+                        Panier
+                    </h2>
+
+                    <span id="cartPanelCount">
+                        0 article
+                    </span>
+                </div>
+
+            </div>
+
+
+            <!-- Liste alimentée par ventes.ts -->
+            <div
+                class="cart-list"
+                id="cartList"
+            >
+                <div class="cart-empty">
+
+                    <div class="empty-icon">
+                        <svg
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                        >
+                            <path d="M4 5h2l2 11h10l2-8H7"></path>
+                            <circle
+                                cx="10"
+                                cy="20"
+                                r="1.2"
+                            ></circle>
+                            <circle
+                                cx="18"
+                                cy="20"
+                                r="1.2"
+                            ></circle>
+                        </svg>
+                    </div>
+
+                    <strong>Votre panier est vide</strong>
+
+                    <span>
+                        Ajoutez des produits pour commencer la vente.
+                    </span>
+
+                </div>
+            </div>
+
+
+            <!-- =========================
+                 INFORMATIONS DE VENTE
+            ========================== -->
+
+            <div class="sale-details">
+
+                <label
+                    class="field-label"
+                    for="customerSelector"
+                >
+                    Client
+                </label>
+
+                <select
+                    id="customerSelector"
+                    class="customer-selector"
+                >
+                    <option value="">
+                        Client comptoir
+                    </option>
+                </select>
+
+
+                <button
+                    type="button"
+                    class="discount-button"
+                    id="discountButton"
+                >
+                    <span>Remise</span>
+
+                    <span id="discountAmount">
+                        0 F
+                    </span>
+                </button>
+
+            </div>
+
+
+            <!-- =========================
+                 RÉSUMÉ
+            ========================== -->
+
+            <div class="sale-summary">
+
+                <div class="summary-line">
+                    <span>Sous-total</span>
+                    <strong id="subtotal">
+                        0 F
+                    </strong>
+                </div>
+
+                <div class="summary-line">
+                    <span>Remise</span>
+                    <strong id="summaryDiscount">
+                        0 F
+                    </strong>
+                </div>
+
+                <div class="summary-total">
+                    <span>Total</span>
+                    <strong id="saleTotal">
+                        0 F
+                    </strong>
+                </div>
+
+            </div>
+
+
+            <!-- =========================
+                 ENCAISSEMENT
+            ========================== -->
+
+            <button
+                type="button"
+                class="checkout-button"
+                id="checkoutButton"
+                disabled
+            >
+
+                <span>
+                    Encaisser
+                </span>
+
+                <strong id="checkoutAmount">
+                    0 F
+                </strong>
+
+            </button>
+
+        </section>
+      <!-- =========================
+     PANNEAU ENCAISSEMENT
+========================== -->
+
+<div
+    class="checkout-overlay"
+    id="checkoutOverlay"
+    hidden
+></div>
+
+<section
+    class="checkout-panel"
+    id="checkoutPanel"
+    aria-labelledby="checkoutPanelTitle"
+    aria-hidden="true"
+>
+
+    <header class="checkout-panel-header">
+
+        <button
+            type="button"
+            class="panel-back-button"
+            id="closeCheckoutButton"
+            aria-label="Fermer l'encaissement"
+        >
+            <svg
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+            >
+                <path d="M15 18l-6-6 6-6"></path>
+            </svg>
+        </button>
+
+        <div>
+            <h2 id="checkoutPanelTitle">
+                Encaissement
+            </h2>
+
+            <span>
+                Paiement de la vente
+            </span>
+        </div>
+
+    </header>
+
+
+    <div class="checkout-content">
+
+        <div class="checkout-total-card">
+
+            <span>Total à payer</span>
+
+            <strong id="checkoutPanelTotal">
+                0 F
+            </strong>
+
+        </div>
+
+
+        <!-- MOYENS DE PAIEMENT -->
+
+        <div class="payment-section">
+
+            <span class="field-label">
+                Moyen de paiement
+            </span>
+
+            <div class="payment-methods">
+
+                <button
+                    type="button"
+                    class="payment-method is-selected"
+                    data-payment-method="cash"
+                >
+                    <span>Espèces</span>
+                </button>
+
+                <button
+                    type="button"
+                    class="payment-method"
+                    data-payment-method="mobile_money"
+                >
+                    <span>Mobile Money</span>
+                </button>
+
+                <button
+                    type="button"
+                    class="payment-method"
+                    data-payment-method="card"
+                >
+                    <span>Carte</span>
+                </button>
+
+                <button
+                    type="button"
+                    class="payment-method"
+                    data-payment-method="other"
+                >
+                    <span>Autre</span>
+                </button>
+
+                <button
+                    type="button"
+                    class="payment-method"
+                    data-payment-method="credit"
+                >
+                    <span>Crédit</span>
+                </button>
+
+            </div>
+
+
+            <!-- =========================
+                 EMPRUNTEUR
+            ========================== -->
+            
+            <div
+                class="borrower-section"
+                id="borrowerSection"
+                hidden
+            >
+
+                <!-- Choix d'un client déjà enregistré -->
+                <div id="borrowerClientBlock">
+
+                    <label
+                        class="field-label"
+                        for="borrowerClient"
+                    >
+                        Client
+                    </label>
+
+                    <select
+                        id="borrowerClient"
+                        class="customer-selector"
+                    ></select>
+
+                    <p
+                        class="borrower-hint"
+                        id="borrowerDebtHint"
+                        hidden
+                    ></p>
+
+                </div>
+
+
+                <!-- Nouveau client (nom saisi à la main) -->
+                <div id="borrowerNewBlock">
+
+                    <label
+                        class="field-label"
+                        for="borrowerName"
+                    >
+                        Nom du client
+                    </label>
+
+                    <div class="borrower-input-wrapper">
+
+                        <input
+                            type="text"
+                            id="borrowerName"
+                            name="borrowerName"
+                            placeholder="Ex. Kouassi Jean"
+                            autocomplete="off"
+                            maxlength="80"
+                        >
+
+                    </div>
+
+                    <label class="borrower-save">
+
+                        <input
+                            type="checkbox"
+                            id="borrowerSave"
+                            checked
+                        >
+
+                        <span>Enregistrer ce client</span>
+
+                    </label>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- MONTANT -->
+
+        <div class="payment-amount-section">
+
+            <label
+                class="field-label"
+                for="paymentAmount"
+            >
+                Montant encaissé
+            </label>
+
+            <div class="payment-input-wrapper">
+
+                <input
+                    type="number"
+                    id="paymentAmount"
+                    inputmode="numeric"
+                    min="0"
+                    step="1"
+                    placeholder="0"
+                    autocomplete="off"
+                >
+
+                <span>F</span>
+
+            </div>
+
+        </div>
+
+
+        <!-- RESTE -->
+
+        <div
+            class="payment-balance"
+            id="paymentBalance"
+        >
+
+            <div>
+                <span>Reste à payer</span>
+
+                <strong id="paymentRemaining">
+                    0 F
+                </strong>
+            </div>
+
+            <div>
+                <span>Monnaie</span>
+
+                <strong id="paymentChange">
+                    0 F
+                </strong>
+            </div>
+
+        </div>
+
+
+        <!-- VALIDATION -->
+
+        <button
+            type="button"
+            class="confirm-payment-button"
+            id="confirmPaymentButton"
+            disabled
+        >
+            <span>
+                Valider l'encaissement
+            </span>
+
+            <strong id="confirmPaymentAmount">
+                0 F
+            </strong>
+        </button>
+
+    </div>
+
+</section>
+       
+
+        <!-- =========================
+             SCANNER
+        ========================== -->
+
+        <section
+            class="scanner-overlay"
+            id="scannerOverlay"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Scanner un code-barres"
+            aria-hidden="true"
+            hidden
+        >
+            <header class="scanner-header">
+                <button
+                    type="button"
+                    class="scanner-close"
+                    id="closeScannerButton"
+                    aria-label="Fermer le scanner"
+                >
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M6 6l12 12"></path>
+                        <path d="M18 6L6 18"></path>
+                    </svg>
+                </button>
+
+                <h2>Scanner un produit</h2>
+
+                <button
+                    type="button"
+                    class="scanner-torch"
+                    id="scannerTorchButton"
+                    aria-label="Allumer la lampe"
+                    aria-pressed="false"
+                    hidden
+                >
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M7 2h10l-1 7H8L7 2z"></path>
+                        <path d="M8 9l1 4v9h6v-9l1-4"></path>
+                    </svg>
+                </button>
+            </header>
+
+            <div class="scanner-viewport">
+                <video
+                    id="scannerVideo"
+                    class="scanner-video"
+                    playsinline
+                    muted
+                ></video>
+
+                <div class="scanner-frame" aria-hidden="true"></div>
+
+                <p
+                    class="scanner-message"
+                    id="scannerMessage"
+                    role="status"
+                    aria-live="polite"
+                >
+                    Placez le code-barres dans le cadre.
+                </p>
+            </div>
+
+            <form
+                class="scanner-manual"
+                id="scannerManualForm"
+                autocomplete="off"
+            >
+                <label for="scannerManualInput">
+                    Ou saisissez le code
+                </label>
+
+                <div class="scanner-manual-row">
+                    <input
+                        type="text"
+                        id="scannerManualInput"
+                        inputmode="numeric"
+                        placeholder="Code-barres"
+                    >
+
+                    <button type="submit">Ajouter</button>
+                </div>
+            </form>
+        </section>
+
+        <!-- =========================
+             NOTIFICATION
+        ========================== -->
+
+        <div
+            class="sales-notification"
+            id="salesNotification"
+            role="status"
+            aria-live="polite"
+            hidden
+        >
+            <svg
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+            >
+                <path d="M5 12l4 4L19 6"></path>
+            </svg>
+
+            <span id="salesNotificationText"></span>
+        </div>
+
+    </main>
+
+
+    <script
+        type="module"
+        src="js/ventes.js"
+    ></script>
+
+</body>
+</html>

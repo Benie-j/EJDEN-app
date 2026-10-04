@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'"
+    >
+    <meta name="referrer" content="no-referrer">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    >
+
+    <title>Commandes | EJDEN</title>
+
+    <link rel="stylesheet" href="css/modules.css">
+    <link rel="stylesheet" href="css/achats.css">
+    <link rel="stylesheet" href="css/commandes.css">
+</head>
+
+<body>
+
+    <main class="module-page">
+
+        <header class="module-header">
+
+            <a
+                href="dashboard.html"
+                class="back-button"
+                aria-label="Retour au tableau de bord"
+            >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M15 18l-6-6 6-6"></path>
+                </svg>
+            </a>
+
+            <div class="module-title">
+                <span>GESTION</span>
+                <h1>Commandes</h1>
+            </div>
+
+        </header>
+
+        <section class="summary-grid" aria-live="polite">
+
+            <div class="summary-card">
+                <span>Commandes clients en cours</span>
+                <strong id="summaryCustomer">0</strong>
+            </div>
+
+            <div class="summary-card">
+                <span>Commandes fournisseurs en cours</span>
+                <strong id="summarySupplier">0</strong>
+            </div>
+
+            <div class="summary-card is-wide is-alert" id="overdueCard" hidden>
+                <span>En retard</span>
+                <strong id="summaryOverdue">0</strong>
+            </div>
+
+        </section>
+
+        <div class="segmented orders-kind" role="group" aria-label="Type de commande">
+            <button type="button" data-kind="customer" class="is-active">
+                Clients
+            </button>
+
+            <button type="button" data-kind="supplier">
+                Fournisseurs
+            </button>
+        </div>
+
+        <section class="module-section" id="orderFormSection">
+
+            <h2 id="orderFormTitle">Nouvelle commande client</h2>
+
+            <p class="form-note" id="orderBlocked" hidden></p>
+
+            <form id="orderForm" autocomplete="off" novalidate>
+
+                <div class="field">
+                    <label for="orderParty" id="orderPartyLabel">Client</label>
+
+                    <select id="orderParty"></select>
+                </div>
+
+                <h3 class="detail-title">Produits commandés</h3>
+
+                <div id="orderLines"></div>
+
+                <button type="button" class="secondary-button wide" id="addOrderLineButton">
+                    ＋ Ajouter un produit
+                </button>
+
+                <div class="purchase-total">
+                    <span>Total de la commande</span>
+                    <strong id="orderTotal">0 FCFA</strong>
+                </div>
+
+                <div class="field">
+                    <label for="orderDate">Date prévue (facultatif)</label>
+
+                    <input type="date" id="orderDate">
+                </div>
+
+                <div class="field">
+                    <label for="orderNote">Note (facultatif)</label>
+
+                    <input
+                        type="text"
+                        id="orderNote"
+                        maxlength="80"
+                        placeholder="Ex. : à livrer le matin"
+                    >
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="primary-button" id="orderSubmit">
+                        Enregistrer la commande
+                    </button>
+                </div>
+
+            </form>
+
+        </section>
+
+        <section class="order-filters" aria-label="Filtrer les commandes">
+
+            <button type="button" class="filter-button active" data-filter="open">
+                En cours
+            </button>
+
+            <button type="button" class="filter-button" data-filter="completed">
+                Terminées
+            </button>
+
+            <button type="button" class="filter-button" data-filter="cancelled">
+                Annulées
+            </button>
+
+        </section>
+
+        <section id="ordersEmpty" class="empty-state" hidden>
+            <strong id="ordersEmptyTitle">Aucune commande</strong>
+            <p id="ordersEmptyText">Les commandes enregistrées apparaîtront ici.</p>
+        </section>
+
+        <section id="ordersList"></section>
+
+    </main>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script type="module" src="js/commandes.js"></script>
+
+</body>
+
+</html>

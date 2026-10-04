@@ -1,0 +1,57 @@
+/* =========================================================
+   EJDEN — CRÉDITS (en plus de modules.css et credit.css)
+   ========================================================= */
+
+.credit-filters {
+    display: flex;
+    gap: 8px;
+
+    margin-bottom: 14px;
+}
+
+.filter-button {
+    flex-shrink: 0;
+
+    height: 38px;
+    padding: 0 16px;
+
+    border: 1px solid var(--border);
+    border-radius: 999px;
+
+    background: var(--surface);
+    color: var(--text-secondary);
+
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.filter-button.active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+}
+
+.badge.is-overdue {
+    background: var(--danger-soft);
+    color: var(--danger);
+}
+
+.credit-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 46px;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+
+    background: var(--surface);
+    color: var(--primary);
+
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+}

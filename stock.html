@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'"
+    >
+    <meta name="referrer" content="no-referrer">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    >
+
+    <title>Stock | EJDEN</title>
+
+    <link rel="stylesheet" href="css/modules.css">
+    <link rel="stylesheet" href="css/stock.css">
+</head>
+
+<body>
+
+    <main class="module-page">
+
+        <header class="module-header">
+
+            <a
+                href="dashboard.html"
+                class="back-button"
+                aria-label="Retour au tableau de bord"
+            >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M15 18l-6-6 6-6"></path>
+                </svg>
+            </a>
+
+            <div class="module-title">
+                <span>GESTION</span>
+                <h1>Stock</h1>
+            </div>
+
+        </header>
+
+
+        <!-- RÉSUMÉ -->
+        <section class="summary-grid" aria-live="polite">
+
+            <div class="summary-card is-wide">
+                <span>Valeur du stock (prix d'achat)</span>
+                <strong id="summaryValue">0</strong>
+                <small id="summaryValueNote">FCFA</small>
+            </div>
+
+            <div class="summary-card">
+                <span>Stock faible</span>
+                <strong id="summaryLow">0</strong>
+                <small>produits</small>
+            </div>
+
+            <div class="summary-card">
+                <span>Ruptures</span>
+                <strong id="summaryOut">0</strong>
+                <small>produits</small>
+            </div>
+
+        </section>
+
+
+        <!-- RECHERCHE + FILTRES -->
+        <section class="module-search">
+
+            <input
+                type="search"
+                id="stockSearch"
+                placeholder="Rechercher un produit..."
+                autocomplete="off"
+                maxlength="80"
+                aria-label="Rechercher un produit"
+            >
+
+        </section>
+
+        <section class="stock-filters" aria-label="Filtrer le stock">
+
+            <button type="button" class="filter-button active" data-filter="all">
+                Tous
+            </button>
+
+            <button type="button" class="filter-button" data-filter="low">
+                Stock faible
+            </button>
+
+            <button type="button" class="filter-button" data-filter="out">
+                Ruptures
+            </button>
+
+        </section>
+
+
+        <!-- ÉTAT VIDE -->
+        <section class="empty-state" id="stockEmpty" hidden>
+            <strong id="stockEmptyTitle">Aucun produit</strong>
+            <p id="stockEmptyText">Ajoutez des produits pour suivre votre stock.</p>
+            <a href="ajouter-produit.html" class="empty-link">Ajouter un produit</a>
+        </section>
+
+
+        <!-- LISTE -->
+        <section id="stockList"></section>
+
+
+        <!-- DERNIERS MOUVEMENTS -->
+        <section class="module-section" id="movementsSection" hidden>
+
+            <h2>Derniers mouvements</h2>
+
+            <div id="movementsList"></div>
+
+        </section>
+
+    </main>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script type="module" src="js/stock.js"></script>
+
+</body>
+
+</html>

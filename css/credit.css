@@ -1,0 +1,198 @@
+/* =========================================================
+   EJDEN — Régularisation des crédits
+   (formulaire de paiement + liste des paiements reçus)
+   Chargé après modules.css et historique-ventes.css.
+   ========================================================= */
+
+.pay-block {
+    margin-top: 12px;
+}
+
+.pay-block > .action-button,
+.pay-form .action-button {
+    width: 100%;
+}
+
+.action-button.is-primary {
+    border-color: var(--primary, #176B87);
+    background: var(--primary, #176B87);
+    color: #FFFFFF;
+}
+
+.pay-form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    padding: 14px;
+
+    border: 1px solid var(--border, #E3EAED);
+    border-radius: var(--radius-sm, 12px);
+
+    background: var(--surface, #FFFFFF);
+}
+
+.pay-form[hidden],
+.pay-confirm[hidden] {
+    display: none;
+}
+
+.pay-form label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text, #172126);
+}
+
+.pay-form input,
+.pay-form select {
+    width: 100%;
+    min-height: 48px;
+    padding: 0 12px;
+
+    border: 1px solid var(--border, #E3EAED);
+    border-radius: 12px;
+
+    background: var(--surface, #FFFFFF);
+    color: var(--text, #172126);
+
+    font: inherit;
+    font-size: 16px;
+}
+
+.pay-form input:focus,
+.pay-form select:focus {
+    outline: none;
+    border-color: var(--primary, #176B87);
+    box-shadow: 0 0 0 3px rgba(23, 107, 135, 0.12);
+}
+
+.pay-amount-row {
+    display: flex;
+    gap: 8px;
+}
+
+.pay-amount-row input {
+    flex: 1;
+    min-width: 0;
+}
+
+.pay-all {
+    min-height: 48px;
+    padding: 0 12px;
+
+    border: 1px solid var(--primary, #176B87);
+    border-radius: 12px;
+
+    background: var(--primary-soft, #EAF4F7);
+    color: var(--primary, #176B87);
+
+    font: inherit;
+    font-size: 13px;
+    font-weight: 700;
+
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.pay-preview {
+    font-size: 13px;
+    color: var(--text-secondary, #68777D);
+}
+
+.pay-preview.is-over {
+    color: var(--danger, var(--error, #D64545));
+    font-weight: 600;
+}
+
+.pay-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    margin-top: 4px;
+}
+
+/* ---------- Liste des paiements ---------- */
+
+.pay-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.pay-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+
+    padding: 10px 0;
+
+    border-bottom: 1px solid var(--border, #E3EAED);
+}
+
+.pay-row:last-child {
+    border-bottom: 0;
+}
+
+.pay-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.pay-info strong {
+    font-size: 14px;
+    color: var(--success, #168A5B);
+}
+
+.pay-info small {
+    font-size: 12px;
+    color: var(--text-secondary, #68777D);
+}
+
+.pay-row.is-cancelled .pay-info strong {
+    color: var(--text-secondary, #68777D);
+    text-decoration: line-through;
+}
+
+.pay-cancel {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+}
+
+.pay-cancel-button {
+    min-height: 36px;
+    padding: 0 12px;
+
+    border: 1px solid var(--border, #E3EAED);
+    border-radius: 10px;
+
+    background: var(--surface, #FFFFFF);
+    color: var(--danger, var(--error, #D64545));
+
+    font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.pay-confirm {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    min-width: 200px;
+    padding: 10px;
+
+    border: 1px solid var(--danger, var(--error, #D64545));
+    border-radius: 12px;
+}
+
+.pay-confirm p {
+    font-size: 12px;
+    line-height: 1.4;
+}

@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+
+    <meta charset="UTF-8">
+
+
+    <meta
+        http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'"
+    >
+    <meta name="referrer" content="no-referrer">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="theme-color"
+        content="#176B87"
+    >
+
+    <title>EJDEN | Tableau de bord</title>
+
+    <link
+        rel="stylesheet"
+        href="css/dashboard.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/more-menu.css"
+    >
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     BARRE SUPÉRIEURE
+===================================================== -->
+
+<header class="topbar">
+
+    <div class="brand">
+
+        <div class="brand-logo">
+
+            <svg
+                class="ejden-symbol"
+                viewBox="0 0 120 120"
+                aria-hidden="true"
+            >
+
+                <circle
+                    class="logo-halo"
+                    cx="60"
+                    cy="60"
+                    r="48"
+                />
+
+                <path
+                    class="logo-line"
+                    d="M34 38 C42 28 54 24 67 28 L84 38"
+                />
+
+                <path
+                    class="logo-line"
+                    d="M34 38 L34 63 C34 72 41 79 50 79"
+                />
+
+                <path
+                    class="logo-line"
+                    d="M50 79 L67 92 C72 96 80 95 84 90"
+                />
+
+                <path
+                    class="logo-line"
+                    d="M84 38 L84 65 C84 75 78 82 68 82 L50 82"
+                />
+
+                <path
+                    class="logo-core"
+                    d="M49 58 L70 58"
+                />
+
+                <circle
+                    class="logo-dot"
+                    cx="60"
+                    cy="58"
+                    r="4"
+                />
+
+            </svg>
+
+        </div>
+
+
+        <div class="brand-name">
+
+            <strong id="brandName">EJDEN</strong>
+
+            <span id="brandGreeting">Bonjour</span>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- Recherche -->
+
+    <div class="global-search">
+
+        <input
+            type="search"
+            id="globalSearch"
+            placeholder="Rechercher un produit..."
+            autocomplete="off"
+            maxlength="80"
+        >
+
+    </div>
+
+
+
+    <div class="topbar-actions">
+
+        <button
+            type="button"
+            class="notification-button"
+         id="notificationButton">
+            Notifications
+
+            <span class="notification-count" id="notificationCount">
+                0
+            </span>
+
+        </button>
+
+
+        <a
+            href="parametres.html"
+            class="profile"
+        >
+
+            <span class="profile-avatar" id="profileAvatar">
+                E
+            </span>
+
+            <span class="profile-text">
+                Mon espace
+            </span>
+
+        </a>
+
+    </div>
+
+</header>
+
+
+
+<!-- =====================================================
+     APPLICATION
+===================================================== -->
+
+<div class="app-layout">
+
+
+    <!-- =================================================
+         SIDEBAR
+    ================================================== -->
+
+    <aside class="sidebar">
+
+
+        <div class="sidebar-group">
+
+            <span class="sidebar-heading">
+                PRINCIPAL
+            </span>
+
+            <a
+                href="dashboard.html"
+                class="sidebar-link active"
+            >
+                Tableau de bord
+            </a>
+
+            <a
+                href="historique-ventes.html"
+                class="sidebar-link"
+            >
+                Ventes
+            </a>
+
+            <a
+                href="produits.html"
+                class="sidebar-link"
+            >
+                Produits
+            </a>
+
+            <a
+                href="stock.html"
+                class="sidebar-link"
+            >
+                Stock
+            </a>
+
+            <a
+                href="clients.html"
+                class="sidebar-link"
+            >
+                Clients
+            </a>
+
+        </div>
+
+
+
+        <div class="sidebar-group">
+
+            <span class="sidebar-heading">
+                FINANCES
+            </span>
+
+            <a
+                href="caisse.html"
+                class="sidebar-link"
+            >
+                Caisse
+            </a>
+
+            <a
+                href="depenses.html"
+                class="sidebar-link"
+            >
+                Dépenses
+            </a>
+
+            <a
+                href="#" data-soon="Finances"
+                class="sidebar-link"
+            >
+                Finances
+            </a>
+
+            <a
+                href="#" data-soon="Rapports"
+                class="sidebar-link"
+            >
+                Rapports
+            </a>
+
+        </div>
+
+
+
+        <div class="sidebar-bottom">
+
+            <a
+                href="parametres.html"
+                class="sidebar-link"
+            >
+                Paramètres
+            </a>
+
+            <a
+                href="#" data-soon="Aide"
+                class="sidebar-link"
+            >
+                Aide
+            </a>
+
+        </div>
+
+    </aside>
+
+
+
+    <!-- =================================================
+         CONTENU
+    ================================================== -->
+
+    <main class="dashboard">
+
+
+        <!-- =============================================
+             EN-TÊTE
+        ============================================== -->
+
+        <section class="dashboard-header">
+
+            <div>
+
+                <span class="dashboard-eyebrow">
+                    TABLEAU DE BORD
+                </span>
+
+                <h1>
+                    Vue générale
+                </h1>
+
+                <p>
+                    Suivez votre activité et prenez les bonnes décisions.
+                </p>
+
+            </div>
+
+
+            <div class="dashboard-controls">
+
+                <button
+                    type="button"
+                    class="date-button"
+                    id="periodButton"
+                    aria-haspopup="dialog"
+                    aria-expanded="false"
+                    aria-controls="periodOverlay"
+                >
+                    <span id="periodButtonLabel">Aujourd'hui</span>
+                    <span class="date-caret" aria-hidden="true"></span>
+                </button>
+
+                <button
+    type="button"
+    class="primary-action"
+    id="dashboardNewSale"
+>
+    + Nouvelle vente
+                </button>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =============================================
+             INDICATEURS PRINCIPAUX
+        ============================================== -->
+
+        <section class="kpi-grid">
+
+
+            <article class="kpi-card">
+
+                <div class="kpi-top">
+
+                    <span>
+                        Chiffre d'affaires
+                    </span>
+
+                    <span class="kpi-period" data-period-label>
+                        Aujourd'hui
+                    </span>
+
+                </div>
+
+                <strong class="kpi-value" id="kpiRevenue">
+                    —
+                </strong>
+
+                <div class="kpi-bottom">
+
+                    <span>
+                        FCFA
+                    </span>
+
+                    <span class="neutral" id="kpiRevenueTrend">
+                        —
+                    </span>
+
+                </div>
+
+            </article>
+
+
+
+            <article class="kpi-card">
+
+                <div class="kpi-top">
+
+                    <span>
+                        Ventes
+                    </span>
+
+                    <span class="kpi-period" data-period-label>
+                        Aujourd'hui
+                    </span>
+
+                </div>
+
+                <strong class="kpi-value" id="kpiSalesCount">
+                    0
+                </strong>
+
+                <div class="kpi-bottom">
+
+                    <span>
+                        <span id="kpiSalesLabel">transaction</span>
+                    </span>
+
+                    <span class="neutral" id="kpiSalesTrend">
+                        —
+                    </span>
+
+                </div>
+
+            </article>
+
+
+
+            <article class="kpi-card">
+
+                <div class="kpi-top">
+
+                    <span>
+                        Marge estimée
+                    </span>
+
+                    <span class="kpi-period" data-period-label>
+                        Aujourd'hui
+                    </span>
+
+                </div>
+
+                <strong class="kpi-value" id="kpiMargin">
+                    —
+                </strong>
+
+                <div class="kpi-bottom">
+
+                    <span>
+                        FCFA
+                    </span>
+
+                    <span class="neutral">
+                        —
+                    </span>
+
+                </div>
+
+            </article>
+
+
+
+            <article class="kpi-card">
+
+                <div class="kpi-top">
+
+                    <span>
+                        Trésorerie
+                    </span>
+
+                    <span class="kpi-period">
+                        Actuelle
+                    </span>
+
+                </div>
+
+                <strong class="kpi-value" id="kpiCash">
+                    —
+                </strong>
+
+                <div class="kpi-bottom">
+
+                    <span>
+                        FCFA
+                    </span>
+
+                    <span class="neutral">
+                        —
+                    </span>
+
+                </div>
+
+            </article>
+
+        </section>
+
+
+
+        <!-- =============================================
+             ANALYSE DES VENTES
+        ============================================== -->
+
+        <section class="dashboard-row">
+
+
+            <article class="dashboard-panel sales-chart-panel">
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <span class="panel-label">
+                            ACTIVITÉ COMMERCIALE
+                        </span>
+
+                        <h2>
+                            Évolution des ventes
+                        </h2>
+
+                    </div>
+
+
+                    <select class="chart-period" id="chartPeriod" aria-label="Période du graphique">
+                        <option value="7d">
+                            7 derniers jours
+                        </option>
+                        <option value="30d">
+                            30 derniers jours
+                        </option>
+                        <option value="12m">
+                            12 derniers mois
+                        </option>
+                    </select>
+
+                </div>
+
+
+                <div class="chart-summary" aria-live="polite">
+                    <div>
+                        <span class="chart-summary-label">Chiffre d'affaires</span>
+                        <strong id="chartTotal">0 FCFA</strong>
+                    </div>
+                    <span class="chart-trend" id="chartTrend">—</span>
+                </div>
+
+                <div class="sales-chart">
+
+                    <div class="chart-grid">
+
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+
+                    </div>
+
+
+                    <div class="chart-bars" id="chartBars"></div>
+
+                    <div class="chart-empty" id="chartEmpty">
+
+                        <strong>
+                            Pas encore de données
+                        </strong>
+
+                        <span>
+                            Votre graphique apparaîtra
+                            après vos premières ventes.
+                        </span>
+
+                    </div>
+
+                </div>
+
+            <p class="chart-hint" id="chartHint">Touchez une barre pour voir le détail.</p>
+
+            </article>
+
+
+
+            <!-- =========================================
+                 CAISSE
+            ========================================== -->
+
+            <article class="dashboard-panel cash-card">
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <span class="panel-label">
+                            TRÉSORERIE
+                        </span>
+
+                        <h2>
+                            Caisse
+                        </h2>
+
+                    </div>
+
+                    <a href="caisse.html">
+                        Voir
+                    </a>
+
+                </div>
+
+
+                <div class="cash-main">
+
+                    <span>
+                        Solde actuel
+                    </span>
+
+                    <strong id="cashBalance">
+                        —
+                    </strong>
+
+                    <small>
+                        FCFA
+                    </small>
+
+                </div>
+
+
+                <div class="cash-details">
+
+                    <div>
+
+                        <span id="cashInLabel">
+                            Entrées
+                        </span>
+
+                        <strong id="cashIn">
+                            —
+                        </strong>
+
+                    </div>
+
+
+                    <div>
+
+                        <span id="cashOutLabel">
+                            Sorties
+                        </span>
+
+                        <strong id="cashOut">
+                            —
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </article>
+
+        </section>
+
+
+
+        <!-- =============================================
+             VENTES + STOCK
+        ============================================== -->
+
+        <section class="dashboard-row">
+
+
+            <!-- DERNIÈRES VENTES -->
+
+            <article class="dashboard-panel large-panel">
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <span class="panel-label">
+                            COMMERCE
+                        </span>
+
+                        <h2>
+                            Dernières ventes
+                        </h2>
+
+                    </div>
+
+                    <a href="historique-ventes.html">
+                        Toutes les ventes
+                    </a>
+
+                </div>
+
+
+                <div class="table-wrapper">
+                    <div class="table-empty" id="recentSalesEmpty">
+                        <strong>Aucune vente</strong>
+                        <span>Vos ventes récentes apparaîtront ici.</span>
+                    </div>
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Produit
+                                </th>
+
+                                <th>
+                                    Client
+                                </th>
+
+                                <th>
+                                    Quantité
+                                </th>
+
+                                <th>
+                                    Montant
+                                </th>
+
+                                <th>
+                                    Statut
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="recentSalesBody"></tbody>
+
+                    </table>
+
+                </div>
+
+            </article>
+
+
+
+            <!-- STOCK -->
+
+            <article class="dashboard-panel stock-card">
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <span class="panel-label">
+                            INVENTAIRE
+                        </span>
+
+                        <h2>
+                            Stock
+                        </h2>
+
+                    </div>
+
+                    <a href="stock.html">
+                        Gérer
+                    </a>
+
+                </div>
+
+
+                <div class="stock-overview">
+
+
+                    <div class="stock-stat">
+
+                        <span>
+                            Produits
+                        </span>
+
+                        <strong id="stockProducts">
+                            0
+                        </strong>
+
+                    </div>
+
+
+                    <div class="stock-stat warning">
+
+                        <span>
+                            Stock faible
+                        </span>
+
+                        <strong id="stockLow">
+                            0
+                        </strong>
+
+                    </div>
+
+
+                    <div class="stock-stat danger">
+
+                        <span>
+                            Ruptures
+                        </span>
+
+                        <strong id="stockOut">
+                            0
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="stock-empty" id="stockEmpty">
+                    Aucun produit à surveiller.
+                </div>
+                <ul class="stock-watch" id="stockWatch" hidden></ul>
+
+            </article>
+
+        </section>
+
+
+
+        <!-- =============================================
+             CLIENTS / CRÉANCES / ALERTES
+        ============================================== -->
+
+        <section class="three-column-row">
+
+
+            <article class="mini-panel">
+
+                <span class="panel-label">
+                    CLIENTS
+                </span>
+
+                <h2>
+                    Clients actifs
+                </h2>
+
+                <strong id="clientsCount">
+                    0
+                </strong>
+                <span class="mini-description" id="clientsLabel">client enregistré</span>
+
+                <a href="clients.html">
+                    Gérer les clients
+                </a>
+
+            </article>
+
+
+
+            <article class="mini-panel">
+
+                <span class="panel-label">
+                    CRÉANCES
+                </span>
+
+                <h2>
+                    À encaisser
+                </h2>
+
+                <strong id="receivablesAmount">
+                    —
+                </strong>
+                <span class="mini-description" id="receivablesLabel">
+                    FCFA
+                </span>
+
+                <a href="credits.html">
+                    Voir les crédits
+                </a>
+
+            </article>
+
+
+
+            <article class="mini-panel alert-mini">
+
+                <span class="panel-label">
+                    ATTENTION
+                </span>
+
+                <h2>
+                    Alertes
+                </h2>
+
+                <strong id="alertsCount">
+                    0
+                </strong>
+                <span class="mini-description" id="alertsLabel">
+                    aucune alerte
+                </span>
+
+                <a href="stock.html?filter=low" id="alertsLink">
+                    Voir les alertes
+                </a>
+
+            </article>
+
+        </section>
+
+
+
+        <!-- =============================================
+             ACTIVITÉ RÉCENTE
+        ============================================== -->
+
+        <section class="dashboard-panel activity-panel">
+
+            <div class="panel-header">
+
+                <div>
+
+                    <span class="panel-label">
+                        JOURNAL
+                    </span>
+
+                    <h2>
+                        Activité récente
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <ul class="activity-list" id="activityList" hidden></ul>
+            <div class="activity-empty" id="activityEmpty">
+
+                <strong>
+                    Aucune activité enregistrée
+                </strong>
+
+                <span>
+                    Les ventes, mouvements de caisse,
+                    nouveaux clients et mouvements de stock
+                    apparaîtront ici.
+                </span>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+
+<!-- NAVIGATION MOBILE -->
+<nav class="mobile-nav" aria-label="Navigation principale">
+
+    <a href="dashboard.html" class="mobile-nav-item active">
+        <svg class="mobile-nav-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M3 10.5L12 3l9 7.5"></path>
+            <path d="M5.5 9.5V21h13V9.5"></path>
+            <path d="M9.5 21v-6h5v6"></path>
+        </svg>
+        <span>Accueil</span>
+    </a>
+
+    <a href="historique-ventes.html" class="mobile-nav-item">
+        <svg class="mobile-nav-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M5 4h14v16H5z"></path>
+            <path d="M8 8h8"></path>
+            <path d="M8 12h8"></path>
+            <path d="M8 16h5"></path>
+        </svg>
+        <span>Ventes</span>
+    </a>
+
+    <button type="button" class="mobile-nav-add" aria-label="Nouvelle action">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 5v14"></path>
+            <path d="M5 12h14"></path>
+        </svg>
+    </button>
+
+    <a href="produits.html" class="mobile-nav-item">
+        <svg class="mobile-nav-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 7h16v13H4z"></path>
+            <path d="M4 10h16"></path>
+            <path d="M8 7V4h8v3"></path>
+            <path d="M8 14h8"></path>
+        </svg>
+        <span>Produits</span>
+    </a>
+
+    <button type="button" class="mobile-nav-item mobile-nav-more" id="mobileMoreButton">
+        <svg class="mobile-nav-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="5" cy="12" r="1.5"></circle>
+            <circle cx="12" cy="12" r="1.5"></circle>
+            <circle cx="19" cy="12" r="1.5"></circle>
+        </svg>
+        <span>Plus</span>
+    </button>
+
+</nav>
+
+  <!-- ========================================
+     MENU ACTIONS RAPIDES
+======================================== -->
+
+<div class="quick-actions-overlay" id="quickActionsOverlay">
+
+    <div class="quick-actions-panel" id="quickActionsPanel">
+
+        <div class="quick-actions-header">
+            <div>
+                <span class="quick-actions-eyebrow">ACTION RAPIDE</span>
+                <h2>Que souhaitez-vous faire ?</h2>
+            </div>
+
+            <button
+                type="button"
+                class="quick-actions-close"
+                id="quickActionsClose"
+                aria-label="Fermer"
+            >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M6 6L18 18"></path>
+                    <path d="M18 6L6 18"></path>
+                </svg>
+            </button>
+        </div>
+
+
+        <div class="quick-actions-list">
+
+            <button
+    type="button"
+    class="quick-action"
+    id="quickActionNewSale"
+>
+                <span class="quick-action-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M5 5h14v14H5z"></path>
+                        <path d="M8 12h8"></path>
+                        <path d="M12 8v8"></path>
+                    </svg>
+                </span>
+
+                <span class="quick-action-content">
+                    <strong>Nouvelle vente</strong>
+                    <small>Enregistrer une nouvelle vente</small>
+                </span>
+
+                <svg class="quick-action-arrow"
+                     viewBox="0 0 24 24"
+                     aria-hidden="true">
+                    <path d="M9 18l6-6-6-6"></path>
+                </svg>
+            </button>
+
+
+            <button type="button" class="quick-action" id="quickActionNewProduct">
+                <span class="quick-action-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M4 7h16v13H4z"></path>
+                        <path d="M8 7V4h8v3"></path>
+                        <path d="M8 12h8"></path>
+                        <path d="M12 9v6"></path>
+                    </svg>
+                </span>
+
+                <span class="quick-action-content">
+                    <strong>Ajouter un produit</strong>
+                    <small>Enregistrer un nouveau produit</small>
+                </span>
+
+                <svg class="quick-action-arrow"
+                     viewBox="0 0 24 24"
+                     aria-hidden="true">
+                    <path d="M9 18l6-6-6-6"></path>
+                </svg>
+            </button>
+
+
+            <button type="button" class="quick-action" id="quickActionNewClient">
+                <span class="quick-action-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <circle cx="9" cy="8" r="3"></circle>
+                        <path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"></path>
+                        <path d="M17 8h4"></path>
+                        <path d="M19 6v4"></path>
+                    </svg>
+                </span>
+
+                <span class="quick-action-content">
+                    <strong>Ajouter un client</strong>
+                    <small>Créer une nouvelle fiche client</small>
+                </span>
+
+                <svg class="quick-action-arrow"
+                     viewBox="0 0 24 24"
+                     aria-hidden="true">
+                    <path d="M9 18l6-6-6-6"></path>
+                </svg>
+            </button>
+
+
+            <button type="button" class="quick-action" id="quickActionNewExpense">
+                <span class="quick-action-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M4 7h16"></path>
+                        <path d="M7 4v3"></path>
+                        <path d="M17 4v3"></path>
+                        <rect x="4" y="7" width="16" height="13" rx="2"></rect>
+                        <path d="M8 13h8"></path>
+                        <path d="M12 10v6"></path>
+                    </svg>
+                </span>
+
+                <span class="quick-action-content">
+                    <strong>Nouvelle dépense</strong>
+                    <small>Enregistrer une dépense</small>
+                </span>
+
+                <svg class="quick-action-arrow"
+                     viewBox="0 0 24 24"
+                     aria-hidden="true">
+                    <path d="M9 18l6-6-6-6"></path>
+                </svg>
+            </button>
+
+
+            <button type="button" class="quick-action" id="quickActionCashIn">
+                <span class="quick-action-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <rect x="3" y="6" width="18" height="14" rx="2"></rect>
+                        <path d="M7 6V4h10v2"></path>
+                        <path d="M12 10v6"></path>
+                        <path d="M9 13h6"></path>
+                    </svg>
+                </span>
+
+                <span class="quick-action-content">
+                    <strong>Entrée de caisse</strong>
+                    <small>Enregistrer une entrée d'argent</small>
+                </span>
+
+                <svg class="quick-action-arrow"
+                     viewBox="0 0 24 24"
+                     aria-hidden="true">
+                    <path d="M9 18l6-6-6-6"></path>
+                </svg>
+            </button>
+
+        </div>
+
+    </div>
+</div>
+<div class="dashboard-toast" id="dashboardToast" role="status" aria-live="polite"></div>
+
+
+<!-- Choix de la période affichée -->
+<div class="period-overlay" id="periodOverlay" hidden>
+
+    <div
+        class="period-panel"
+        id="periodPanel"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="periodTitle"
+    >
+
+        <div class="period-header">
+
+            <h2 id="periodTitle">Période affichée</h2>
+
+            <button
+                type="button"
+                class="period-close"
+                id="periodClose"
+                aria-label="Fermer"
+            >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M6 6l12 12"></path>
+                    <path d="M18 6L6 18"></path>
+                </svg>
+            </button>
+
+        </div>
+
+        <div class="period-options" role="group" aria-label="Périodes">
+
+            <button type="button" class="period-option" data-preset="today">Aujourd'hui</button>
+            <button type="button" class="period-option" data-preset="7d">7 derniers jours</button>
+            <button type="button" class="period-option" data-preset="1m">1 mois</button>
+            <button type="button" class="period-option" data-preset="3m">3 mois</button>
+            <button type="button" class="period-option" data-preset="6m">6 mois</button>
+            <button type="button" class="period-option" data-preset="custom">Choisir les dates</button>
+
+        </div>
+
+        <form class="period-custom" id="periodCustomForm" hidden novalidate>
+
+            <div class="period-dates">
+
+                <label for="periodFrom">
+                    Du
+                    <input type="date" id="periodFrom" required>
+                </label>
+
+                <label for="periodTo">
+                    Au
+                    <input type="date" id="periodTo" required>
+                </label>
+
+            </div>
+
+            <p class="period-error" id="periodError" role="alert"></p>
+
+            <button type="submit" class="period-apply">Afficher cette période</button>
+
+        </form>
+
+    </div>
+
+</div>
+
+<script type="module" src="js/quick-actions.js"></script>
+<script type="module" src="js/dashboard.js"></script>
+</body>
+
+</html>

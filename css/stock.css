@@ -1,0 +1,218 @@
+/* =========================================================
+   EJDEN — STOCK (en plus de modules.css)
+   ========================================================= */
+
+.stock-filters {
+    display: flex;
+    gap: 8px;
+
+    margin-bottom: 14px;
+    padding-bottom: 2px;
+
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.stock-filters::-webkit-scrollbar {
+    display: none;
+}
+
+.filter-button {
+    flex-shrink: 0;
+
+    height: 38px;
+    padding: 0 16px;
+
+    border: 1px solid var(--border);
+    border-radius: 999px;
+
+    background: var(--surface);
+    color: var(--text-secondary);
+
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.filter-button.active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+}
+
+.badge.is-out {
+    background: var(--danger-soft);
+    color: var(--danger);
+}
+
+.stock-level {
+    display: block;
+
+    font-size: 16px;
+    white-space: nowrap;
+}
+
+.stock-level small {
+    color: var(--text-secondary);
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.empty-link {
+    display: inline-flex;
+    align-items: center;
+
+    height: 44px;
+    margin-top: 14px;
+    padding: 0 20px;
+
+    border-radius: var(--radius-sm);
+
+    background: var(--primary);
+    color: #fff;
+
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+
+/* ---------- Actions de stock ---------- */
+
+.stock-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+
+    margin-top: 14px;
+}
+
+.stock-tabs button {
+    min-height: 42px;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+
+    background: var(--surface);
+    color: var(--text-secondary);
+
+    font-size: 12px;
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+.stock-tabs button.is-active {
+    background: var(--primary-soft);
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.stock-form {
+    margin-top: 12px;
+    padding: 12px;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+
+    background: var(--background);
+}
+
+.stock-form[hidden] {
+    display: none;
+}
+
+.stock-form .field input,
+.stock-form .field select {
+    background: var(--surface);
+}
+
+.stock-form-hint {
+    margin-top: 6px;
+
+    color: var(--text-secondary);
+
+    font-size: 11px;
+}
+
+.stock-form .primary-button {
+    width: 100%;
+
+    margin-top: 14px;
+}
+
+.edit-link {
+    display: block;
+
+    margin-top: 12px;
+
+    color: var(--primary);
+
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+}
+
+
+/* ---------- Mouvements ---------- */
+
+.movement-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    padding: 9px 0;
+
+    border-top: 1px solid var(--border);
+
+    font-size: 13px;
+}
+
+.movement-row:first-child {
+    border-top: 0;
+}
+
+.movement-main {
+    min-width: 0;
+}
+
+.movement-main strong {
+    display: block;
+
+    font-size: 13px;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.movement-main span {
+    display: block;
+
+    margin-top: 2px;
+
+    color: var(--text-secondary);
+
+    font-size: 11px;
+}
+
+.movement-side {
+    flex-shrink: 0;
+
+    text-align: right;
+}
+
+.movement-side strong {
+    display: block;
+
+    font-size: 14px;
+}
+
+.movement-side span {
+    color: var(--text-secondary);
+
+    font-size: 10px;
+}

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'"
+    >
+    <meta name="referrer" content="no-referrer">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    >
+
+    <title>Paramètres | EJDEN</title>
+
+    <link rel="stylesheet" href="css/parametres.css">
+</head>
+
+<body>
+
+    <main class="settings-page">
+
+        <header class="settings-header">
+
+            <a
+                href="dashboard.html"
+                class="back-button"
+                aria-label="Retour au tableau de bord"
+            >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M15 18l-6-6 6-6"></path>
+                </svg>
+            </a>
+
+            <div class="settings-title">
+                <span>CONFIGURATION</span>
+                <h1>Paramètres</h1>
+            </div>
+
+        </header>
+
+        <form id="shopForm" autocomplete="off" novalidate>
+
+            <!-- ENTREPRISE : utilisée sur les reçus -->
+            <section class="settings-section">
+
+                <h2>Mon entreprise</h2>
+
+                <p class="settings-help">
+                    Ces informations apparaissent en haut des reçus
+                    que vous partagez à vos clients, et le nom de
+                    l'entreprise s'affiche sur le tableau de bord.
+                </p>
+
+                <div class="field">
+                    <label for="shopName">Nom de l'entreprise</label>
+
+                    <input
+                        type="text"
+                        id="shopName"
+                        name="shopName"
+                        maxlength="60"
+                        placeholder="Ex. : Boutique Awa"
+                        autocomplete="organization"
+                    >
+                </div>
+
+                <div class="field">
+                    <label for="shopPhone">Téléphone de l'entreprise</label>
+
+                    <input
+                        type="tel"
+                        id="shopPhone"
+                        name="shopPhone"
+                        maxlength="20"
+                        inputmode="tel"
+                        placeholder="Ex. : +225 07 00 00 00 00"
+                        autocomplete="off"
+                    >
+                </div>
+
+            </section>
+
+            <section class="settings-section">
+
+                <h2>Aperçu du reçu</h2>
+
+                <pre class="receipt-preview" id="receiptPreview"></pre>
+
+            </section>
+
+
+            <!-- UTILISATEUR : jamais sur les reçus -->
+            <section class="settings-section">
+
+                <h2>Mes informations</h2>
+
+                <p class="settings-help">
+                    Vos informations personnelles servent à vous saluer
+                    dans l'application. Elles n'apparaissent jamais
+                    sur les reçus.
+                </p>
+
+                <div class="field">
+                    <label for="userFirstName">Prénom</label>
+
+                    <input
+                        type="text"
+                        id="userFirstName"
+                        name="userFirstName"
+                        maxlength="40"
+                        placeholder="Ex. : Awa"
+                        autocomplete="off"
+                    >
+                </div>
+
+                <div class="field">
+                    <label for="userLastName">Nom (facultatif)</label>
+
+                    <input
+                        type="text"
+                        id="userLastName"
+                        name="userLastName"
+                        maxlength="40"
+                        placeholder="Ex. : Koné"
+                        autocomplete="off"
+                    >
+                </div>
+
+                <div class="field">
+                    <label for="userPhone">Mon téléphone (facultatif)</label>
+
+                    <input
+                        type="tel"
+                        id="userPhone"
+                        name="userPhone"
+                        maxlength="20"
+                        inputmode="tel"
+                        placeholder="Ex. : +225 05 00 00 00 00"
+                        autocomplete="off"
+                    >
+                </div>
+
+                <p class="settings-greeting" id="greetingPreview"></p>
+
+            </section>
+
+            <button type="submit" class="save-button">
+                Enregistrer
+            </button>
+
+        </form>
+
+    </main>
+
+    <div class="settings-toast" id="settingsToast" role="status" aria-live="polite"></div>
+
+    <script type="module" src="js/parametres.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,707 @@
+:root {
+    --primary: #176B87;
+    --primary-dark: #12566C;
+    --primary-soft: #EAF4F7;
+
+    --background: #F6F9FA;
+    --surface: #FFFFFF;
+
+    --text: #172126;
+    --text-secondary: #68777D;
+    --border: #E3EAED;
+
+    --success: #168A5B;
+    --warning: #D98A16;
+    --error: #D64545;
+}
+
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+html,
+body {
+    width: 100%;
+    min-height: 100%;
+}
+
+
+body {
+    font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    color: var(--text);
+
+    background: var(--background);
+
+    -webkit-font-smoothing: antialiased;
+
+    overflow: hidden;
+}
+
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+
+/* =================================
+   SPLASH
+================================= */
+
+.splash-screen {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 1000;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    background:
+        radial-gradient(
+            circle at 50% 50%,
+            rgba(23, 107, 135, 0.08),
+            transparent 38%
+        ),
+        linear-gradient(
+            145deg,
+            #F9FCFD 0%,
+            #F6F9FA 50%,
+            #EEF6F8 100%
+        );
+
+    opacity: 1;
+
+    visibility: visible;
+
+    transition:
+        opacity .8s ease,
+        visibility .8s ease;
+}
+
+
+/*
+   Après 5 secondes,
+   JavaScript ajoute .splash-hidden
+*/
+
+.splash-screen.splash-hidden {
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    pointer-events: none;
+}
+
+
+.splash-logo {
+
+    width: 118px;
+    height: 118px;
+
+    color: var(--primary);
+
+    animation:
+        splashLogoAppear 1.4s ease forwards,
+        splashLogoPulse 2.8s ease-in-out 1.4s infinite;
+}
+
+
+/* =================================
+   ANIMATION DU LOGO
+================================= */
+
+.splash-logo .logo-line {
+
+    stroke-dasharray: 240;
+
+    stroke-dashoffset: 240;
+
+    animation:
+        logoDraw 1.8s cubic-bezier(.65, 0, .35, 1)
+        forwards;
+}
+
+
+.splash-logo .logo-core {
+
+    stroke-dasharray: 30;
+
+    stroke-dashoffset: 30;
+
+    animation:
+        logoCoreDraw 1s ease .9s forwards;
+}
+
+
+.splash-logo .logo-dot {
+
+    opacity: 0;
+
+    animation:
+        logoDotAppear .5s ease 1.4s forwards;
+}
+
+
+.splash-logo .logo-halo {
+
+    opacity: 0;
+
+    animation:
+        haloAppear 1.2s ease .3s forwards;
+}
+
+
+/* =================================
+   ANIMATIONS
+================================= */
+
+@keyframes splashLogoAppear {
+
+    from {
+        opacity: 0;
+
+        transform:
+            scale(.82);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            scale(1);
+    }
+}
+
+
+@keyframes splashLogoPulse {
+
+    0%,
+    100% {
+        transform:
+            scale(1);
+    }
+
+    50% {
+        transform:
+            scale(1.025);
+    }
+}
+
+
+@keyframes logoDraw {
+
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+
+@keyframes logoCoreDraw {
+
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+
+@keyframes logoDotAppear {
+
+    to {
+        opacity: 1;
+    }
+}
+
+
+@keyframes haloAppear {
+
+    to {
+        opacity: .08;
+    }
+}
+
+
+/* =================================
+   ESPACE EJDEN
+================================= */
+
+.welcome-screen {
+
+    min-height: 100vh;
+    min-height: 100dvh;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding:
+        calc(32px + env(safe-area-inset-top))
+        24px
+        calc(32px + env(safe-area-inset-bottom));
+
+    background:
+        radial-gradient(
+            circle at 15% 20%,
+            rgba(23, 107, 135, 0.10),
+            transparent 32%
+        ),
+        radial-gradient(
+            circle at 88% 78%,
+            rgba(23, 107, 135, 0.08),
+            transparent 30%
+        ),
+        linear-gradient(
+            145deg,
+            #F9FCFD 0%,
+            #F6F9FA 48%,
+            #EEF6F8 100%
+        );
+
+    opacity: 0;
+
+    transform: translateY(12px);
+
+    transition:
+        opacity .8s ease,
+        transform .8s ease;
+}
+
+
+.welcome-screen.welcome-visible {
+
+    opacity: 1;
+
+    transform: translateY(0);
+}
+
+
+/* =================================
+   CONTENU
+================================= */
+
+.welcome-content {
+
+    width: 100%;
+
+    max-width: 430px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    text-align: center;
+}
+
+
+/* =================================
+   LOGO
+================================= */
+
+.logo-container {
+
+    width: 92px;
+    height: 92px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    color: var(--primary);
+
+    margin-bottom: 14px;
+}
+
+
+.ejden-symbol {
+
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    overflow: visible;
+}
+
+
+.logo-halo {
+
+    fill: none;
+
+    stroke: currentColor;
+
+    stroke-width: 1.2;
+
+    opacity: .08;
+}
+
+
+.logo-line {
+
+    fill: none;
+
+    stroke: currentColor;
+
+    stroke-width: 7;
+
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+
+.logo-core {
+
+    fill: none;
+
+    stroke: currentColor;
+
+    stroke-width: 5;
+
+    stroke-linecap: round;
+}
+
+
+.logo-dot {
+
+    fill: currentColor;
+}
+
+
+/* =================================
+   NOM
+================================= */
+
+.brand {
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    margin-bottom: 46px;
+}
+
+
+.brand-name {
+
+    font-size: 19px;
+
+    font-weight: 750;
+
+    letter-spacing: .28em;
+}
+
+
+.brand-line {
+
+    width: 26px;
+
+    height: 2px;
+
+    margin-top: 8px;
+
+    border-radius: 999px;
+
+    background: var(--primary);
+}
+
+
+/* =================================
+   TEXTE
+================================= */
+
+.welcome-text {
+
+    width: 100%;
+}
+
+
+.eyebrow {
+
+    display: block;
+
+    margin-bottom: 13px;
+
+    color: var(--primary);
+
+    font-size: 11px;
+
+    font-weight: 750;
+
+    letter-spacing: .14em;
+}
+
+
+h1 {
+
+    max-width: 380px;
+
+    margin: 0 auto;
+
+    font-size: clamp(30px, 8vw, 42px);
+
+    line-height: 1.08;
+
+    letter-spacing: -.035em;
+
+    font-weight: 750;
+}
+
+
+.welcome-text p {
+
+    max-width: 330px;
+
+    margin: 17px auto 0;
+
+    color: var(--text-secondary);
+
+    font-size: 15px;
+
+    line-height: 1.65;
+}
+
+
+/* =================================
+   FONCTIONNALITÉS
+================================= */
+
+.features {
+
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    margin-top: 38px;
+
+    border-top:
+        1px solid rgba(227, 234, 237, .8);
+
+    border-bottom:
+        1px solid rgba(227, 234, 237, .8);
+}
+
+
+.feature {
+
+    min-height: 58px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 4px;
+
+    font-size: 12px;
+
+    font-weight: 650;
+}
+
+
+.feature + .feature {
+
+    border-left:
+        1px solid rgba(227, 234, 237, .8);
+}
+
+
+.feature-number {
+
+    color: var(--primary);
+
+    font-size: 9px;
+
+    font-weight: 750;
+
+    letter-spacing: .12em;
+}
+
+
+/* =================================
+   BOUTON
+================================= */
+
+.start-button {
+
+    width: 100%;
+
+    min-height: 58px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-top: 30px;
+
+    padding:
+        0 18px 0 22px;
+
+    color: #FFFFFF;
+
+    background: var(--primary);
+
+    border-radius: 16px;
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+    box-shadow:
+        0 12px 30px
+        rgba(23, 107, 135, .18);
+
+    transition:
+        transform .18s ease,
+        background .18s ease;
+}
+
+
+.start-button:active {
+
+    transform:
+        scale(.985);
+
+    background:
+        var(--primary-dark);
+}
+
+
+.button-arrow {
+
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background:
+        rgba(255, 255, 255, .12);
+
+    font-size: 19px;
+}
+
+
+/* =================================
+   PETITS ÉCRANS
+================================= */
+
+@media (max-height: 700px) {
+
+    .brand {
+        margin-bottom: 30px;
+    }
+
+    .features {
+        margin-top: 28px;
+    }
+
+    .start-button {
+        margin-top: 22px;
+    }
+}
+
+
+/* =================================
+   MODE SOMBRE
+================================= */
+
+@media (prefers-color-scheme: dark) {
+
+    :root {
+
+        --background: #0F181C;
+
+        --surface: #162126;
+
+        --text: #F1F6F8;
+
+        --text-secondary: #9BAAB0;
+
+        --border: #26373D;
+
+        --primary-soft: #173943;
+    }
+
+
+    .splash-screen {
+
+        background:
+            radial-gradient(
+                circle at 50% 50%,
+                rgba(23, 107, 135, .18),
+                transparent 38%
+            ),
+            linear-gradient(
+                145deg,
+                #111C20 0%,
+                #0F181C 50%,
+                #10242B 100%
+            );
+    }
+
+
+    .welcome-screen {
+
+        background:
+            radial-gradient(
+                circle at 15% 20%,
+                rgba(23, 107, 135, .20),
+                transparent 32%
+            ),
+            radial-gradient(
+                circle at 88% 78%,
+                rgba(23, 107, 135, .14),
+                transparent 30%
+            ),
+            linear-gradient(
+                145deg,
+                #111C20 0%,
+                #0F181C 50%,
+                #10242B 100%
+            );
+    }
+
+
+    .features {
+
+        border-color:
+            rgba(38, 55, 61, .8);
+    }
+
+
+    .feature + .feature {
+
+        border-color:
+            rgba(38, 55, 61, .8);
+    }
+}

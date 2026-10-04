@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'"
+    >
+    <meta name="referrer" content="no-referrer">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    >
+
+    <title>Crédits | EJDEN</title>
+
+    <link rel="stylesheet" href="css/modules.css">
+    <link rel="stylesheet" href="css/credit.css">
+    <link rel="stylesheet" href="css/credits.css">
+</head>
+
+<body>
+
+    <main class="module-page">
+
+        <header class="module-header">
+
+            <a
+                href="dashboard.html"
+                class="back-button"
+                aria-label="Retour au tableau de bord"
+            >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M15 18l-6-6 6-6"></path>
+                </svg>
+            </a>
+
+            <div class="module-title">
+                <span>FINANCES</span>
+                <h1>Crédits</h1>
+            </div>
+
+        </header>
+
+        <section class="summary-grid" aria-live="polite">
+
+            <div class="summary-card is-wide">
+                <span>À encaisser</span>
+                <strong id="summaryTotal">0</strong>
+                <small id="summaryTotalNote">FCFA</small>
+            </div>
+
+            <div class="summary-card">
+                <span>Débiteurs</span>
+                <strong id="summaryDebtors">0</strong>
+            </div>
+
+            <div class="summary-card">
+                <span>En retard (+30 jours)</span>
+                <strong class="is-out" id="summaryOverdue">0</strong>
+                <small>FCFA</small>
+            </div>
+
+        </section>
+
+        <section class="module-search">
+
+            <input
+                type="search"
+                id="creditSearch"
+                placeholder="Rechercher un débiteur..."
+                autocomplete="off"
+                maxlength="80"
+                aria-label="Rechercher un débiteur"
+            >
+
+        </section>
+
+        <section class="credit-filters" aria-label="Filtrer les crédits">
+
+            <button type="button" class="filter-button active" data-filter="all">
+                Tous
+            </button>
+
+            <button type="button" class="filter-button" data-filter="overdue">
+                En retard
+            </button>
+
+        </section>
+
+        <section id="creditsEmpty" class="empty-state" hidden>
+            <strong id="creditsEmptyTitle">Aucun crédit en cours</strong>
+            <p id="creditsEmptyText">Les ventes à crédit non soldées apparaîtront ici.</p>
+        </section>
+
+        <section id="creditsList"></section>
+
+    </main>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script type="module" src="js/credits.js"></script>
+
+</body>
+
+</html>

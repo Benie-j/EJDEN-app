@@ -1,0 +1,1017 @@
+/* =========================================================
+   EJDEN — Modifier un produit
+   ========================================================= */
+
+
+/* ---------- Variables ---------- */
+
+:root {
+    --primary: #176B87;
+    --primary-dark: #12566C;
+    --primary-soft: #EAF4F7;
+
+    --background: #F6F9FA;
+    --surface: #FFFFFF;
+
+    --text: #172126;
+    --text-secondary: #68777D;
+
+    --border: #E3EAED;
+
+    --error: #D64545;
+}
+
+
+/* ---------- Reset ---------- */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-size: 16px;
+}
+
+body {
+    min-height: 100vh;
+
+    background: var(--background);
+    color: var(--text);
+
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Helvetica,
+        Arial,
+        sans-serif;
+
+    -webkit-font-smoothing: antialiased;
+}
+
+button,
+input {
+    font: inherit;
+}
+
+button,
+a {
+    -webkit-tap-highlight-color: transparent;
+}
+
+
+/* ---------- Page ---------- */
+
+.page {
+    width: 100%;
+    min-height: 100vh;
+
+    padding-bottom:
+        calc(32px + env(safe-area-inset-bottom));
+}
+
+
+/* ---------- Header ---------- */
+
+.page-header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+
+    display: flex;
+    align-items: center;
+
+    height: 64px;
+
+    padding:
+        0 16px;
+
+    background: rgba(255, 255, 255, 0.94);
+
+    border-bottom: 1px solid var(--border);
+
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+.page-header h1 {
+    flex: 1;
+
+    margin-left: 14px;
+
+    font-size: 18px;
+    font-weight: 700;
+
+    color: var(--text);
+}
+
+
+/* ---------- Retour ---------- */
+
+.back-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 42px;
+    height: 42px;
+
+    flex-shrink: 0;
+
+    color: var(--text);
+
+    text-decoration: none;
+
+    border-radius: 12px;
+}
+
+.back-button:active {
+    background: var(--primary-soft);
+}
+
+.back-button svg {
+    width: 22px;
+    height: 22px;
+
+    fill: none;
+    stroke: currentColor;
+
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+
+/* ---------- Formulaire ---------- */
+
+#productForm {
+    width: 100%;
+
+    padding:
+        20px 16px 0;
+}
+
+
+/* ---------- Sections ---------- */
+
+.form-section {
+    margin-bottom: 24px;
+
+    padding: 18px;
+
+    background: var(--surface);
+
+    border: 1px solid var(--border);
+    border-radius: 16px;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 18px;
+}
+
+.section-title h2 {
+    font-size: 15px;
+    font-weight: 700;
+
+    color: var(--text);
+}
+
+.section-title span {
+    font-size: 12px;
+    font-weight: 600;
+
+    color: var(--text-secondary);
+}
+
+
+/* ---------- Champs ---------- */
+
+.field {
+    margin-bottom: 18px;
+}
+
+.field:last-child {
+    margin-bottom: 0;
+}
+
+.field label {
+    display: block;
+
+    margin-bottom: 8px;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    color: var(--text);
+}
+
+.field input {
+    width: 100%;
+    height: 50px;
+
+    padding: 0 14px;
+
+    color: var(--text);
+
+    background: var(--surface);
+
+    border: 1px solid var(--border);
+    border-radius: 12px;
+
+    outline: none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.field input::placeholder {
+    color: #9AA7AC;
+}
+
+.field input:focus {
+    border-color: var(--primary);
+
+    box-shadow:
+        0 0 0 3px rgba(23, 107, 135, 0.10);
+}
+
+
+/* ---------- Aide champ ---------- */
+
+.field-help {
+    margin-top: 7px;
+
+    font-size: 12px;
+    line-height: 1.5;
+
+    color: var(--text-secondary);
+}
+
+
+/* ---------- Prix ---------- */
+
+.price-input {
+    position: relative;
+}
+
+.price-input input {
+    padding-right: 68px;
+}
+
+.price-input span {
+    position: absolute;
+    top: 50%;
+    right: 14px;
+
+    transform: translateY(-50%);
+
+    font-size: 12px;
+    font-weight: 600;
+
+    color: var(--text-secondary);
+
+    pointer-events: none;
+}
+
+
+/* ---------- Photo ---------- */
+
+.product-photo-editor {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.product-photo-preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+    height: 180px;
+
+    overflow: hidden;
+
+    background: var(--background);
+
+    border: 1px solid var(--border);
+    border-radius: 14px;
+}
+
+.product-photo-preview img {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+    object-position: center;
+}
+
+.photo-preview-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    color: var(--text-secondary);
+
+    font-size: 12px;
+}
+
+.photo-preview-placeholder svg {
+    width: 32px;
+    height: 32px;
+
+    fill: none;
+    stroke: currentColor;
+
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+
+/* Sélecteur de nouvelle photo */
+
+.photo-upload {
+    display: flex;
+    align-items: center;
+
+    min-height: 76px;
+
+    padding: 12px;
+
+    background: var(--background);
+
+    border: 1px dashed var(--border);
+    border-radius: 14px;
+
+    cursor: pointer;
+}
+
+.photo-upload:active {
+    background: var(--primary-soft);
+}
+
+.photo-upload input {
+    display: none;
+}
+
+.photo-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 48px;
+    height: 48px;
+
+    flex-shrink: 0;
+
+    color: var(--primary);
+
+    background: var(--primary-soft);
+
+    border-radius: 12px;
+}
+
+.photo-icon svg {
+    width: 24px;
+    height: 24px;
+
+    fill: none;
+    stroke: currentColor;
+
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.photo-content {
+    display: flex;
+    flex-direction: column;
+
+    margin-left: 12px;
+
+    gap: 4px;
+}
+
+.photo-content strong {
+    font-size: 13px;
+    font-weight: 700;
+
+    color: var(--text);
+}
+
+.photo-content span {
+    font-size: 12px;
+
+    color: var(--text-secondary);
+}
+
+
+/* Suppression de la photo */
+
+.remove-photo-button {
+    width: 100%;
+    min-height: 44px;
+
+    color: var(--error);
+
+    background: transparent;
+
+    border: 1px solid rgba(214, 69, 69, 0.25);
+    border-radius: 11px;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+.remove-photo-button:active {
+    background: rgba(214, 69, 69, 0.08);
+}
+
+.remove-photo-button[hidden] {
+    display: none;
+}
+
+/* ---------- Code-barres ---------- */
+
+.barcode-input-wrapper {
+    width: 100%;
+}
+
+.barcode-input {
+    display: flex;
+    align-items: center;
+
+    min-height: 50px;
+
+    overflow: hidden;
+
+    background: var(--surface);
+
+    border: 1px solid var(--border);
+    border-radius: 12px;
+}
+
+.barcode-icon {
+    width: 20px;
+    height: 20px;
+
+    margin-left: 13px;
+
+    flex-shrink: 0;
+
+    fill: none;
+    stroke: var(--text-secondary);
+
+    stroke-width: 1.7;
+    stroke-linecap: round;
+}
+
+.barcode-input input {
+    min-width: 0;
+    flex: 1;
+
+    height: 48px;
+
+    padding: 0 10px;
+
+    color: var(--text);
+
+    background: transparent;
+
+    border: 0;
+    outline: none;
+}
+
+.barcode-input input::placeholder {
+    color: #9AA7AC;
+}
+
+.scan-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 86px;
+    height: 38px;
+
+    margin-right: 6px;
+
+    gap: 6px;
+
+    color: var(--primary);
+
+    background: var(--primary-soft);
+
+    border: 0;
+    border-radius: 9px;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+.scan-button:active {
+    background: #DCEFF4;
+}
+
+.scan-button svg {
+    width: 17px;
+    height: 17px;
+
+    fill: none;
+    stroke: currentColor;
+
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.barcode-help {
+    margin-top: 8px;
+
+    font-size: 12px;
+    line-height: 1.5;
+
+    color: var(--text-secondary);
+}
+
+
+/* ---------- Actions ---------- */
+
+.form-actions {
+    display: flex;
+    flex-direction: column;
+
+    gap: 10px;
+
+    padding:
+        0 0
+        calc(20px + env(safe-area-inset-bottom));
+}
+
+.cancel-button,
+.save-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+    min-height: 50px;
+
+    border-radius: 13px;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    text-decoration: none;
+
+    cursor: pointer;
+}
+
+.cancel-button {
+    color: var(--text);
+
+    background: var(--surface);
+
+    border: 1px solid var(--border);
+}
+
+.cancel-button:active {
+    background: var(--background);
+}
+
+.save-button {
+    color: #FFFFFF;
+
+    background: var(--primary);
+
+    border: 0;
+}
+
+.save-button:active {
+    background: var(--primary-dark);
+}
+
+
+/* ---------- Notification ---------- */
+
+.notification {
+    position: fixed;
+
+    left: 16px;
+    right: 16px;
+    bottom:
+        calc(18px + env(safe-area-inset-bottom));
+
+    z-index: 100;
+
+    padding: 13px 16px;
+
+    color: white;
+
+    background: var(--text);
+
+    border-radius: 12px;
+
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.4;
+
+    text-align: center;
+
+    opacity: 0;
+    visibility: hidden;
+
+    transform: translateY(12px);
+
+    transition:
+        opacity 0.2s ease,
+        transform 0.2s ease,
+        visibility 0.2s ease;
+}
+
+.notification.show {
+    opacity: 1;
+    visibility: visible;
+
+    transform: translateY(0);
+}
+
+
+/* =========================================================
+   MODE SOMBRE
+   ========================================================= */
+
+@media (prefers-color-scheme: dark) {
+
+    :root {
+        --background: #101719;
+        --surface: #172024;
+
+        --text: #F2F6F7;
+        --text-secondary: #9AA9AE;
+
+        --border: #2A373C;
+
+        --primary-soft: #183944;
+    }
+
+    .page-header {
+        background: rgba(23, 32, 36, 0.94);
+    }
+
+    .field input,
+    .barcode-input {
+        background: var(--surface);
+    }
+
+    .photo-upload {
+        background: #121B1E;
+    }
+
+    .scan-button:active {
+        background: #214853;
+    }
+
+    .cancel-button {
+        background: var(--surface);
+    }
+
+    .save-button {
+        color: #FFFFFF;
+    }
+}
+
+/* =========================================================
+   Scanner de code-barres
+   ========================================================= */
+
+.barcode-scanner {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+
+    display: flex;
+    flex-direction: column;
+
+    background: #000;
+
+    color: #fff;
+}
+
+.barcode-scanner[hidden] {
+    display: none;
+}
+
+
+/* En-tête */
+
+.scanner-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    min-height: 64px;
+    padding:
+        env(safe-area-inset-top)
+        16px
+        12px;
+
+    background: #000;
+}
+
+.scanner-header h2 {
+    margin: 0;
+
+    font-size: 17px;
+    font-weight: 700;
+}
+
+
+/* Bouton fermer */
+
+.scanner-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 42px;
+    height: 42px;
+
+    padding: 0;
+
+    border: 0;
+    border-radius: 50%;
+
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+
+    cursor: pointer;
+}
+
+.scanner-close svg {
+    width: 20px;
+    height: 20px;
+
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+}
+
+
+/* Zone caméra */
+
+.scanner-view {
+    position: relative;
+
+    flex: 1;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+}
+
+.scanner-view video {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+}
+
+
+/* Cadre de visée */
+
+.scanner-frame {
+    position: absolute;
+
+    width: min(78vw, 340px);
+    height: 180px;
+
+    pointer-events: none;
+}
+
+
+/* Coins */
+
+.corner {
+    position: absolute;
+
+    width: 30px;
+    height: 30px;
+
+    border-color: #fff;
+    border-style: solid;
+}
+
+.corner.top-left {
+    top: 0;
+    left: 0;
+
+    border-width: 3px 0 0 3px;
+}
+
+.corner.top-right {
+    top: 0;
+    right: 0;
+
+    border-width: 3px 3px 0 0;
+}
+
+.corner.bottom-left {
+    bottom: 0;
+    left: 0;
+
+    border-width: 0 0 3px 3px;
+}
+
+.corner.bottom-right {
+    right: 0;
+    bottom: 0;
+
+    border-width: 0 3px 3px 0;
+}
+
+
+/* Message */
+
+.scanner-status {
+    margin: 0;
+
+    padding:
+        16px
+        20px
+        calc(20px + env(safe-area-inset-bottom));
+
+    text-align: center;
+
+    font-size: 14px;
+    line-height: 1.5;
+
+    color: rgba(255, 255, 255, 0.85);
+
+    background: #000;
+}
+
+
+/* Message d'erreur dans le scanner */
+
+.scanner-status.is-error {
+    background: var(--error, #D64545);
+    color: #fff;
+}
+
+
+/* Bouton lampe (affiché seulement si le téléphone la gère) */
+
+.scanner-torch {
+    margin-left: auto;
+
+    min-height: 42px;
+    padding: 0 16px;
+
+    border: 0;
+    border-radius: 21px;
+
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+
+    font: inherit;
+    font-size: 14px;
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+.scanner-torch[hidden] {
+    display: none;
+}
+
+.scanner-torch.is-on {
+    background: #D98A16;
+}
+
+
+/* ---------- Suppression du produit ---------- */
+
+form[hidden] {
+    display: none;
+}
+
+.danger-zone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    gap: 8px;
+
+    padding:
+        4px 0
+        calc(28px + env(safe-area-inset-bottom));
+}
+
+.danger-zone p {
+    font-size: 12px;
+    color: var(--text-secondary);
+    text-align: center;
+}
+
+.delete-product-button {
+    width: 100%;
+    min-height: 50px;
+
+    border: 1px solid var(--error);
+    border-radius: 13px;
+
+    background: var(--surface);
+    color: var(--error);
+
+    font: inherit;
+    font-size: 14px;
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+.delete-product-button:active {
+    background: #FDF1F1;
+}
+
+.delete-product-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.danger-zone[hidden] {
+    display: none;
+}
+
+
+/* ---------- Produit introuvable ---------- */
+
+.not-found {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    gap: 8px;
+
+    margin: 24px 16px;
+    padding: 28px 20px;
+
+    border: 1px solid var(--border);
+    border-radius: 16px;
+
+    background: var(--surface);
+
+    text-align: center;
+}
+
+.not-found strong {
+    font-size: 16px;
+}
+
+.not-found p {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.not-found a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 46px;
+    margin-top: 8px;
+    padding: 0 22px;
+
+    border-radius: 13px;
+
+    background: var(--primary);
+    color: #FFFFFF;
+
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+}

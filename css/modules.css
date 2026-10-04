@@ -1,0 +1,641 @@
+/* =========================================================
+   EJDEN — MODULES (Clients, Dépenses, Caisse)
+   Interface mobile-first
+   ========================================================= */
+
+:root {
+    --primary: #176B87;
+    --primary-soft: #EAF4F7;
+
+    --background: #F6F9FA;
+    --surface: #FFFFFF;
+
+    --text: #172126;
+    --text-secondary: #68777D;
+
+    --border: #E3EAED;
+
+    --success: #168A5B;
+    --success-soft: #E9F6F0;
+    --warning: #D98A16;
+    --warning-soft: #FFF5E5;
+    --danger: #D64545;
+    --danger-soft: #FCECEC;
+
+    --shadow-soft: 0 8px 24px rgba(23, 33, 38, 0.06);
+
+    --radius-sm: 10px;
+    --radius-md: 16px;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+[hidden] {
+    display: none !important;
+}
+
+body {
+    min-height: 100vh;
+
+    background: var(--background);
+    color: var(--text);
+
+    font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+select {
+    font: inherit;
+}
+
+.module-page {
+    width: 100%;
+    max-width: 640px;
+    margin: 0 auto;
+
+    padding:
+        calc(14px + env(safe-area-inset-top, 0px))
+        16px
+        calc(40px + env(safe-area-inset-bottom, 0px));
+}
+
+
+/* ---------- En-tête ---------- */
+
+.module-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    margin-bottom: 16px;
+}
+
+.back-button {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+
+    background: var(--surface);
+    color: var(--text);
+
+    text-decoration: none;
+}
+
+.back-button svg {
+    width: 20px;
+    height: 20px;
+
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.module-title span {
+    display: block;
+
+    color: var(--primary);
+
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .08em;
+}
+
+.module-title h1 {
+    font-size: 20px;
+    line-height: 1.2;
+}
+
+
+/* ---------- Résumé ---------- */
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+
+    margin-bottom: 14px;
+}
+
+.summary-card {
+    padding: 14px;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+
+    background: var(--surface);
+}
+
+.summary-card span {
+    display: block;
+
+    color: var(--text-secondary);
+
+    font-size: 11px;
+}
+
+.summary-card strong {
+    display: block;
+
+    margin-top: 4px;
+
+    font-size: 17px;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.summary-card small {
+    color: var(--text-secondary);
+    font-size: 10px;
+}
+
+.summary-card.is-wide {
+    grid-column: 1 / -1;
+
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+}
+
+.summary-card.is-wide span,
+.summary-card.is-wide small {
+    color: rgba(255, 255, 255, .8);
+}
+
+.summary-card.is-wide strong {
+    font-size: 26px;
+}
+
+.summary-card.is-wide.is-negative {
+    background: var(--danger);
+    border-color: var(--danger);
+}
+
+.is-in {
+    color: var(--success);
+}
+
+.is-out {
+    color: var(--danger);
+}
+
+
+/* ---------- Formulaire ---------- */
+
+.module-section {
+    margin-bottom: 14px;
+    padding: 16px;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+
+    background: var(--surface);
+}
+
+.module-section h2 {
+    margin-bottom: 12px;
+
+    font-size: 15px;
+}
+
+.field + .field {
+    margin-top: 12px;
+}
+
+.field label {
+    display: block;
+
+    margin-bottom: 6px;
+
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.field input,
+.field select {
+    width: 100%;
+    height: 46px;
+
+    padding: 0 14px;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+
+    background: var(--surface);
+    color: var(--text);
+
+    font-size: 14px;
+}
+
+.field input:focus,
+.field select:focus {
+    outline: 2px solid var(--primary);
+    outline-offset: 1px;
+}
+
+.field input.is-invalid {
+    border-color: var(--danger);
+}
+
+.segmented {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.segmented button {
+    height: 44px;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+
+    background: var(--surface);
+    color: var(--text-secondary);
+
+    font-size: 14px;
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+.segmented button.is-active[data-type="in"] {
+    background: var(--success-soft);
+    border-color: var(--success);
+    color: var(--success);
+}
+
+.segmented button.is-active[data-type="out"] {
+    background: var(--danger-soft);
+    border-color: var(--danger);
+    color: var(--danger);
+}
+
+.form-actions {
+    display: flex;
+    gap: 8px;
+
+    margin-top: 16px;
+}
+
+.primary-button {
+    flex: 1;
+
+    min-height: 48px;
+
+    border: 0;
+    border-radius: var(--radius-sm);
+
+    background: var(--primary);
+    color: #fff;
+
+    font-size: 15px;
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+.secondary-button {
+    min-height: 48px;
+    padding: 0 18px;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+
+    background: var(--surface);
+    color: var(--text);
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+
+/* ---------- Recherche ---------- */
+
+.module-search input {
+    width: 100%;
+    height: 46px;
+
+    margin-bottom: 12px;
+    padding: 0 14px;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+
+    background: var(--surface);
+    color: var(--text);
+
+    font-size: 14px;
+}
+
+
+/* ---------- Listes ---------- */
+
+.day-heading {
+    margin: 18px 2px 8px;
+
+    color: var(--text-secondary);
+
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: capitalize;
+}
+
+.row-card {
+    margin-bottom: 8px;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+
+    background: var(--surface);
+
+    overflow: hidden;
+}
+
+.row-card summary,
+.row-card .row-summary {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    min-height: 62px;
+    padding: 12px 14px;
+
+    list-style: none;
+}
+
+.row-card summary {
+    cursor: pointer;
+}
+
+.row-card summary::-webkit-details-marker {
+    display: none;
+}
+
+.row-main {
+    flex: 1;
+    min-width: 0;
+}
+
+.row-main strong {
+    display: block;
+
+    font-size: 14px;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.row-main span {
+    display: block;
+
+    margin-top: 3px;
+
+    color: var(--text-secondary);
+
+    font-size: 12px;
+}
+
+.row-side {
+    text-align: right;
+}
+
+.row-side strong {
+    display: block;
+
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.badge {
+    display: inline-block;
+
+    margin-top: 4px;
+    padding: 3px 8px;
+
+    border-radius: 999px;
+
+    background: var(--success-soft);
+    color: var(--success);
+
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.badge.is-debt {
+    background: var(--warning-soft);
+    color: var(--warning);
+}
+
+.row-details {
+    padding: 4px 14px 14px;
+
+    border-top: 1px solid var(--border);
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+
+    padding: 7px 0;
+
+    font-size: 13px;
+}
+
+.detail-row span:first-child {
+    color: var(--text-secondary);
+}
+
+.detail-row span:last-child,
+.detail-row a {
+    font-weight: 600;
+    text-align: right;
+    overflow-wrap: anywhere;
+}
+
+.detail-row a {
+    color: var(--primary);
+}
+
+.detail-title {
+    margin: 12px 0 4px;
+
+    color: var(--text-secondary);
+
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+}
+
+.row-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    margin-top: 14px;
+}
+
+
+/* ---------- Boutons d'action + confirmation ---------- */
+
+.action-button {
+    min-height: 46px;
+    padding: 0 16px;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+
+    background: var(--surface);
+    color: var(--text);
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.action-button.is-danger {
+    border-color: var(--danger);
+    color: var(--danger);
+}
+
+.action-button.is-solid {
+    background: var(--danger);
+    color: #fff;
+}
+
+.action-button:disabled {
+    opacity: .5;
+    cursor: default;
+}
+
+.delete-control {
+    display: flex;
+    flex-direction: column;
+}
+
+.delete-control > .action-button {
+    width: 100%;
+}
+
+.confirm-box {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    padding: 12px;
+
+    border: 1px solid var(--danger);
+    border-radius: var(--radius-sm);
+
+    background: var(--danger-soft);
+}
+
+.confirm-box p {
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+
+/* ---------- État vide + message ---------- */
+
+.empty-state {
+    padding: 36px 20px;
+
+    text-align: center;
+}
+
+.empty-state strong {
+    display: block;
+
+    font-size: 16px;
+}
+
+.empty-state p {
+    margin-top: 6px;
+
+    color: var(--text-secondary);
+
+    font-size: 13px;
+}
+
+.toast {
+    position: fixed;
+    left: 50%;
+    bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+    z-index: 3000;
+
+    width: max-content;
+    max-width: min(420px, calc(100% - 32px));
+
+    padding: 11px 16px;
+
+    transform: translate(-50%, 12px);
+
+    opacity: 0;
+    pointer-events: none;
+
+    border-radius: var(--radius-sm);
+
+    background: var(--text);
+    color: var(--surface);
+
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+
+    box-shadow: var(--shadow-soft);
+
+    transition: opacity .2s ease, transform .2s ease;
+}
+
+.toast.is-visible {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
+
+/* ---------- Mode sombre ---------- */
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --primary-soft: #183A46;
+
+        --background: #10181C;
+        --surface: #172126;
+
+        --text: #F0F4F5;
+        --text-secondary: #9BA9AE;
+
+        --border: #29373D;
+
+        --success-soft: #15372B;
+        --warning-soft: #3B2C17;
+        --danger-soft: #3B2020;
+    }
+}
