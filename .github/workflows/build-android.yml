@@ -105,11 +105,9 @@ jobs:
           sha256sum android/ejden-upload.jks
 
           echo "Vérification de l'intégrité :"
-          test "$(sha256sum android/ejden-upload.jks | cut -d' ' -f1)" \
-            = "34d51ecd2ab28b09d92be922f11929f250126d00545857120570483c26b58aa"
+          echo "34d51ecd2ab28b09d92be922f11929f250126d00545857120570483c26b58aa  android/ejden-upload.jks" | sha256sum -c -
 
           echo "Keystore identique au fichier local de référence."
-
           keytool -list \
             -keystore android/ejden-upload.jks \
             -alias "$KEY_ALIAS" \
