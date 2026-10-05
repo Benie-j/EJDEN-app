@@ -9,9 +9,13 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ejden-android-build
+  cancel-in-progress: true
+
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
 
     steps:
@@ -21,7 +25,7 @@ jobs:
       - name: Installer Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: 24
+          node-version: '22'
           cache: npm
 
       - name: Installer les dépendances
@@ -37,13 +41,25 @@ jobs:
           cp ./*.html www/
           cp -r css js www/
 
-      - name: Créer le projet Android
+      - name: Créer le projet Android Capacitor
         run: npx cap add android
 
       - name: Synchroniser Capacitor
         run: npx cap sync android
 
-      - name: Appliquer la personnalisation EJDEN
+      - name: Installer Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: gradle
+
+      - name: Installer Android SDK
+        uses: android-actions/setup-android@v4
+        with:
+          packages: 'platforms;android-36 build-tools;36.0.0'
+
+      - name: Appliquer la personnalisation native EJDEN
         run: |
           mkdir -p android/app/src/main/res/drawable
           mkdir -p android/app/src/main/res/drawable-night
@@ -67,25 +83,26 @@ jobs:
           cp native/android/values/styles.xml android/app/src/main/res/values/styles.xml
           cp native/android/values-night/styles.xml android/app/src/main/res/values-night/styles.xml
 
-      - name: Installer Java
-        uses: actions/setup-java@v6
-        with:
-          distribution: temurin
-          java-version: '21'
-
-      - name: Installer Android SDK
-        uses: android-actions/setup-android@v4
-        with:
-          packages: 'platforms;android-36 build-tools;36.0.0'
-
-      - name: Configurer Gradle
-        uses: gradle/actions/setup-gradle@v6
-
       - name: Préparer le keystore
         env:
           EJDEN_KEYSTORE_BASE64: ${{ secrets.EJDEN_KEYSTORE_BASE64 }}
         run: |
+          test -n "$EJDEN_KEYSTORE_BASE64"
           printf '%s' "$EJDEN_KEYSTORE_BASE64" | base64 --decode > android/ejden-upload.jks
+
+      - name: Vérifier le keystore
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.EJDEN_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.EJDEN_KEY_ALIAS }}
+        run: |
+          test -n "$KEYSTORE_PASSWORD"
+          test -n "$KEY_ALIAS"
+
+          keytool -list \
+            -keystore android/ejden-upload.jks \
+            -alias "$KEY_ALIAS" \
+            -storepass "$KEYSTORE_PASSWORD" \
+            -storetype PKCS12
 
       - name: Configurer la signature Release
         env:
@@ -99,7 +116,8 @@ jobs:
           path = Path("android/app/build.gradle")
           text = path.read_text()
 
-          signing = """    signingConfigs {
+          if "signingConfigs {" not in text:
+              signing = """    signingConfigs {
                   release {
                       storeFile file("../ejden-upload.jks")
                       storePassword System.getenv("KEYSTORE_PASSWORD")
@@ -110,20 +128,32 @@ jobs:
 
           """
 
-          marker = "    buildTypes {"
+              marker = "    buildTypes {"
 
-          if "signingConfigs {" not in text:
-              text = text.replace(marker, signing + marker, 1)
+              if marker not in text:
+                  raise SystemExit(
+                      "Bloc buildTypes introuvable dans android/app/build.gradle"
+                  )
 
-          old = """        release {
-            minifyEnabled false"""
-
-          new = """        release {
-            signingConfig signingConfigs.release
-            minifyEnabled false"""
+              text = text.replace(
+                  marker,
+                  signing + marker,
+                  1
+              )
 
           if "signingConfig signingConfigs.release" not in text:
-              text = text.replace(old, new, 1)
+              marker = "        release {"
+
+              if marker not in text:
+                  raise SystemExit(
+                      "Bloc release introuvable dans android/app/build.gradle"
+                  )
+
+              text = text.replace(
+                  marker,
+                  marker + "\n            signingConfig signingConfigs.release",
+                  1
+              )
 
           path.write_text(text)
           PY
@@ -134,7 +164,12 @@ jobs:
           KEYSTORE_PASSWORD: ${{ secrets.EJDEN_KEYSTORE_PASSWORD }}
           KEY_PASSWORD: ${{ secrets.EJDEN_KEY_PASSWORD }}
           KEY_ALIAS: ${{ secrets.EJDEN_KEY_ALIAS }}
-        run: ./gradlew assembleRelease --no-daemon
+        run: ./gradlew assembleRelease --no-daemon --stacktrace
+
+      - name: Vérifier l'APK
+        run: |
+          test -s android/app/build/outputs/apk/release/app-release.apk
+          ls -lh android/app/build/outputs/apk/release/app-release.apk
 
       - name: Publier l'APK Release
         uses: actions/upload-artifact@v4
