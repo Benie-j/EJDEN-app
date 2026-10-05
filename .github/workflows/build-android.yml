@@ -98,12 +98,22 @@ jobs:
           test -n "$KEYSTORE_PASSWORD"
           test -n "$KEY_ALIAS"
 
+          echo "Taille du keystore reconstruit :"
+          wc -c android/ejden-upload.jks
+
+          echo "SHA-256 du keystore reconstruit :"
+          sha256sum android/ejden-upload.jks
+
+          echo "Vérification de l'intégrité :"
+          test "$(sha256sum android/ejden-upload.jks | cut -d' ' -f1)" \
+            = "34d51ecd2ab28b09d92be922f11929f250126d00545857120570483c26b58aa"
+
+          echo "Keystore identique au fichier local de référence."
+
           keytool -list \
             -keystore android/ejden-upload.jks \
             -alias "$KEY_ALIAS" \
-            -storepass "$KEYSTORE_PASSWORD" \
-            -storetype PKCS12
-
+            -storepass "$KEYSTORE_PASSWORD"
       - name: Configurer la signature Release
         env:
           KEYSTORE_PASSWORD: ${{ secrets.EJDEN_KEYSTORE_PASSWORD }}
