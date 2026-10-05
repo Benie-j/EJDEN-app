@@ -17,6 +17,6 @@ window.addEventListener("load", () => {
             "welcome-visible"
         );
 
-    }, 5000);
+    }, 900);
 
 });
