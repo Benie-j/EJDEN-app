@@ -13,6 +13,7 @@ import {
     getShopSettings
 } from "./storage.js";
 import { createPaymentForm, createPaymentsList } from "./credit-ui.js";
+import { printTicket } from "./ticket.js";
 
 
 /* =========================================================
@@ -294,6 +295,14 @@ function createActions(sale: Sale): HTMLElement {
         void shareReceipt(sale);
     });
 
+    const ticket80 = el("button", "action-button", "Ticket 80 mm");
+    const ticket58 = el("button", "action-button", "Ticket 58 mm");
+
+    ticket80.type = "button";
+    ticket58.type = "button";
+    ticket80.addEventListener("click", () => printTicket(sale, 80));
+    ticket58.addEventListener("click", () => printTicket(sale, 58));
+
     const cancelButton = el(
         "button",
         "action-button is-danger",
@@ -366,7 +375,7 @@ function createActions(sale: Sale): HTMLElement {
     });
 
     confirmBox.append(confirmText, confirmYes, confirmNo);
-    actions.append(shareButton, cancelButton, confirmBox);
+    actions.append(shareButton, ticket80, ticket58, cancelButton, confirmBox);
 
     return actions;
 }

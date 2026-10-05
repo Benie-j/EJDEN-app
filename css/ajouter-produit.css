@@ -583,9 +583,7 @@ body {
    DARK MODE
 ========================= */
 
-@media (prefers-color-scheme: dark) {
-
-    :root {
+:root[data-theme="dark"] {
         --background: #101719;
         --surface: #182124;
 
@@ -597,27 +595,28 @@ body {
         --primary-soft: #17343E;
     }
 
-    .page-header {
+:root[data-theme="dark"] .page-header {
         background: rgba(24, 33, 36, 0.94);
     }
 
-    .field input {
+:root[data-theme="dark"] .field input {
         background: #11191C;
     }
 
-    .field input:focus {
+:root[data-theme="dark"] .field input:focus {
         background: var(--surface);
     }
 
-    .photo-upload {
+:root[data-theme="dark"] .photo-upload {
         background: #11191C;
     }
 
-    .cancel-button {
+:root[data-theme="dark"] .cancel-button {
         background: var(--surface);
         color: var(--text);
     }
-}
+
+
 .notification {
     position: fixed;
 

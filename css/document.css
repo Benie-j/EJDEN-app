@@ -1,0 +1,331 @@
+/* =========================================================
+   EJDEN — DOCUMENTS (feuille A4 : devis, factures, reçus)
+   Même rendu à l'écran et à l'impression.
+   ========================================================= */
+
+.doc-wrap {
+    overflow-x: auto;
+    margin-bottom: 16px;
+    padding-bottom: 4px;
+}
+
+.doc-sheet {
+    width: 100%;
+    max-width: 794px;
+    margin: 0 auto;
+    padding: 20px 16px 24px;
+
+    border: 1px solid var(--border);
+    border-radius: 6px;
+
+    background: #fff;
+    color: #111;
+
+    font-size: 12px;
+    line-height: 1.45;
+
+    box-shadow: var(--shadow-soft);
+}
+
+.doc-sheet { min-width: 0; overflow-wrap: anywhere; }
+.doc-sheet p { margin: 0; }
+
+.doc-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+
+    padding-bottom: 14px;
+    border-bottom: 2px solid #176B87;
+}
+
+.doc-company { flex: 1 1 200px; min-width: 0; }
+.doc-meta { flex: 0 1 220px; text-align: right; }
+
+.doc-logo {
+    display: block;
+    max-width: 140px;
+    max-height: 64px;
+    margin-bottom: 8px;
+    object-fit: contain;
+}
+
+.doc-company-name {
+    margin: 0 0 4px;
+    font-size: 17px;
+    font-weight: 800;
+    color: #176B87;
+    overflow-wrap: anywhere;
+}
+
+.doc-line { color: #333; overflow-wrap: anywhere; }
+
+.doc-title {
+    margin: 0;
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: #176B87;
+}
+
+.doc-number { margin: 2px 0 6px !important; font-size: 14px; font-weight: 700; }
+
+.doc-stamp {
+    display: inline-block;
+    margin-top: 8px !important;
+    padding: 3px 10px;
+    border: 2px solid #168A5B;
+    border-radius: 4px;
+    color: #168A5B;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    transform: rotate(-4deg);
+}
+
+.doc-party {
+    margin: 16px 0 12px auto;
+    width: min(100%, 300px);
+    padding: 10px 12px;
+    border: 1px solid #c9d3d7;
+    border-radius: 4px;
+}
+
+.doc-party-label {
+    display: block;
+    margin-bottom: 2px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #68777D;
+}
+
+.doc-party-name { display: block; font-size: 14px; overflow-wrap: anywhere; }
+
+.doc-subject { margin: 0 0 10px !important; font-size: 13px; }
+
+.doc-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 12px;
+}
+
+.doc-table th {
+    padding: 7px 6px;
+    background: #176B87;
+    color: #fff;
+    font-size: 11px;
+    text-align: left;
+}
+
+.doc-table td {
+    padding: 7px 6px;
+    border-bottom: 1px solid #dde4e7;
+    vertical-align: top;
+}
+
+.doc-table .is-num { text-align: right; white-space: nowrap; }
+.doc-desc { overflow-wrap: anywhere; }
+.doc-table tr { break-inside: avoid; }
+
+.doc-totals {
+    width: min(100%, 320px);
+    margin: 0 0 8px auto;
+    break-inside: avoid;
+}
+
+.doc-total-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 5px 0;
+    border-bottom: 1px solid #e6ecee;
+}
+
+.doc-total-row.is-grand {
+    margin-top: 2px;
+    padding: 8px 8px;
+    border: 0;
+    background: #176B87;
+    color: #fff;
+    font-size: 14px;
+}
+
+.doc-small { margin: 0 0 6px !important; color: #68777D; font-size: 11px; text-align: right; }
+
+.doc-words { margin: 10px 0 14px !important; font-style: italic; }
+
+.doc-blocks {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 10px;
+    margin: 14px 0 4px;
+}
+
+.doc-block {
+    min-width: 0;
+    padding: 9px 11px;
+    border: 1px solid #dde4e7;
+    border-left: 3px solid #176B87;
+    border-radius: 4px;
+    background: #f7fafb;
+    break-inside: avoid;
+}
+
+.doc-block .doc-line + .doc-line { margin-top: 2px; }
+
+.doc-block h3 {
+    margin: 0 0 3px;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #176B87;
+}
+
+.doc-signatures {
+    display: flex;
+    gap: 16px;
+    margin-top: 18px;
+    break-inside: avoid;
+}
+
+.doc-signature {
+    flex: 1;
+    padding: 8px 10px;
+    border: 1px solid #c9d3d7;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.doc-signature-space { height: 70px; }
+
+.doc-footer {
+    margin-top: 18px;
+    padding-top: 8px;
+    border-top: 1px solid #c9d3d7;
+    color: #68777D;
+    font-size: 10.5px;
+    line-height: 1.5;
+    text-align: center;
+}
+
+.doc-total-row span { min-width: 0; }
+.doc-total-row strong { white-space: nowrap; }
+
+/* ---------- Petit écran : lignes en cartes, rien ne déborde ---------- */
+
+@media screen and (max-width: 600px) {
+    .doc-meta { flex-basis: 100%; text-align: left; }
+
+    .doc-party { width: 100%; margin-left: 0; }
+
+    .doc-table, .doc-table tbody { display: block; width: 100%; }
+    .doc-table thead { display: none; }
+
+    .doc-table tr {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2px 10px;
+        padding: 8px 0;
+        border-bottom: 1px solid #dde4e7;
+    }
+
+    .doc-table td { padding: 0; border: 0; min-width: 0; }
+
+    .doc-table .doc-index { flex: 0 0 18px; color: #68777D; }
+    .doc-table .doc-desc { flex: 1 1 calc(100% - 30px); font-weight: 600; }
+
+    .doc-table td.is-num {
+        flex: 0 0 auto;
+        margin-left: 28px;
+        text-align: left;
+        white-space: normal;
+        color: #333;
+    }
+
+    .doc-table td.is-num::before {
+        content: attr(data-label) " : ";
+        color: #68777D;
+    }
+
+    .doc-table td.is-amount { margin-left: auto; font-weight: 700; color: #111; }
+
+    .doc-blocks { grid-template-columns: 1fr; }
+
+    .doc-signatures { flex-direction: column; }
+}
+
+/* ---------- Impression ---------- */
+
+@page { size: A4; margin: 12mm; }
+
+@media print {
+    html, body { background: #fff !important; }
+
+    .no-print, .toast, .module-header { display: none !important; }
+
+    .module-page { padding: 0 !important; max-width: none !important; }
+
+    .doc-wrap { overflow: visible; margin: 0; padding: 0; }
+
+    .doc-sheet {
+        max-width: none;
+        padding: 0;
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+        font-size: 11pt;
+    }
+
+    .doc-title { font-size: 24pt; }
+
+    /* Garde les couleurs des bandeaux à l'impression. */
+    .doc-table th, .doc-total-row.is-grand {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+}
+
+.doc-total-row.is-balance { font-size: 13px; color: #176B87; border-bottom: 2px solid #176B87; }
+
+/* ---------- Rappel « Paramètres » (devis, factures, reçus) ---------- */
+
+.settings-notice {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+
+    margin: 12px 0;
+    padding: 12px 14px;
+
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--primary);
+    border-radius: var(--radius-sm);
+    background: var(--primary-soft);
+}
+
+.settings-notice-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1 1 200px;
+    min-width: 0;
+}
+
+.settings-notice-text strong { font-size: 14px; color: var(--text); }
+.settings-notice-text span { font-size: 13px; color: var(--text-secondary); }
+
+.settings-notice-link {
+    flex: 0 0 auto;
+    padding: 9px 14px;
+    border-radius: var(--radius-sm);
+    background: var(--primary);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    text-align: center;
+}

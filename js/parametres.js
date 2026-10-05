@@ -1,8 +1,11 @@
 // src/parametres.ts
 // Paramètres : informations de l'entreprise (reçus + tableau de bord)
 // et informations de l'utilisateur (salutation seulement, jamais les reçus).
-import { SHOP_LIMITS, USER_LIMITS, getShopSettings, getUserProfile, isValidPhone, saveShopSettings, saveUserProfile } from "./storage.js";
+import { DEFAULT_INVOICE_TERMS, DEFAULT_QUOTE_TERMS, SHOP_LIMITS, USER_LIMITS, getDocumentSettings, getShopSettings, getUserProfile, isValidEmail, isValidPhone, saveDocumentSettings, saveShopSettings, saveUserProfile } from "./storage.js";
 import { greetingFor } from "./greeting.js";
+import { resetAllData } from "./backup.js";
+import { APP_VERSION, getLanguage, getThemeChoice, saveLanguage, saveThemeChoice } from "./preferences.js";
+import { preparePhoto } from "./photo.js";
 const form = document.querySelector("#shopForm");
 const nameInput = document.querySelector("#shopName");
 const phoneInput = document.querySelector("#shopPhone");
@@ -55,6 +58,58 @@ function renderGreetingPreview() {
 }
 const shop = getShopSettings();
 const user = getUserProfile();
+const docs = getDocumentSettings();
+/* ---------- Documents (devis, factures) ---------- */
+const docField = (id) => document.querySelector(`#${id}`);
+const docText = (id) => docField(id)?.value.trim() ?? "";
+const setDoc = (id, value) => {
+    const node = docField(id);
+    if (node)
+        node.value = value;
+};
+let docLogo = docs.logo;
+const logoPreview = docField("docLogoPreview");
+const logoRemove = docField("docLogoRemove");
+function renderLogo() {
+    if (logoPreview) {
+        logoPreview.hidden = docLogo === null;
+        if (docLogo)
+            logoPreview.src = docLogo;
+    }
+    if (logoRemove)
+        logoRemove.hidden = docLogo === null;
+}
+setDoc("docAddress", docs.address);
+setDoc("docEmail", docs.email);
+setDoc("docWebsite", docs.website);
+setDoc("docTaxId", docs.taxId);
+setDoc("docRegistry", docs.registry);
+setDoc("docPayment", docs.paymentInfo);
+setDoc("docTax", docs.defaultTaxRate > 0 ? String(docs.defaultTaxRate) : "");
+setDoc("docValidity", String(docs.defaultValidityDays));
+setDoc("docTerms", docs.quoteTerms);
+setDoc("docDueDays", String(docs.defaultDueDays));
+setDoc("docInvoiceTerms", docs.invoiceTerms);
+setDoc("docFooter", docs.footer);
+renderLogo();
+docField("docLogoInput")?.addEventListener("change", async (event) => {
+    const fileInput = event.target;
+    const file = fileInput.files?.[0];
+    if (!file)
+        return;
+    try {
+        docLogo = await preparePhoto(file);
+        renderLogo();
+    }
+    catch {
+        showToast("Logo illisible ou trop lourd. Essayez une autre image.");
+    }
+    fileInput.value = "";
+});
+logoRemove?.addEventListener("click", () => {
+    docLogo = null;
+    renderLogo();
+});
 if (nameInput)
     nameInput.value = shop.name;
 if (phoneInput)
@@ -109,9 +164,51 @@ form?.addEventListener("submit", (event) => {
         userPhoneInput?.focus();
         return;
     }
-    // Les deux enregistrements sont indépendants : un échec est signalé précisément.
+    const docEmail = docText("docEmail");
+    const docTax = Number(docText("docTax").replace(",", ".") || "0");
+    const docValidity = Number(docText("docValidity") || "30");
+    if (!isValidEmail(docEmail)) {
+        showToast("E-mail de l'entreprise invalide.");
+        docField("docEmail")?.focus();
+        return;
+    }
+    if (!Number.isFinite(docTax) || docTax < 0 || docTax > 100) {
+        showToast("TVA par défaut invalide (0 à 100 %).");
+        docField("docTax")?.focus();
+        return;
+    }
+    if (!Number.isInteger(docValidity) || docValidity < 1 || docValidity > 365) {
+        showToast("Validité d'un devis : entre 1 et 365 jours.");
+        docField("docValidity")?.focus();
+        return;
+    }
+    const docDue = Number(docText("docDueDays") || "30");
+    if (!Number.isInteger(docDue) || docDue < 0 || docDue > 365) {
+        showToast("Délai de paiement : entre 0 et 365 jours.");
+        docField("docDueDays")?.focus();
+        return;
+    }
+    // Les enregistrements sont indépendants : un échec est signalé précisément.
     if (!saveShopSettings({ name: shopName, phone: shopPhone })) {
         showToast("Impossible d'enregistrer les informations de l'entreprise.");
+        return;
+    }
+    if (!saveDocumentSettings({
+        address: docText("docAddress"),
+        email: docEmail,
+        website: docText("docWebsite"),
+        taxId: docText("docTaxId"),
+        registry: docText("docRegistry"),
+        paymentInfo: docText("docPayment"),
+        logo: docLogo,
+        defaultTaxRate: docTax,
+        defaultValidityDays: docValidity,
+        quoteTerms: docText("docTerms") || DEFAULT_QUOTE_TERMS,
+        defaultDueDays: docDue,
+        invoiceTerms: docText("docInvoiceTerms") || DEFAULT_INVOICE_TERMS,
+        footer: docText("docFooter")
+    })) {
+        showToast("Entreprise enregistrée, mais pas les réglages des documents.");
         return;
     }
     if (!saveUserProfile({ firstName, lastName, phone: userPhone })) {
@@ -120,4 +217,79 @@ form?.addEventListener("submit", (event) => {
     }
     showToast("Informations enregistrées.");
 });
+/* ---------- Apparence, langue, données ---------- */
+const themeButtons = document.querySelectorAll("[data-theme-choice]");
+function renderTheme() {
+    const current = getThemeChoice();
+    for (const button of themeButtons) {
+        button.setAttribute("aria-checked", String(button.dataset.themeChoice === current));
+    }
+}
+for (const button of themeButtons) {
+    button.addEventListener("click", () => {
+        const choice = button.dataset.themeChoice;
+        if (saveThemeChoice(choice)) {
+            renderTheme();
+            showToast("Thème enregistré.");
+        }
+        else {
+            showToast("Impossible d'enregistrer le thème.");
+        }
+    });
+}
+renderTheme();
+const languageSelect = document.querySelector("#languageSelect");
+if (languageSelect) {
+    languageSelect.value = getLanguage();
+    languageSelect.addEventListener("change", () => {
+        if (languageSelect.value === "fr") {
+            saveLanguage("fr");
+            showToast("Langue enregistrée.");
+        }
+    });
+}
+const versionNode = document.querySelector("#appVersion");
+if (versionNode) {
+    versionNode.textContent = `Version ${APP_VERSION}`;
+}
+const resetControl = document.querySelector("#resetControl");
+if (resetControl) {
+    const start = document.createElement("button");
+    const box = document.createElement("div");
+    const question = document.createElement("p");
+    const yes = document.createElement("button");
+    const no = document.createElement("button");
+    start.type = yes.type = no.type = "button";
+    start.className = "reset-button";
+    yes.className = "reset-yes";
+    no.className = "reset-no";
+    question.className = "reset-question";
+    box.hidden = true;
+    start.textContent = "Effacer toutes les données";
+    question.textContent =
+        "Produits, ventes, clients, finances… tout sera supprimé de cet appareil. Continuer ?";
+    yes.textContent = "Oui, tout effacer";
+    no.textContent = "Non, garder";
+    start.addEventListener("click", () => {
+        start.hidden = true;
+        box.hidden = false;
+    });
+    no.addEventListener("click", () => {
+        box.hidden = true;
+        start.hidden = false;
+    });
+    yes.addEventListener("click", () => {
+        if (!resetAllData()) {
+            showToast("Impossible d'effacer les données.");
+            return;
+        }
+        yes.disabled = true;
+        showToast("Données effacées.");
+        window.setTimeout(() => {
+            window.location.href = "dashboard.html";
+        }, 1000);
+    });
+    box.append(question, yes, no);
+    resetControl.append(start, box);
+}
 //# sourceMappingURL=parametres.js.map

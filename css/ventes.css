@@ -1901,9 +1901,7 @@ a:focus-visible {
    DARK MODE
 ======================================== */
 
-@media (prefers-color-scheme: dark) {
-
-    :root {
+:root[data-theme="dark"] {
         --background: #10181C;
         --surface: #172126;
 
@@ -1915,69 +1913,70 @@ a:focus-visible {
         --primary-soft: #163744;
     }
 
-    .sales-header {
+:root[data-theme="dark"] .sales-header {
         background:
             rgba(16, 24, 28, 0.94);
     }
 
-    .header-button,
-    .panel-back-button {
+:root[data-theme="dark"] .header-button,
+:root[data-theme="dark"] .panel-back-button {
         background: var(--surface);
     }
 
-    .search-box,
-    .product-card,
-    .products-empty,
-    .cart-empty {
+:root[data-theme="dark"] .search-box,
+:root[data-theme="dark"] .product-card,
+:root[data-theme="dark"] .products-empty,
+:root[data-theme="dark"] .cart-empty {
         box-shadow: none;
     }
 
-    .search-clear,
-    .quantity-button {
+:root[data-theme="dark"] .search-clear,
+:root[data-theme="dark"] .quantity-button {
         background: #202D32;
     }
 
-    .cart-item-delete {
+:root[data-theme="dark"] .cart-item-delete {
         background:
             rgba(214, 69, 69, 0.14);
     }
 
-    .customer-selector {
+:root[data-theme="dark"] .customer-selector {
         background: #202D32;
     }
 
-    .sales-notification {
+:root[data-theme="dark"] .sales-notification {
         background: #F1F5F6;
         color: #172126;
   
     }
 
-  .checkout-total-card {
+:root[data-theme="dark"] .checkout-total-card {
     border-color:
         rgba(23, 107, 135, 0.25);
 }
 
-.payment-method {
+:root[data-theme="dark"] .payment-method {
     background: #202D32;
 }
 
-.payment-method.is-selected {
+:root[data-theme="dark"] .payment-method.is-selected {
     background: var(--primary-soft);
 }
 
-.payment-input-wrapper {
+:root[data-theme="dark"] .payment-input-wrapper {
     background: var(--surface);
 }
 
-.payment-balance {
+:root[data-theme="dark"] .payment-balance {
     background: #202D32;
 }
 
-.checkout-overlay {
+:root[data-theme="dark"] .checkout-overlay {
     background:
         rgba(0, 0, 0, 0.58);
 }
-}
+
+
 
 
 /* ========================================

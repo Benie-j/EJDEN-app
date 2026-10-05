@@ -5,7 +5,7 @@
 // de code dans la page.
 import { greetingFor } from "./greeting.js";
 import { setupMoreMenu } from "./more-menu.js";
-import { getSalesSummaryBetween, getCashFlowBetween, getDashboardPeriod, saveDashboardPeriod, isValidDay, getRecentSales, getStockSummary, getReceivables, getCashSummary, getClients, getShopSettings, getUserProfile, getSalesTrend, percentChange, getCreditPayments, getRemainingMap, getSales } from "./storage.js";
+import { getSalesSummaryBetween, getCashFlowBetween, getDashboardPeriod, saveDashboardPeriod, isValidDay, getRecentSales, getStockSummary, getReceivables, getCashSummary, getClients, getShopSettings, getUserProfile, getSalesTrend, percentChange, getCreditPayments, getRemainingMap, getSales, getUnreadNotificationsCount } from "./storage.js";
 import { endOfDay, formatDay, resolvePeriod, startOfDay } from "./period.js";
 /* =========================================================
    Outils
@@ -184,7 +184,12 @@ function renderStock() {
     setText("#alertsLabel", alerts === 0
         ? "aucune alerte"
         : `produit${alerts > 1 ? "s" : ""} à réapprovisionner`);
-    setText("#notificationCount", String(alerts));
+    const unread = getUnreadNotificationsCount();
+    const badge = document.querySelector("#notificationCount");
+    if (badge) {
+        badge.textContent = unread > 99 ? "99+" : String(unread);
+        badge.hidden = unread === 0;
+    }
     const alertsLink = document.querySelector("#alertsLink");
     if (alertsLink) {
         alertsLink.href =
@@ -539,15 +544,7 @@ setupMoreMenu({
     onSoon: (label) => showToast(`${label} : bientôt disponible.`)
 });
 $("#notificationButton")?.addEventListener("click", () => {
-    const alerts = getStockSummary(0);
-    if (alerts.lowCount + alerts.outCount === 0) {
-        showToast("Aucune notification.");
-        return;
-    }
-    window.location.href =
-        alerts.outCount > 0 && alerts.lowCount === 0
-            ? "stock.html?filter=out"
-            : "stock.html?filter=low";
+    window.location.href = "notifications.html";
 });
 // Recherche du haut : ouvre la page Produits avec la recherche.
 const globalSearch = document.querySelector("#globalSearch");

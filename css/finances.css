@@ -1,0 +1,320 @@
+/* Module Finances : vue d'ensemble (complète modules.css) */
+
+.period-chips {
+    display: flex;
+    gap: 8px;
+
+    margin-bottom: 12px;
+    padding-bottom: 2px;
+
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.period-chips::-webkit-scrollbar {
+    display: none;
+}
+
+.period-chip {
+    flex: 0 0 auto;
+
+    padding: 9px 14px;
+
+    border: 1px solid var(--border);
+    border-radius: 999px;
+
+    background: var(--surface);
+    color: var(--text-secondary);
+
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.period-chip.is-active {
+    border-color: var(--primary);
+
+    background: var(--primary);
+    color: #fff;
+}
+
+.custom-period-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+
+    margin-bottom: 12px;
+}
+
+.period-caption {
+    margin: 0 2px 12px;
+
+    color: var(--text-secondary);
+
+    font-size: 12px;
+}
+
+/* ---------- Résultat net ---------- */
+
+.result-card {
+    margin-bottom: 14px;
+    padding: 18px;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+
+    background: var(--surface);
+    box-shadow: var(--shadow-soft);
+}
+
+.result-card > span {
+    color: var(--text-secondary);
+
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+
+.result-value {
+    display: block;
+
+    margin: 6px 0 4px;
+
+    font-size: 30px;
+    font-weight: 800;
+    line-height: 1.1;
+}
+
+.result-card.is-positive .result-value {
+    color: var(--success);
+}
+
+.result-card.is-negative .result-value {
+    color: var(--danger);
+}
+
+.result-card p {
+    margin: 6px 0 0;
+
+    color: var(--text-secondary);
+
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+.delta {
+    display: inline-block;
+
+    margin-top: 4px;
+    padding: 2px 8px;
+
+    border-radius: 999px;
+
+    background: var(--primary-soft);
+    color: var(--text-secondary);
+
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.delta.is-good {
+    background: var(--success-soft);
+    color: var(--success);
+}
+
+.delta.is-bad {
+    background: var(--danger-soft);
+    color: var(--danger);
+}
+
+.kpi-note {
+    display: block;
+
+    margin-top: 4px;
+
+    color: var(--text-secondary);
+
+    font-size: 11px;
+}
+
+/* ---------- Points d'attention ---------- */
+
+.alert-list {
+    display: grid;
+    gap: 8px;
+
+    margin: 0;
+    padding: 0;
+
+    list-style: none;
+}
+
+.alert-list li {
+    padding: 10px 12px;
+
+    border-radius: var(--radius-sm);
+
+    background: var(--warning-soft);
+    color: var(--text);
+
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.alert-list li.is-danger {
+    background: var(--danger-soft);
+}
+
+/* ---------- Lignes de chiffres ---------- */
+
+.metric-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+
+    padding: 10px 0;
+
+    border-bottom: 1px solid var(--border);
+}
+
+.metric-row:last-child {
+    border-bottom: 0;
+}
+
+.metric-row span {
+    color: var(--text-secondary);
+
+    font-size: 13px;
+}
+
+.metric-row small {
+    display: block;
+
+    margin-top: 2px;
+
+    font-size: 11px;
+}
+
+.metric-row strong {
+    font-size: 14px;
+    text-align: right;
+    white-space: nowrap;
+}
+
+.metric-row.is-total strong {
+    font-size: 16px;
+}
+
+.metric-row.is-positive strong {
+    color: var(--success);
+}
+
+.metric-row.is-negative strong {
+    color: var(--danger);
+}
+
+/* ---------- Barres de répartition ---------- */
+
+.bar-row {
+    margin-bottom: 12px;
+}
+
+.bar-row:last-child {
+    margin-bottom: 0;
+}
+
+.bar-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+
+    margin-bottom: 5px;
+
+    font-size: 13px;
+}
+
+.bar-head strong {
+    white-space: nowrap;
+}
+
+.bar-track {
+    height: 8px;
+
+    border-radius: 999px;
+
+    background: var(--primary-soft);
+
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 100%;
+
+    border-radius: 999px;
+
+    background: var(--primary);
+}
+
+.bar-fill.is-warning {
+    background: var(--warning);
+}
+
+/* ---------- Classement ---------- */
+
+.rank-list {
+    display: grid;
+    gap: 4px;
+
+    margin: 0;
+    padding: 0;
+
+    list-style: none;
+}
+
+.rank-list li {
+    display: grid;
+    grid-template-columns: 24px 1fr auto;
+    align-items: center;
+    gap: 10px;
+
+    padding: 8px 0;
+
+    font-size: 13px;
+}
+
+.rank-index {
+    display: grid;
+    place-items: center;
+
+    width: 24px;
+    height: 24px;
+
+    border-radius: 50%;
+
+    background: var(--primary-soft);
+    color: var(--primary);
+
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.rank-list small {
+    display: block;
+
+    color: var(--text-secondary);
+
+    font-size: 11px;
+}
+
+.section-note {
+    margin: 10px 0 0;
+
+    color: var(--text-secondary);
+
+    font-size: 11px;
+    line-height: 1.45;
+}

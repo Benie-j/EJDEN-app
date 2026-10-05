@@ -1108,6 +1108,23 @@ export function getCashSummary(now = new Date()) {
             method: payment.method
         });
     }
+    // Paiements de factures émises : entrées de caisse (date du paiement).
+    for (const invoice of getInvoices()) {
+        if (invoice.status !== "issued") {
+            continue;
+        }
+        for (const payment of invoice.payments) {
+            salesByMethod[payment.method] += payment.amount;
+            movements.push({
+                id: `invoice-payment-${invoice.id}-${payment.id}`,
+                source: "invoice_payment",
+                amount: payment.amount,
+                label: `Facture ${invoice.number} · ${invoice.clientName}`,
+                createdAt: invoicePaymentTime(payment),
+                method: payment.method
+            });
+        }
+    }
     for (const entry of getCashEntries()) {
         movements.push({
             id: `cash-${entry.id}`,
@@ -2254,5 +2271,949 @@ export function getCreditsSummary(now = new Date()) {
         overdueDebtors: overdue.length,
         groups: list
     };
+}
+export const DOCUMENT_PREFIX = {
+    quote: "DEV",
+    invoice: "FAC",
+    receipt: "REC"
+};
+export const DOC_LIMITS = {
+    shortMax: 80,
+    addressMax: 160,
+    longMax: 600,
+    linesMax: 60,
+    descriptionMax: 120,
+    unitMax: 12,
+    totalMax: 100_000_000_000
+};
+/** Texte sûr (plusieurs lignes permises) : sans caractères de contrôle. */
+function cleanText(value, max) {
+    return typeof value === "string"
+        ? value
+            .replace(/\r\n?/g, "\n")
+            // eslint-disable-next-line no-control-regex
+            .replace(/[\u0000-\u0009\u000B-\u001F\u007F]/g, " ")
+            .trim()
+            .slice(0, max)
+        : "";
+}
+const EMAIL_PATTERN = /^[^\s@<>"']+@[^\s@<>"']+\.[^\s@<>"']+$/;
+export function isValidEmail(value) {
+    return value === "" || (value.length <= DOC_LIMITS.shortMax && EMAIL_PATTERN.test(value));
+}
+/** Ajoute des jours à une date AAAA-MM-JJ (heure locale). */
+export function addDaysToDay(day, days) {
+    const [year, month, date] = day.split("-").map(Number);
+    const result = new Date(year, month - 1, date + days);
+    const m = String(result.getMonth() + 1).padStart(2, "0");
+    const d = String(result.getDate()).padStart(2, "0");
+    return `${result.getFullYear()}-${m}-${d}`;
+}
+function localToday() {
+    const now = new Date();
+    const m = String(now.getMonth() + 1).padStart(2, "0");
+    const d = String(now.getDate()).padStart(2, "0");
+    return `${now.getFullYear()}-${m}-${d}`;
+}
+const DOC_SETTINGS_KEY = "ejden_doc_settings";
+export const DEFAULT_QUOTE_TERMS = "Devis valable pour la durée indiquée. Les prix sont exprimés en FCFA. " +
+    "La commande est ferme après acceptation écrite (signature) et, le cas échéant, " +
+    "versement de l'acompte.";
+export const DEFAULT_INVOICE_TERMS = "Paiement à réception ou avant la date d'échéance. En cas de retard, des " +
+    "pénalités pourront être appliquées. Marchandises vendues non reprises ni échangées sauf accord écrit.";
+export function normalizeDocumentSettings(value) {
+    const data = (typeof value === "object" && value !== null ? value : {});
+    const email = cleanText(data.email, DOC_LIMITS.shortMax);
+    const rate = typeof data.defaultTaxRate === "number" && Number.isFinite(data.defaultTaxRate)
+        ? Math.min(100, Math.max(0, Math.round(data.defaultTaxRate * 100) / 100))
+        : 0;
+    const days = typeof data.defaultValidityDays === "number" && Number.isFinite(data.defaultValidityDays)
+        ? Math.min(365, Math.max(1, Math.round(data.defaultValidityDays)))
+        : 30;
+    return {
+        address: cleanText(data.address, DOC_LIMITS.addressMax),
+        email: isValidEmail(email) ? email : "",
+        website: cleanText(data.website, DOC_LIMITS.shortMax),
+        taxId: cleanText(data.taxId, 40),
+        registry: cleanText(data.registry, 40),
+        paymentInfo: cleanText(data.paymentInfo, DOC_LIMITS.longMax),
+        logo: isSafePhoto(data.logo) ? data.logo : null,
+        defaultTaxRate: rate,
+        defaultValidityDays: days,
+        quoteTerms: typeof data.quoteTerms === "string"
+            ? cleanText(data.quoteTerms, DOC_LIMITS.longMax)
+            : DEFAULT_QUOTE_TERMS,
+        defaultDueDays: typeof data.defaultDueDays === "number" && Number.isFinite(data.defaultDueDays)
+            ? Math.min(365, Math.max(0, Math.round(data.defaultDueDays)))
+            : 30,
+        invoiceTerms: typeof data.invoiceTerms === "string"
+            ? cleanText(data.invoiceTerms, DOC_LIMITS.longMax)
+            : DEFAULT_INVOICE_TERMS,
+        footer: cleanText(data.footer, DOC_LIMITS.addressMax)
+    };
+}
+export function getDocumentSettings() {
+    try {
+        const stored = localStorage.getItem(DOC_SETTINGS_KEY);
+        if (stored) {
+            return normalizeDocumentSettings(JSON.parse(stored));
+        }
+    }
+    catch (error) {
+        console.error("Impossible de lire les réglages des documents.", error);
+    }
+    return normalizeDocumentSettings({});
+}
+export function saveDocumentSettings(settings) {
+    try {
+        localStorage.setItem(DOC_SETTINGS_KEY, JSON.stringify(normalizeDocumentSettings(settings)));
+        return true;
+    }
+    catch (error) {
+        console.error("Impossible d'enregistrer les réglages des documents.", error);
+        return false;
+    }
+}
+/* ---------- Numérotation (DEV-2026-0001) ---------- */
+const DOC_COUNTERS_KEY = "ejden_doc_counters";
+function readCounters() {
+    try {
+        const stored = localStorage.getItem(DOC_COUNTERS_KEY);
+        const parsed = stored ? JSON.parse(stored) : {};
+        const result = {};
+        if (typeof parsed === "object" && parsed !== null) {
+            for (const [key, count] of Object.entries(parsed)) {
+                if (typeof count === "number" && Number.isInteger(count) && count >= 0) {
+                    result[key] = count;
+                }
+            }
+        }
+        return result;
+    }
+    catch {
+        return {};
+    }
+}
+/** Réserve le numéro suivant d'un type de document pour l'année de la date. */
+export function reserveDocumentNumber(type, day) {
+    const year = isValidDay(day) ? day.slice(0, 4) : String(new Date().getFullYear());
+    const key = `${type}-${year}`;
+    const counters = readCounters();
+    const next = (counters[key] ?? 0) + 1;
+    counters[key] = next;
+    try {
+        localStorage.setItem(DOC_COUNTERS_KEY, JSON.stringify(counters));
+    }
+    catch (error) {
+        console.error("Impossible d'enregistrer la numérotation.", error);
+    }
+    return `${DOCUMENT_PREFIX[type]}-${year}-${String(next).padStart(4, "0")}`;
+}
+export function normalizeDocumentLine(value) {
+    if (typeof value !== "object" || value === null) {
+        return null;
+    }
+    const l = value;
+    const description = cleanLabel(l.description, DOC_LIMITS.descriptionMax);
+    const unit = cleanLabel(l.unit, DOC_LIMITS.unitMax);
+    if (description === "" ||
+        typeof l.quantity !== "number" ||
+        !Number.isFinite(l.quantity) ||
+        l.quantity <= 0 ||
+        l.quantity > 1_000_000 ||
+        typeof l.unitPrice !== "number" ||
+        !Number.isFinite(l.unitPrice) ||
+        l.unitPrice < 0 ||
+        l.unitPrice > MODULE_LIMITS.amountMax) {
+        return null;
+    }
+    const pct = typeof l.discountPct === "number" && Number.isFinite(l.discountPct)
+        ? Math.min(100, Math.max(0, Math.round(l.discountPct * 100) / 100))
+        : 0;
+    return {
+        productId: typeof l.productId === "string" && l.productId !== "" && l.productId.length <= 100
+            ? l.productId
+            : null,
+        description,
+        unit,
+        quantity: Math.round(l.quantity * 100) / 100,
+        unitPrice: Math.round(l.unitPrice),
+        discountPct: pct
+    };
+}
+export function documentLineTotal(line) {
+    return Math.round(line.quantity * line.unitPrice * (1 - line.discountPct / 100));
+}
+export function computeDocumentTotals(lines, discount, taxRate, depositPct) {
+    const subtotal = lines.reduce((sum, line) => sum + documentLineTotal(line), 0);
+    const disc = Math.min(Math.max(0, Math.round(discount)), subtotal);
+    const net = subtotal - disc;
+    const tax = Math.round((net * taxRate) / 100);
+    const total = net + tax;
+    const deposit = Math.round((total * depositPct) / 100);
+    return { subtotal, discount: disc, net, tax, total, deposit, balance: total - deposit };
+}
+export const QUOTE_STATUS_LABELS = {
+    draft: "Brouillon",
+    sent: "Envoyé",
+    accepted: "Accepté",
+    refused: "Refusé",
+    expired: "Expiré"
+};
+const QUOTES_KEY = "ejden_quotes";
+export function normalizeQuote(value) {
+    if (typeof value !== "object" || value === null) {
+        return null;
+    }
+    const q = value;
+    const createdAt = validDate(q.createdAt);
+    const updatedAt = validDate(q.updatedAt) ?? createdAt;
+    const clientName = cleanLabel(q.clientName, DOC_LIMITS.shortMax);
+    const clientPhone = cleanLabel(q.clientPhone, MODULE_LIMITS.phoneMax);
+    const clientEmail = cleanText(q.clientEmail, DOC_LIMITS.shortMax);
+    const number = cleanLabel(q.number, 30);
+    if (typeof q.id !== "string" ||
+        q.id === "" ||
+        q.id.length > 100 ||
+        number === "" ||
+        createdAt === null ||
+        updatedAt === null ||
+        !isValidDay(q.issueDate) ||
+        !isValidDay(q.validUntil) ||
+        clientName === "" ||
+        !isValidPhone(clientPhone) ||
+        !Array.isArray(q.lines) ||
+        q.lines.length === 0 ||
+        q.lines.length > DOC_LIMITS.linesMax ||
+        (q.status !== "draft" && q.status !== "sent" && q.status !== "accepted" && q.status !== "refused")) {
+        return null;
+    }
+    const lines = [];
+    for (const raw of q.lines) {
+        const line = normalizeDocumentLine(raw);
+        if (line === null) {
+            return null;
+        }
+        lines.push(line);
+    }
+    const num = (input, min, max, fallback) => typeof input === "number" && Number.isFinite(input)
+        ? Math.min(max, Math.max(min, Math.round(input * 100) / 100))
+        : fallback;
+    const discount = Math.round(num(q.discount, 0, MODULE_LIMITS.amountMax, 0));
+    const taxRate = num(q.taxRate, 0, 100, 0);
+    const depositPct = num(q.depositPct, 0, 100, 0);
+    if (computeDocumentTotals(lines, discount, taxRate, depositPct).total > DOC_LIMITS.totalMax) {
+        return null;
+    }
+    return {
+        id: q.id,
+        number,
+        status: q.status,
+        createdAt,
+        updatedAt: updatedAt ?? createdAt,
+        issueDate: q.issueDate,
+        validUntil: q.validUntil,
+        clientId: typeof q.clientId === "string" && q.clientId !== "" && q.clientId.length <= 100
+            ? q.clientId
+            : null,
+        clientName,
+        clientPhone,
+        clientEmail: isValidEmail(clientEmail) ? clientEmail : "",
+        clientAddress: cleanText(q.clientAddress, DOC_LIMITS.addressMax),
+        subject: cleanLabel(q.subject, DOC_LIMITS.descriptionMax),
+        lines,
+        discount,
+        taxRate,
+        depositPct,
+        deliveryTerms: cleanText(q.deliveryTerms, DOC_LIMITS.addressMax),
+        paymentTerms: cleanText(q.paymentTerms, DOC_LIMITS.addressMax),
+        notes: cleanText(q.notes, DOC_LIMITS.longMax),
+        terms: cleanText(q.terms, DOC_LIMITS.longMax),
+        invoiceId: typeof q.invoiceId === "string" && q.invoiceId !== "" && q.invoiceId.length <= 100
+            ? q.invoiceId
+            : null
+    };
+}
+export function getQuotes() {
+    return readList(QUOTES_KEY, normalizeQuote, "les devis").sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+}
+export function getQuoteById(quoteId) {
+    return getQuotes().find((item) => item.id === quoteId) ?? null;
+}
+/** Ajoute le devis, ou le remplace s'il existe déjà (même id). */
+export function saveQuote(quote) {
+    const clean = normalizeQuote(quote);
+    if (clean === null) {
+        return false;
+    }
+    const quotes = getQuotes();
+    const index = quotes.findIndex((item) => item.id === clean.id);
+    if (index === -1) {
+        quotes.push(clean);
+    }
+    else {
+        quotes[index] = clean;
+    }
+    return writeList(QUOTES_KEY, quotes, "les devis");
+}
+export function deleteQuote(quoteId) {
+    const quotes = getQuotes();
+    const remaining = quotes.filter((item) => item.id !== quoteId);
+    return remaining.length === quotes.length
+        ? false
+        : writeList(QUOTES_KEY, remaining, "les devis");
+}
+export function setQuoteStatus(quoteId, status) {
+    const quote = getQuoteById(quoteId);
+    return quote === null
+        ? false
+        : saveQuote({ ...quote, status, updatedAt: new Date().toISOString() });
+}
+/** Copie d'un devis : nouveau numéro, brouillon, dates d'aujourd'hui. */
+export function duplicateQuote(quoteId) {
+    const source = getQuoteById(quoteId);
+    if (source === null) {
+        return null;
+    }
+    const today = localToday();
+    const span = Math.max(1, Math.round((new Date(source.validUntil).getTime() - new Date(source.issueDate).getTime()) /
+        86_400_000));
+    const now = new Date().toISOString();
+    const copy = {
+        ...source,
+        id: newId(),
+        number: reserveDocumentNumber("quote", today),
+        status: "draft",
+        invoiceId: null,
+        createdAt: now,
+        updatedAt: now,
+        issueDate: today,
+        validUntil: addDaysToDay(today, span)
+    };
+    return saveQuote(copy) ? copy : null;
+}
+/** Un devis envoyé ou en brouillon dont la validité est dépassée est « expiré ». */
+export function getQuoteDisplayStatus(quote, today = localToday()) {
+    return (quote.status === "draft" || quote.status === "sent") && quote.validUntil < today
+        ? "expired"
+        : quote.status;
+}
+export function getQuoteTotals(quote) {
+    return computeDocumentTotals(quote.lines, quote.discount, quote.taxRate, quote.depositPct);
+}
+export const INVOICE_STATUS_LABELS = {
+    draft: "Brouillon",
+    unpaid: "À payer",
+    partial: "Partiellement payée",
+    overdue: "En retard",
+    paid: "Payée",
+    cancelled: "Annulée"
+};
+const INVOICES_KEY = "ejden_invoices";
+function normalizeInvoicePayment(value) {
+    if (typeof value !== "object" || value === null) {
+        return null;
+    }
+    const p = value;
+    const amount = cleanAmount(p.amount);
+    if (typeof p.id !== "string" ||
+        p.id === "" ||
+        p.id.length > 100 ||
+        amount === null ||
+        !isValidDay(p.date) ||
+        typeof p.method !== "string" ||
+        !CREDIT_PAYMENT_METHODS.includes(p.method)) {
+        return null;
+    }
+    return {
+        id: p.id,
+        date: p.date,
+        amount,
+        method: p.method,
+        note: cleanLabel(p.note, DOC_LIMITS.shortMax),
+        receiptNumber: cleanLabel(p.receiptNumber, 30),
+        createdAt: validDate(p.createdAt) ?? `${p.date}T12:00:00.000Z`
+    };
+}
+/** Moment d'un paiement de facture, pour la caisse et les finances. */
+function invoicePaymentTime(payment) {
+    // Le jour saisi fait foi ; l'heure vient de l'enregistrement si c'est le même jour.
+    const saved = new Date(payment.createdAt);
+    if (!Number.isNaN(saved.getTime()) && localDayOf(saved) === payment.date) {
+        return saved.toISOString();
+    }
+    return new Date(`${payment.date}T12:00:00`).toISOString();
+}
+function localDayOf(date) {
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${date.getFullYear()}-${month}-${day}`;
+}
+export function normalizeInvoice(value) {
+    if (typeof value !== "object" || value === null) {
+        return null;
+    }
+    const v = value;
+    const createdAt = validDate(v.createdAt);
+    const updatedAt = validDate(v.updatedAt) ?? createdAt;
+    const clientName = cleanLabel(v.clientName, DOC_LIMITS.shortMax);
+    const clientPhone = cleanLabel(v.clientPhone, MODULE_LIMITS.phoneMax);
+    const clientEmail = cleanText(v.clientEmail, DOC_LIMITS.shortMax);
+    const number = cleanLabel(v.number, 30);
+    if (typeof v.id !== "string" ||
+        v.id === "" ||
+        v.id.length > 100 ||
+        (v.status !== "draft" && v.status !== "issued" && v.status !== "cancelled") ||
+        (v.status !== "draft" && number === "") ||
+        createdAt === null ||
+        updatedAt === null ||
+        !isValidDay(v.issueDate) ||
+        !isValidDay(v.dueDate) ||
+        clientName === "" ||
+        !isValidPhone(clientPhone) ||
+        !Array.isArray(v.lines) ||
+        v.lines.length === 0 ||
+        v.lines.length > DOC_LIMITS.linesMax) {
+        return null;
+    }
+    const lines = [];
+    for (const raw of v.lines) {
+        const line = normalizeDocumentLine(raw);
+        if (line === null) {
+            return null;
+        }
+        lines.push(line);
+    }
+    const payments = [];
+    if (Array.isArray(v.payments)) {
+        for (const raw of v.payments) {
+            const payment = normalizeInvoicePayment(raw);
+            if (payment !== null) {
+                payments.push(payment);
+            }
+        }
+    }
+    const num = (input, max) => typeof input === "number" && Number.isFinite(input)
+        ? Math.min(max, Math.max(0, Math.round(input * 100) / 100))
+        : 0;
+    const discount = Math.round(num(v.discount, MODULE_LIMITS.amountMax));
+    const taxRate = num(v.taxRate, 100);
+    if (computeDocumentTotals(lines, discount, taxRate, 0).total > DOC_LIMITS.totalMax) {
+        return null;
+    }
+    return {
+        id: v.id,
+        number,
+        status: v.status,
+        createdAt,
+        updatedAt: updatedAt ?? createdAt,
+        issueDate: v.issueDate,
+        dueDate: v.dueDate,
+        quoteId: typeof v.quoteId === "string" && v.quoteId !== "" && v.quoteId.length <= 100 ? v.quoteId : null,
+        quoteNumber: cleanLabel(v.quoteNumber, 30),
+        clientId: typeof v.clientId === "string" && v.clientId !== "" && v.clientId.length <= 100 ? v.clientId : null,
+        clientName,
+        clientPhone,
+        clientEmail: isValidEmail(clientEmail) ? clientEmail : "",
+        clientAddress: cleanText(v.clientAddress, DOC_LIMITS.addressMax),
+        subject: cleanLabel(v.subject, DOC_LIMITS.descriptionMax),
+        lines,
+        discount,
+        taxRate,
+        paymentTerms: cleanText(v.paymentTerms, DOC_LIMITS.addressMax),
+        notes: cleanText(v.notes, DOC_LIMITS.longMax),
+        terms: cleanText(v.terms, DOC_LIMITS.longMax),
+        payments
+    };
+}
+export function getInvoices() {
+    return readList(INVOICES_KEY, normalizeInvoice, "les factures").sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+}
+export function getInvoiceById(invoiceId) {
+    return getInvoices().find((item) => item.id === invoiceId) ?? null;
+}
+export function saveInvoice(invoice) {
+    const clean = normalizeInvoice(invoice);
+    if (clean === null) {
+        return false;
+    }
+    const invoices = getInvoices();
+    const index = invoices.findIndex((item) => item.id === clean.id);
+    if (index === -1) {
+        invoices.push(clean);
+    }
+    else {
+        invoices[index] = clean;
+    }
+    return writeList(INVOICES_KEY, invoices, "les factures");
+}
+/** Seuls les brouillons se suppriment (une facture émise s'annule). */
+export function deleteInvoice(invoiceId) {
+    const invoices = getInvoices();
+    const target = invoices.find((item) => item.id === invoiceId);
+    if (!target || target.status !== "draft") {
+        return false;
+    }
+    return writeList(INVOICES_KEY, invoices.filter((item) => item.id !== invoiceId), "les factures");
+}
+export function getInvoiceTotals(invoice) {
+    return computeDocumentTotals(invoice.lines, invoice.discount, invoice.taxRate, 0);
+}
+export function getInvoicePaid(invoice) {
+    return invoice.payments.reduce((sum, payment) => sum + payment.amount, 0);
+}
+export function getInvoiceRemaining(invoice) {
+    return Math.max(0, getInvoiceTotals(invoice).total - getInvoicePaid(invoice));
+}
+export function getInvoiceDisplayStatus(invoice, today = localToday()) {
+    if (invoice.status !== "issued") {
+        return invoice.status;
+    }
+    if (getInvoiceRemaining(invoice) === 0) {
+        return "paid";
+    }
+    if (invoice.dueDate < today) {
+        return "overdue";
+    }
+    return getInvoicePaid(invoice) > 0 ? "partial" : "unpaid";
+}
+/** Émet un brouillon : attribue le numéro définitif. */
+export function issueInvoice(invoiceId) {
+    const invoice = getInvoiceById(invoiceId);
+    if (invoice === null || invoice.status !== "draft") {
+        return null;
+    }
+    const issued = {
+        ...invoice,
+        status: "issued",
+        number: reserveDocumentNumber("invoice", invoice.issueDate),
+        updatedAt: new Date().toISOString()
+    };
+    return saveInvoice(issued) ? issued : null;
+}
+export function cancelInvoice(invoiceId) {
+    const invoice = getInvoiceById(invoiceId);
+    // Une facture déjà payée en partie ne s'annule pas : retirez d'abord les
+    // paiements, sinon la caisse et la facture ne seraient plus d'accord.
+    return invoice !== null && invoice.status === "issued" && invoice.payments.length === 0
+        ? saveInvoice({ ...invoice, status: "cancelled", updatedAt: new Date().toISOString() })
+        : false;
+}
+export function addInvoicePayment(invoiceId, amount, method, date, note) {
+    const invoice = getInvoiceById(invoiceId);
+    if (invoice === null)
+        return "not-found";
+    if (invoice.status !== "issued")
+        return "not-issued";
+    const clean = normalizeInvoicePayment({
+        id: newId(),
+        date,
+        amount,
+        method,
+        note,
+        createdAt: new Date().toISOString()
+    });
+    if (clean === null)
+        return "invalid";
+    if (clean.amount > getInvoiceRemaining(invoice))
+        return "too-much";
+    clean.receiptNumber = reserveDocumentNumber("receipt", date);
+    return saveInvoice({
+        ...invoice,
+        payments: [...invoice.payments, clean],
+        updatedAt: new Date().toISOString()
+    })
+        ? "ok"
+        : "error";
+}
+export function removeInvoicePayment(invoiceId, paymentId) {
+    const invoice = getInvoiceById(invoiceId);
+    return invoice !== null && invoice.status === "issued"
+        ? saveInvoice({ ...invoice, payments: invoice.payments.filter((p) => p.id !== paymentId) })
+        : false;
+}
+/** Crée un brouillon de facture à partir d'un devis accepté (une seule fois). */
+export function createInvoiceFromQuote(quoteId) {
+    const quote = getQuoteById(quoteId);
+    if (quote === null || quote.status !== "accepted" || quote.invoiceId !== null) {
+        return null;
+    }
+    const today = localToday();
+    const now = new Date().toISOString();
+    const invoice = {
+        id: newId(),
+        number: "",
+        status: "draft",
+        createdAt: now,
+        updatedAt: now,
+        issueDate: today,
+        dueDate: addDaysToDay(today, getDocumentSettings().defaultDueDays),
+        quoteId: quote.id,
+        quoteNumber: quote.number,
+        clientId: quote.clientId,
+        clientName: quote.clientName,
+        clientPhone: quote.clientPhone,
+        clientEmail: quote.clientEmail,
+        clientAddress: quote.clientAddress,
+        subject: quote.subject,
+        lines: quote.lines,
+        discount: quote.discount,
+        taxRate: quote.taxRate,
+        paymentTerms: quote.paymentTerms,
+        notes: quote.notes,
+        terms: getDocumentSettings().invoiceTerms,
+        payments: []
+    };
+    if (!saveInvoice(invoice)) {
+        return null;
+    }
+    return saveQuote({ ...quote, invoiceId: invoice.id }) ? invoice : null;
+}
+/* ---------- Factures : liens avec les finances et les reçus ---------- */
+/** Paiements de factures encaissés sur une période. */
+export function getInvoiceCollectedBetween(start, end) {
+    const from = start.getTime();
+    const to = end.getTime();
+    let amount = 0;
+    let count = 0;
+    for (const invoice of getInvoices()) {
+        if (invoice.status !== "issued")
+            continue;
+        for (const payment of invoice.payments) {
+            const at = new Date(invoicePaymentTime(payment)).getTime();
+            if (at >= from && at <= to) {
+                amount += payment.amount;
+                count += 1;
+            }
+        }
+    }
+    return { amount, count };
+}
+/** Factures émises restant à encaisser (dont celles en retard). */
+export function getInvoicesReceivable() {
+    const result = { total: 0, count: 0, overdueTotal: 0, overdueCount: 0 };
+    for (const invoice of getInvoices()) {
+        if (invoice.status !== "issued")
+            continue;
+        const remaining = getInvoiceRemaining(invoice);
+        if (remaining === 0)
+            continue;
+        result.total += remaining;
+        result.count += 1;
+        if (invoice.dueDate < localToday()) {
+            result.overdueTotal += remaining;
+            result.overdueCount += 1;
+        }
+    }
+    return result;
+}
+/** Tous les reçus (un par paiement de facture émise), le plus récent d'abord. */
+export function getReceipts() {
+    const receipts = [];
+    for (const invoice of getInvoices()) {
+        if (invoice.status !== "issued")
+            continue;
+        const ordered = [...invoice.payments].sort((a, b) => a.date === b.date ? a.createdAt.localeCompare(b.createdAt) : a.date.localeCompare(b.date));
+        const total = getInvoiceTotals(invoice).total;
+        let paid = 0;
+        ordered.forEach((payment, index) => {
+            paid += payment.amount;
+            receipts.push({
+                key: `${invoice.id}:${payment.id}`,
+                number: payment.receiptNumber || `REC-${invoice.number}-${index + 1}`,
+                invoice,
+                payment,
+                remainingAfter: Math.max(0, total - paid)
+            });
+        });
+    }
+    return receipts.sort((a, b) => a.payment.date === b.payment.date
+        ? b.payment.createdAt.localeCompare(a.payment.createdAt)
+        : b.payment.date.localeCompare(a.payment.date));
+}
+export function getReceiptByKey(key) {
+    return getReceipts().find((receipt) => receipt.key === key) ?? null;
+}
+export const NOTIFICATION_CATEGORIES = [
+    { id: "stock", label: "Stock", description: "Ruptures et stock faible" },
+    { id: "credits", label: "Crédits clients", description: `Impayés de plus de ${CREDIT_OVERDUE_DAYS} jours` },
+    { id: "orders", label: "Commandes", description: "Livraisons prévues dépassées" },
+    { id: "suppliers", label: "Dettes fournisseurs", description: "Achats restant à payer" },
+    { id: "invoices", label: "Factures", description: "Échues ou à échéance proche" },
+    { id: "quotes", label: "Devis", description: "Devis envoyés bientôt expirés" }
+];
+const NOTIF_SETTINGS_KEY = "ejden_notif_settings";
+const NOTIF_STATE_KEY = "ejden_notif_state";
+const NOTIF_ID_MAX = 200;
+const NOTIF_STATE_MAX = 1000;
+// Nombre de jours avant l'échéance (facture) ou l'expiration (devis).
+const NOTIF_SOON_DAYS = 3;
+function defaultNotificationSettings() {
+    return {
+        stock: true,
+        credits: true,
+        orders: true,
+        suppliers: true,
+        invoices: true,
+        quotes: true
+    };
+}
+export function getNotificationSettings() {
+    const settings = defaultNotificationSettings();
+    try {
+        const stored = localStorage.getItem(NOTIF_SETTINGS_KEY);
+        const parsed = stored ? JSON.parse(stored) : null;
+        if (typeof parsed === "object" && parsed !== null) {
+            const data = parsed;
+            for (const { id } of NOTIFICATION_CATEGORIES) {
+                if (typeof data[id] === "boolean") {
+                    settings[id] = data[id];
+                }
+            }
+        }
+    }
+    catch (error) {
+        console.error("Impossible de lire les réglages des notifications.", error);
+    }
+    return settings;
+}
+export function saveNotificationSettings(settings) {
+    try {
+        const clean = defaultNotificationSettings();
+        for (const { id } of NOTIFICATION_CATEGORIES) {
+            clean[id] = settings[id] === true;
+        }
+        localStorage.setItem(NOTIF_SETTINGS_KEY, JSON.stringify(clean));
+        return true;
+    }
+    catch (error) {
+        console.error("Impossible d'enregistrer les réglages des notifications.", error);
+        return false;
+    }
+}
+function cleanIdList(value) {
+    if (!Array.isArray(value)) {
+        return [];
+    }
+    return value
+        .filter((item) => typeof item === "string" && item !== "" && item.length <= NOTIF_ID_MAX)
+        .slice(0, NOTIF_STATE_MAX);
+}
+function getNotificationState() {
+    try {
+        const stored = localStorage.getItem(NOTIF_STATE_KEY);
+        const parsed = stored ? JSON.parse(stored) : null;
+        if (typeof parsed === "object" && parsed !== null) {
+            const data = parsed;
+            return {
+                read: cleanIdList(data.read),
+                dismissed: cleanIdList(data.dismissed)
+            };
+        }
+    }
+    catch (error) {
+        console.error("Impossible de lire l'état des notifications.", error);
+    }
+    return { read: [], dismissed: [] };
+}
+function saveNotificationState(state) {
+    try {
+        localStorage.setItem(NOTIF_STATE_KEY, JSON.stringify({
+            read: cleanIdList(state.read),
+            dismissed: cleanIdList(state.dismissed)
+        }));
+        return true;
+    }
+    catch (error) {
+        console.error("Impossible d'enregistrer l'état des notifications.", error);
+        return false;
+    }
+}
+function notifMoney(value) {
+    return `${Math.round(value).toLocaleString("fr-FR")} FCFA`;
+}
+function notifDays(count) {
+    return `${count} jour${count > 1 ? "s" : ""}`;
+}
+function notifDate(day) {
+    const [y, m, d] = day.split("-").map(Number);
+    return new Date(y, m - 1, d).toLocaleDateString("fr-FR", {
+        day: "numeric",
+        month: "long"
+    });
+}
+/** Toutes les alertes actuelles (sans tenir compte des réglages ni de l'état). */
+function collectNotifications(now) {
+    const list = [];
+    // --- Stock ---
+    for (const product of getProducts()) {
+        if (product.stock <= 0) {
+            list.push({
+                id: `stock-out:${product.id}`,
+                category: "stock",
+                severity: "danger",
+                title: `Rupture : ${product.name}`,
+                message: "Plus aucune unité en stock. Pensez à réapprovisionner.",
+                href: "stock.html?filter=out"
+            });
+        }
+        else if (product.stockThreshold > 0 && product.stock <= product.stockThreshold) {
+            list.push({
+                id: `stock-low:${product.id}:${product.stock}`,
+                category: "stock",
+                severity: "warning",
+                title: `Stock faible : ${product.name}`,
+                message: `Il reste ${product.stock} unité${product.stock > 1 ? "s" : ""} (seuil d'alerte : ${product.stockThreshold}).`,
+                href: "stock.html?filter=low"
+            });
+        }
+    }
+    // --- Crédits clients en retard ---
+    for (const group of getCreditsSummary(now).groups) {
+        if (!group.overdue)
+            continue;
+        list.push({
+            id: `credit:${group.key}:${group.amount}`,
+            category: "credits",
+            severity: "danger",
+            title: `Crédit en retard : ${group.name}`,
+            message: `${notifMoney(group.amount)} à encaisser, dette la plus ancienne depuis ${notifDays(group.oldestDays)}.`,
+            href: "credits.html?filter=overdue"
+        });
+    }
+    // --- Commandes en retard ---
+    for (const order of getOrders()) {
+        if (!isOrderOverdue(order, now) || order.expectedDate === null)
+            continue;
+        const supplier = order.kind === "supplier";
+        list.push({
+            id: `order:${order.id}:${order.status}`,
+            category: "orders",
+            severity: "warning",
+            title: `${supplier ? "Réception" : "Livraison"} en retard : ${order.partyName}`,
+            message: `Prévue le ${notifDate(order.expectedDate)} — ${notifMoney(order.total)}.`,
+            href: supplier ? "commandes.html?kind=supplier" : "commandes.html"
+        });
+    }
+    // --- Dettes fournisseurs ---
+    for (const supplier of getSuppliers()) {
+        const debt = getSupplierDebt(supplier.id);
+        if (debt.amount <= 0)
+            continue;
+        const count = debt.purchases.length;
+        list.push({
+            id: `supplier:${supplier.id}:${debt.amount}`,
+            category: "suppliers",
+            severity: "warning",
+            title: `À payer : ${supplier.name}`,
+            message: `${notifMoney(debt.amount)} dus sur ${count} achat${count > 1 ? "s" : ""}.`,
+            href: "fournisseurs.html"
+        });
+    }
+    // --- Factures échues ou proches de l'échéance ---
+    const today = localToday();
+    const soon = addDaysToDay(today, NOTIF_SOON_DAYS);
+    for (const invoice of getInvoices()) {
+        if (invoice.status !== "issued")
+            continue;
+        const remaining = getInvoiceRemaining(invoice);
+        if (remaining <= 0)
+            continue;
+        const label = invoice.clientName
+            ? `${invoice.number} — ${invoice.clientName}`
+            : invoice.number;
+        if (invoice.dueDate < today) {
+            list.push({
+                id: `invoice-late:${invoice.id}:${remaining}`,
+                category: "invoices",
+                severity: "danger",
+                title: `Facture échue : ${label}`,
+                message: `${notifMoney(remaining)} restant dû, échéance du ${notifDate(invoice.dueDate)}.`,
+                href: `factures.html?open=${encodeURIComponent(invoice.id)}`
+            });
+        }
+        else if (invoice.dueDate <= soon) {
+            list.push({
+                id: `invoice-soon:${invoice.id}:${remaining}`,
+                category: "invoices",
+                severity: "info",
+                title: `Facture bientôt due : ${label}`,
+                message: `${notifMoney(remaining)} à encaisser avant le ${notifDate(invoice.dueDate)}.`,
+                href: `factures.html?open=${encodeURIComponent(invoice.id)}`
+            });
+        }
+    }
+    // --- Devis envoyés qui expirent bientôt ---
+    for (const quote of getQuotes()) {
+        if (quote.status !== "sent" || quote.validUntil < today || quote.validUntil > soon) {
+            continue;
+        }
+        list.push({
+            id: `quote:${quote.id}:${quote.validUntil}`,
+            category: "quotes",
+            severity: "info",
+            title: `Devis bientôt expiré : ${quote.number}${quote.clientName ? ` — ${quote.clientName}` : ""}`,
+            message: `Valable jusqu'au ${notifDate(quote.validUntil)}. Relancez le client.`,
+            href: "devis.html"
+        });
+    }
+    return list;
+}
+const SEVERITY_ORDER = {
+    danger: 0,
+    warning: 1,
+    info: 2
+};
+/**
+ * Alertes à afficher : types activés, non ignorées, les plus urgentes
+ * (puis les non lues) en premier. Nettoie au passage l'état des alertes
+ * qui n'existent plus.
+ */
+export function getNotifications(now = new Date()) {
+    const all = collectNotifications(now);
+    const settings = getNotificationSettings();
+    const state = getNotificationState();
+    const activeIds = new Set(all.map((item) => item.id));
+    // Les alertes disparues (problème réglé) n'ont plus besoin d'être retenues.
+    const read = state.read.filter((id) => activeIds.has(id));
+    const dismissed = state.dismissed.filter((id) => activeIds.has(id));
+    if (read.length !== state.read.length || dismissed.length !== state.dismissed.length) {
+        saveNotificationState({ read, dismissed });
+    }
+    const readSet = new Set(read);
+    const dismissedSet = new Set(dismissed);
+    return all
+        .filter((item) => settings[item.category] && !dismissedSet.has(item.id))
+        .map((item) => ({ ...item, read: readSet.has(item.id) }))
+        .sort((a, b) => Number(a.read) - Number(b.read) ||
+        SEVERITY_ORDER[a.severity] - SEVERITY_ORDER[b.severity])
+        .slice(0, 200);
+}
+export function getUnreadNotificationsCount() {
+    return getNotifications().filter((item) => !item.read).length;
+}
+export function markNotificationsRead(ids) {
+    const state = getNotificationState();
+    return saveNotificationState({
+        read: [...new Set([...state.read, ...cleanIdList(ids)])],
+        dismissed: state.dismissed
+    });
+}
+export function dismissNotifications(ids) {
+    const state = getNotificationState();
+    return saveNotificationState({
+        read: state.read,
+        dismissed: [...new Set([...state.dismissed, ...cleanIdList(ids)])]
+    });
+}
+/** Réaffiche les alertes ignorées. */
+export function restoreDismissedNotifications() {
+    const state = getNotificationState();
+    return saveNotificationState({ read: state.read, dismissed: [] });
+}
+export function getDismissedNotificationsCount() {
+    const settings = getNotificationSettings();
+    const dismissed = new Set(getNotificationState().dismissed);
+    return collectNotifications(new Date()).filter((item) => dismissed.has(item.id) && settings[item.category]).length;
 }
 //# sourceMappingURL=storage.js.map

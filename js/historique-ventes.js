@@ -4,6 +4,7 @@
 // (jamais en HTML) pour éviter toute injection.
 import { getSales, cancelSale, getRemainingMap, getSalePayments, getShopSettings } from "./storage.js";
 import { createPaymentForm, createPaymentsList } from "./credit-ui.js";
+import { printTicket } from "./ticket.js";
 /* =========================================================
    Éléments
    ========================================================= */
@@ -203,6 +204,12 @@ function createActions(sale) {
     shareButton.addEventListener("click", () => {
         void shareReceipt(sale);
     });
+    const ticket80 = el("button", "action-button", "Ticket 80 mm");
+    const ticket58 = el("button", "action-button", "Ticket 58 mm");
+    ticket80.type = "button";
+    ticket58.type = "button";
+    ticket80.addEventListener("click", () => printTicket(sale, 80));
+    ticket58.addEventListener("click", () => printTicket(sale, 58));
     const cancelButton = el("button", "action-button is-danger", "Annuler la vente");
     cancelButton.type = "button";
     // Confirmation en deux temps : pas d'annulation par erreur.
@@ -242,7 +249,7 @@ function createActions(sale) {
         render();
     });
     confirmBox.append(confirmText, confirmYes, confirmNo);
-    actions.append(shareButton, cancelButton, confirmBox);
+    actions.append(shareButton, ticket80, ticket58, cancelButton, confirmBox);
     return actions;
 }
 function createSaleCard(sale, remaining) {

@@ -56,7 +56,8 @@ const SOURCE_LABELS: Record<CashMovement["source"], string> = {
     exit: "Sortie de caisse",
     expense: "Dépense",
     purchase: "Achat fournisseur",
-    supplier_payment: "Paiement fournisseur"
+    supplier_payment: "Paiement fournisseur",
+    invoice_payment: "Paiement de facture"
 };
 
 
@@ -162,7 +163,9 @@ function createMovementRow(movement: CashMovement): HTMLElement {
     const isIn = movement.amount > 0;
 
     const subtitle =
-        (movement.source === "sale" || movement.source === "credit_payment") &&
+        (movement.source === "sale" ||
+            movement.source === "credit_payment" ||
+            movement.source === "invoice_payment") &&
         movement.method
             ? `${SOURCE_LABELS[movement.source]} · ${METHOD_LABELS[movement.method]} · ${timeLabel(date)}`
             : `${SOURCE_LABELS[movement.source]} · ${timeLabel(date)}`;

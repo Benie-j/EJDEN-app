@@ -659,9 +659,7 @@ a {
    MODE SOMBRE
    ========================================================= */
 
-@media (prefers-color-scheme: dark) {
-
-    :root {
+:root[data-theme="dark"] {
         --background: #101719;
         --surface: #172024;
 
@@ -673,31 +671,32 @@ a {
         --primary-soft: #183944;
     }
 
-    .page-header {
+:root[data-theme="dark"] .page-header {
         background: rgba(23, 32, 36, 0.94);
     }
 
-    .field input,
-    .barcode-input {
+:root[data-theme="dark"] .field input,
+:root[data-theme="dark"] .barcode-input {
         background: var(--surface);
     }
 
-    .photo-upload {
+:root[data-theme="dark"] .photo-upload {
         background: #121B1E;
     }
 
-    .scan-button:active {
+:root[data-theme="dark"] .scan-button:active {
         background: #214853;
     }
 
-    .cancel-button {
+:root[data-theme="dark"] .cancel-button {
         background: var(--surface);
     }
 
-    .save-button {
+:root[data-theme="dark"] .save-button {
         color: #FFFFFF;
     }
-}
+
+
 
 /* =========================================================
    Scanner de code-barres

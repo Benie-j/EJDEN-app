@@ -66,26 +66,42 @@ export const MODULE_CATEGORIES: readonly ModuleCategory[] = [
             {
                 label: "Finances",
                 description: "Vue d'ensemble",
-                href: null
+                href: "finances.html"
             }
         ]
     },
     {
         label: "Documents",
         modules: [
-            { label: "Devis", description: "Propositions de prix", href: null },
-            { label: "Factures", description: "Documents de vente", href: null },
-            { label: "Reçus", description: "Preuves de paiement", href: null }
+            {
+                label: "Devis",
+                description: "Propositions de prix",
+                href: "devis.html"
+            },
+            {
+                label: "Factures",
+                description: "Documents de vente",
+                href: "factures.html"
+            },
+            {
+                label: "Reçus",
+                description: "Preuves de paiement",
+                href: "recus.html"
+            }
         ]
     },
     {
         label: "Analyse",
         modules: [
-            { label: "Rapports", description: "Jour, mois, année", href: null },
+            {
+                label: "Rapports",
+                description: "Jour, mois, année",
+                href: "rapports.html"
+            },
             {
                 label: "Statistiques",
-                description: "Performances",
-                href: null
+                description: "Prévisions et analyses",
+                href: "statistiques.html"
             }
         ]
     },
@@ -95,12 +111,12 @@ export const MODULE_CATEGORIES: readonly ModuleCategory[] = [
             {
                 label: "Notifications",
                 description: "Alertes et rappels",
-                href: null
+                href: "notifications.html"
             },
             {
                 label: "Sauvegarde",
                 description: "Copie des données",
-                href: null
+                href: "sauvegarde.html"
             },
             {
                 label: "Paramètres",

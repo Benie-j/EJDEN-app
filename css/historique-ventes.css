@@ -497,8 +497,7 @@ input {
 
 /* ---------- Mode sombre ---------- */
 
-@media (prefers-color-scheme: dark) {
-    :root {
+:root[data-theme="dark"] {
         --primary-soft: #183A46;
 
         --background: #10181C;
@@ -512,7 +511,8 @@ input {
         --success-soft: #15372B;
         --warning-soft: #3B2C17;
     }
-}
+
+
 
 
 /* ---------- Annulation, partage, message ---------- */
@@ -640,8 +640,6 @@ input {
     transform: translate(-50%, 0);
 }
 
-@media (prefers-color-scheme: dark) {
-    :root {
+:root[data-theme="dark"] {
         --danger-soft: #3B2020;
-    }
 }

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'"
+    >
+    <meta name="referrer" content="no-referrer">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    >
+
+    <script src="js/theme.js"></script>
+    <title>Statistiques | EJDEN</title>
+
+    <link rel="stylesheet" href="css/modules.css">
+    <link rel="stylesheet" href="css/achats.css">
+    <link rel="stylesheet" href="css/document.css">
+    <link rel="stylesheet" href="css/rapports.css">
+    <link rel="stylesheet" href="css/statistiques.css">
+</head>
+
+<body>
+
+    <main class="module-page">
+
+        <header class="module-header">
+            <a href="dashboard.html" class="back-button" aria-label="Retour">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg>
+            </a>
+            <div class="module-title">
+                <span>ANALYSE</span>
+                <h1>Statistiques</h1>
+            </div>
+        </header>
+
+        <div class="st-tabs" role="tablist" aria-label="Sections">
+            <button type="button" class="st-tab is-active" role="tab" data-tab="forecast">Prévisions</button>
+            <button type="button" class="st-tab" role="tab" data-tab="products">Produits</button>
+            <button type="button" class="st-tab" role="tab" data-tab="stock">Stock</button>
+            <button type="button" class="st-tab" role="tab" data-tab="clients">Clients</button>
+        </div>
+
+        <div class="rp-modes" id="horizonBar" role="group" aria-label="Période analysée" hidden>
+            <button type="button" class="rp-mode" data-horizon="30">30 jours</button>
+            <button type="button" class="rp-mode is-active" data-horizon="90">90 jours</button>
+            <button type="button" class="rp-mode" data-horizon="365">12 mois</button>
+        </div>
+
+        <div class="rp-sheet" id="content" aria-live="polite"></div>
+
+        <p class="form-note">
+            Les prévisions sont des estimations calculées à partir de votre
+            historique : plus vous avez de ventes enregistrées, plus elles
+            sont fiables.
+        </p>
+
+    </main>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script type="module" src="js/statistiques.js"></script>
+
+</body>
+
+</html>

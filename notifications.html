@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'"
+    >
+    <meta name="referrer" content="no-referrer">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    >
+
+    <script src="js/theme.js"></script>
+    <title>Notifications | EJDEN</title>
+
+    <link rel="stylesheet" href="css/modules.css">
+    <link rel="stylesheet" href="css/notifications.css">
+</head>
+
+<body>
+
+    <main class="module-page">
+
+        <header class="module-header">
+
+            <a
+                href="dashboard.html"
+                class="back-button"
+                aria-label="Retour au tableau de bord"
+            >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M15 18l-6-6 6-6"></path>
+                </svg>
+            </a>
+
+            <div class="module-title">
+                <span>SYSTÈME</span>
+                <h1>Notifications</h1>
+            </div>
+
+        </header>
+
+        <section class="summary-grid" aria-live="polite">
+
+            <div class="summary-card">
+                <span>Non lues</span>
+                <strong id="summaryUnread">0</strong>
+            </div>
+
+            <div class="summary-card">
+                <span>Urgentes</span>
+                <strong class="is-out" id="summaryUrgent">0</strong>
+            </div>
+
+        </section>
+
+        <section class="nt-toolbar" aria-label="Filtrer les notifications">
+
+            <div class="nt-filters">
+                <button type="button" class="filter-button active" data-filter="all">Toutes</button>
+                <button type="button" class="filter-button" data-filter="unread">Non lues</button>
+            </div>
+
+            <div class="nt-bulk">
+                <button type="button" class="action-button" id="readAllButton">Tout lire</button>
+                <button type="button" class="action-button is-danger" id="clearAllButton">Tout effacer</button>
+            </div>
+
+        </section>
+
+        <section id="notificationsEmpty" class="empty-state" hidden>
+            <strong id="emptyTitle">Aucune notification</strong>
+            <p id="emptyText">Tout est en ordre : rien à signaler pour le moment.</p>
+        </section>
+
+        <section id="notificationsList" aria-label="Liste des notifications"></section>
+
+        <section class="module-section" aria-labelledby="settingsTitle">
+
+            <h2 id="settingsTitle">Types d'alertes</h2>
+
+            <div id="settingsList"></div>
+
+            <button
+                type="button"
+                class="secondary-button"
+                id="restoreButton"
+                hidden
+            >
+                Réafficher les alertes effacées
+            </button>
+
+        </section>
+
+    </main>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script type="module" src="js/notifications.js"></script>
+
+</body>
+
+</html>

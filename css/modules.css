@@ -622,8 +622,7 @@ select {
 
 /* ---------- Mode sombre ---------- */
 
-@media (prefers-color-scheme: dark) {
-    :root {
+:root[data-theme="dark"] {
         --primary-soft: #183A46;
 
         --background: #10181C;
@@ -637,5 +636,4 @@ select {
         --success-soft: #15372B;
         --warning-soft: #3B2C17;
         --danger-soft: #3B2020;
-    }
 }

@@ -1,0 +1,78 @@
+/* =========================================================
+   EJDEN — SAUVEGARDE (en plus de modules.css)
+   ========================================================= */
+
+.bk-help {
+    margin-bottom: 12px;
+
+    color: var(--text-secondary);
+
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.bk-status {
+    min-height: 0;
+    margin-bottom: 12px;
+
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.bk-status:empty {
+    display: none;
+}
+
+.bk-actions {
+    display: grid;
+    gap: 8px;
+}
+
+.bk-actions button:disabled {
+    opacity: .5;
+    cursor: default;
+}
+
+.bk-config {
+    margin-top: 14px;
+    padding-top: 12px;
+
+    border-top: 1px solid var(--border);
+}
+
+.bk-config summary {
+    margin-bottom: 10px;
+
+    color: var(--primary);
+
+    font-size: 13px;
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+.bk-config .secondary-button {
+    width: 100%;
+    margin-top: 10px;
+}
+
+.bk-confirm {
+    border-color: var(--danger);
+}
+
+.bk-warning {
+    margin-bottom: 12px;
+    padding: 10px 12px;
+
+    border-radius: var(--radius-sm);
+
+    background: var(--danger-soft);
+    color: var(--danger);
+
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.summary-card strong {
+    font-size: 13px;
+}

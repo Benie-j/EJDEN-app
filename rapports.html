@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'"
+    >
+    <meta name="referrer" content="no-referrer">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    >
+
+    <script src="js/theme.js"></script>
+    <title>Rapports | EJDEN</title>
+
+    <link rel="stylesheet" href="css/modules.css">
+    <link rel="stylesheet" href="css/achats.css">
+    <link rel="stylesheet" href="css/document.css">
+    <link rel="stylesheet" href="css/rapports.css">
+</head>
+
+<body>
+
+    <main class="module-page">
+
+        <header class="module-header">
+            <a href="dashboard.html" class="back-button" aria-label="Retour">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg>
+            </a>
+            <div class="module-title">
+                <span>ANALYSE</span>
+                <h1>Rapports</h1>
+            </div>
+        </header>
+
+        <div class="rp-modes no-print" role="group" aria-label="Type de rapport">
+            <button type="button" class="rp-mode is-active" data-mode="day">Jour</button>
+            <button type="button" class="rp-mode" data-mode="month">Mois</button>
+            <button type="button" class="rp-mode" data-mode="year">Année</button>
+        </div>
+
+        <div class="rp-nav no-print">
+            <button type="button" class="rp-step" id="prevButton" aria-label="Période précédente">‹</button>
+            <strong id="periodLabel" aria-live="polite"></strong>
+            <button type="button" class="rp-step" id="nextButton" aria-label="Période suivante">›</button>
+        </div>
+
+        <div class="rp-actions no-print">
+            <button type="button" class="primary-button" id="printButton">Imprimer / PDF</button>
+            <button type="button" class="secondary-button" id="shareButton">Partager</button>
+        </div>
+
+        <article class="rp-sheet" id="report"></article>
+
+    </main>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script type="module" src="js/rapports.js"></script>
+
+</body>
+
+</html>

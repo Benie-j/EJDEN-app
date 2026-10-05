@@ -21,6 +21,7 @@
         content="#176B87"
     >
 
+    <script src="js/theme.js"></script>
     <title>EJDEN | Tableau de bord</title>
 
     <link
@@ -132,13 +133,15 @@
         <button
             type="button"
             class="notification-button"
-         id="notificationButton">
-            Notifications
+            id="notificationButton"
+            aria-label="Notifications"
+        >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M6 9a6 6 0 0 1 12 0c0 6 2.5 7.5 2.5 7.5h-17S6 15 6 9z"></path>
+                <path d="M10 20a2 2 0 0 0 4 0"></path>
+            </svg>
 
-            <span class="notification-count" id="notificationCount">
-                0
-            </span>
-
+            <span class="notification-count" id="notificationCount" hidden>0</span>
         </button>
 
 
@@ -243,7 +246,7 @@
             </a>
 
             <a
-                href="#" data-soon="Finances"
+                href="finances.html"
                 class="sidebar-link"
             >
                 Finances

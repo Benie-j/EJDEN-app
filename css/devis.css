@@ -1,0 +1,227 @@
+/* =========================================================
+   EJDEN — DEVIS (liste, éditeur, aperçu)
+   ========================================================= */
+
+.print-only { display: none; }
+
+.field textarea {
+    width: 100%;
+    padding: 10px 12px;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+
+    background: var(--surface);
+    color: var(--text);
+
+    resize: vertical;
+}
+
+.field textarea:focus {
+    outline: 2px solid var(--primary);
+    outline-offset: 0;
+}
+
+.field-row {
+    display: flex;
+    gap: 10px;
+}
+
+.field-row .field { flex: 1; min-width: 0; }
+
+.devis-toolbar {
+    display: flex;
+    gap: 8px;
+    margin: 12px 0;
+}
+
+.devis-toolbar button { flex: 1; }
+
+.devis-filters {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+    padding-bottom: 4px;
+    overflow-x: auto;
+}
+
+.devis-filter {
+    flex-shrink: 0;
+    height: 36px;
+    padding: 0 14px;
+
+    border: 1px solid var(--border);
+    border-radius: 999px;
+
+    background: var(--surface);
+    color: var(--text-secondary);
+
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.devis-filter.is-active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+}
+
+.devis-search {
+    width: 100%;
+    height: 42px;
+    margin-bottom: 12px;
+    padding: 0 14px;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+
+    background: var(--surface);
+    color: var(--text);
+}
+
+/* ---------- Liste ---------- */
+
+.quote-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    width: 100%;
+    margin-bottom: 8px;
+    padding: 12px 14px;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+
+    background: var(--surface);
+    color: var(--text);
+
+    text-align: left;
+    cursor: pointer;
+}
+
+.quote-row-main { flex: 1; min-width: 0; }
+
+.quote-row-main strong,
+.quote-row-main span {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.quote-row-main span { margin-top: 2px; color: var(--text-secondary); font-size: 12px; }
+
+.quote-row-side { text-align: right; flex-shrink: 0; }
+
+.quote-row-side strong { display: block; font-size: 14px; }
+
+.status-badge {
+    display: inline-block;
+    margin-top: 4px;
+    padding: 3px 8px;
+
+    border-radius: 999px;
+
+    background: var(--primary-soft);
+    color: var(--primary);
+
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.status-badge.is-draft { background: #EEF1F2; color: var(--text-secondary); }
+.status-badge.is-accepted { background: var(--success-soft); color: var(--success); }
+.status-badge.is-refused,
+.status-badge.is-expired { background: var(--danger-soft); color: var(--danger); }
+
+/* ---------- Éditeur ---------- */
+
+.line-card {
+    margin-bottom: 10px;
+    padding: 12px;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+
+    background: var(--background);
+}
+
+.line-card .field + .field { margin-top: 8px; }
+
+.line-card .field-row { margin-top: 8px; }
+
+.line-card-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.line-card-foot strong { font-size: 14px; }
+
+.link-danger {
+    border: 0;
+    background: none;
+    color: var(--danger);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.devis-totals {
+    margin-top: 14px;
+    padding: 10px 12px;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+
+    background: var(--background);
+}
+
+.devis-totals div {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+}
+
+.devis-totals .is-grand { font-size: 16px; font-weight: 800; color: var(--primary); }
+
+/* ---------- Aperçu ---------- */
+
+.devis-actions { display: grid; gap: 8px; margin-bottom: 14px; }
+
+.devis-actions-row { display: flex; gap: 8px; }
+.devis-actions-row button { flex: 1; }
+
+.status-switch { display: flex; gap: 6px; }
+
+.status-switch button {
+    flex: 1;
+    height: 38px;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+
+    background: var(--surface);
+    color: var(--text-secondary);
+
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.status-switch button.is-active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+}
+
+@media print {
+    .print-only { display: block; margin-bottom: 10px; }
+    .print-only strong { display: block; font-size: 16px; }
+    .quote-row { break-inside: avoid; border-radius: 0; }
+    .summary-grid { margin-bottom: 8px; }
+}
+
+.devis-link { display: flex; align-items: center; justify-content: center; text-decoration: none; min-height: 44px; }

@@ -1,0 +1,71 @@
+/* EJDEN — STATISTIQUES */
+
+.st-tabs {
+    display: flex;
+    gap: 6px;
+    margin: 12px 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.st-tabs::-webkit-scrollbar { display: none; }
+
+.st-tab {
+    flex: 1 0 auto;
+    min-height: 40px;
+    padding: 0 14px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--text-secondary);
+    font: inherit;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.st-tab.is-active { background: var(--primary); border-color: var(--primary); color: #fff; }
+
+.st-note { margin-top: 8px; color: var(--text-secondary); font-size: 12px; line-height: 1.4; }
+
+.st-chart { width: 100%; height: auto; display: block; }
+.st-chart text { fill: var(--text-secondary); font-size: 9px; font-family: inherit; }
+.st-chart .st-axis { stroke: var(--border); stroke-width: 1; }
+.st-bar { fill: var(--primary); }
+.st-bar.is-forecast { fill: var(--primary-soft); stroke: var(--primary); stroke-dasharray: 3 2; stroke-width: 1; }
+.st-band { stroke: var(--warning); stroke-width: 1.5; }
+.st-trend { fill: none; stroke: var(--warning); stroke-width: 1.5; stroke-dasharray: 4 3; }
+.st-legend { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 6px; font-size: 12px; color: var(--text-secondary); }
+.st-legend i { display: inline-block; width: 10px; height: 10px; margin-right: 4px; border-radius: 2px; background: var(--primary); }
+.st-legend i.is-forecast { background: var(--primary-soft); border: 1px dashed var(--primary); }
+
+.st-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: var(--primary-soft);
+    color: var(--primary);
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.st-badge.is-good { background: var(--success-soft); color: var(--success); }
+.st-badge.is-warn { background: var(--warning-soft); color: var(--warning); }
+.st-badge.is-bad { background: var(--danger-soft); color: var(--danger); }
+
+.st-meter { height: 8px; margin-top: 4px; border-radius: 99px; background: var(--border); overflow: hidden; }
+.st-meter > div { height: 100%; border-radius: 99px; background: var(--primary); }
+.st-meter.is-good > div { background: var(--success); }
+.st-meter.is-warn > div { background: var(--warning); }
+.st-meter.is-bad > div { background: var(--danger); }
+
+.st-item { padding: 8px 0; border-bottom: 1px solid var(--border); }
+.st-item:last-child { border-bottom: 0; }
+.st-item-head { display: flex; justify-content: space-between; gap: 10px; }
+.st-item-head span { min-width: 0; overflow-wrap: anywhere; }
+.st-item-head strong { white-space: nowrap; }
+.st-item small { display: block; margin-top: 2px; color: var(--text-secondary); font-size: 12px; }
+
+.st-heat { display: grid; grid-template-columns: 22px repeat(12, 1fr); gap: 2px; align-items: center; }
+.st-heat .st-h-label { font-size: 10px; color: var(--text-secondary); text-align: center; }
+.st-heat .st-cell { aspect-ratio: 1; border-radius: 3px; background: var(--primary); }
+.st-heat .st-cell.is-0 { background: var(--border); }

@@ -1,0 +1,57 @@
+/* =========================================================
+   EJDEN — TICKET DE CAISSE (imprimante thermique 80 / 58 mm)
+   Invisible à l'écran ; seul le ticket sort à l'impression.
+   ========================================================= */
+
+.tk-host { display: none; }
+
+@page ticket80 { size: 80mm auto; margin: 0; }
+@page ticket58 { size: 58mm auto; margin: 0; }
+
+.tk-sheet {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 3mm 3mm 0;
+    background: #fff;
+    color: #000;
+    font-family: "Courier New", ui-monospace, monospace;
+    font-size: 11px;
+    line-height: 1.35;
+}
+
+.tk-sheet.is-80 { width: 80mm; page: ticket80; }
+.tk-sheet.is-58 { width: 58mm; page: ticket58; font-size: 10px; padding: 2mm 2mm 0; }
+
+.tk-sheet p { margin: 0; }
+.tk-center { text-align: center; overflow-wrap: anywhere; }
+.tk-shop { font-size: 15px; font-weight: 700; margin-bottom: 2px !important; }
+.is-58 .tk-shop { font-size: 13px; }
+.tk-title { font-weight: 700; letter-spacing: 0.05em; margin: 2px 0 !important; }
+
+.tk-rule { border: 0; border-top: 1px solid #000; margin: 5px 0; }
+.tk-rule.is-dashed { border-top-style: dashed; }
+
+.tk-row { display: flex; justify-content: space-between; gap: 6px; }
+.tk-row > span:first-child { min-width: 0; overflow-wrap: anywhere; }
+.tk-val { white-space: nowrap; text-align: right; }
+
+.tk-item { font-weight: 700; margin-top: 3px !important; overflow-wrap: anywhere; }
+
+.tk-total { font-size: 13px; font-weight: 700; margin: 2px 0; }
+.is-58 .tk-total { font-size: 11.5px; }
+
+.tk-thanks { margin-top: 2px !important; }
+.tk-cut { height: 10mm; }
+
+@media print {
+    body.printing-ticket { background: #fff !important; }
+
+    body.printing-ticket > *:not(.tk-host) { display: none !important; }
+
+    body.printing-ticket .tk-host { display: block; }
+
+    body.printing-ticket .tk-sheet {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+}

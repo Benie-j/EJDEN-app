@@ -276,17 +276,33 @@ a {
 
     position: relative;
 
-    min-height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 
-    padding: 0 12px;
+    width: 40px;
+    height: 40px;
+
+    border: 0;
+    border-radius: 10px;
 
     background: transparent;
 
-    border-radius: 9px;
-
     color: var(--text-secondary);
 
-    font-size: 12px;
+    cursor: pointer;
+}
+
+.notification-button svg {
+
+    width: 22px;
+    height: 22px;
+
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
 }
 
 .notification-button:hover {
@@ -298,23 +314,35 @@ a {
 
 .notification-count {
 
+    position: absolute;
+    top: 0;
+    right: -2px;
+
     display: inline-flex;
     align-items: center;
     justify-content: center;
 
+    box-sizing: border-box;
     min-width: 18px;
     height: 18px;
 
-    margin-left: 5px;
+    padding: 0 4px;
 
-    border-radius: 50%;
+    border: 2px solid var(--surface);
+    border-radius: 999px;
 
-    background: var(--primary);
+    background: var(--danger, #D64545);
 
     color: #fff;
 
     font-size: 9px;
     font-weight: 700;
+    line-height: 1;
+}
+
+.notification-count[hidden] {
+
+    display: none;
 }
 
 .profile {
@@ -1296,21 +1324,6 @@ td {
         display: none;
     }
 
-    .notification-button {
-
-        padding: 0 7px;
-
-        font-size: 0;
-    }
-
-    .notification-button::before {
-
-        content: "•••";
-
-        font-size: 14px;
-
-        letter-spacing: 2px;
-    }
 
 
     /* SIDEBAR */
@@ -1710,9 +1723,7 @@ td {
        DARK MODE
     ------------------------------------ */
 
-    @media (prefers-color-scheme: dark) {
-
-        .mobile-nav {
+    :root[data-theme="dark"] .mobile-nav {
             background: rgba(23, 33, 38, 0.94);
             border-color: rgba(255, 255, 255, 0.08);
 
@@ -1721,11 +1732,12 @@ td {
                 0 2px 8px rgba(0, 0, 0, 0.20);
         }
 
-        .mobile-nav-add {
+:root[data-theme="dark"] .mobile-nav-add {
             box-shadow:
                 0 7px 18px rgba(0, 0, 0, 0.30);
         }
-    }
+
+
 }
 
 
@@ -1781,9 +1793,7 @@ td {
    MODE SOMBRE
 ========================================================= */
 
-@media (prefers-color-scheme: dark) {
-
-    :root {
+:root[data-theme="dark"] {
 
         --background: #10181C;
         --surface: #172126;
@@ -1807,28 +1817,28 @@ td {
             0 8px 25px rgba(0, 0, 0, .30);
     }
 
-    .global-search input {
+:root[data-theme="dark"] .global-search input {
 
         background: #111B1F;
     }
 
-    .global-search input:focus {
+:root[data-theme="dark"] .global-search input:focus {
 
         background: var(--surface);
     }
 
-    .chart-period,
-    .date-button {
+:root[data-theme="dark"] .chart-period,
+:root[data-theme="dark"] .date-button {
 
         background: #111B1F;
     }
 
-    .chart-period {
+:root[data-theme="dark"] .chart-period {
 
         color: var(--text-secondary);
     }
 
-}
+
 /* ========================================
    CORRECTION — BOUTON PLUS
 ======================================== */
@@ -2096,17 +2106,16 @@ td {
 
 /* DARK MODE */
 
-@media (prefers-color-scheme: dark) {
-
-    .quick-actions-overlay {
+:root[data-theme="dark"] .quick-actions-overlay {
         background: rgba(0, 0, 0, 0.60);
     }
 
-    .quick-actions-panel {
+:root[data-theme="dark"] .quick-actions-panel {
         box-shadow:
             0 20px 60px rgba(0, 0, 0, 0.45);
     }
-}
+
+
 
 
 /* MOBILE */

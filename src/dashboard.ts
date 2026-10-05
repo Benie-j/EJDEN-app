@@ -27,7 +27,8 @@ import {
     type SalesPeriod,
     getCreditPayments,
     getRemainingMap,
-    getSales
+    getSales,
+    getUnreadNotificationsCount
 } from "./storage.js";
 import { endOfDay, formatDay, resolvePeriod, startOfDay } from "./period.js";
 
@@ -297,7 +298,13 @@ function renderStock(): void {
             ? "aucune alerte"
             : `produit${alerts > 1 ? "s" : ""} à réapprovisionner`
     );
-    setText("#notificationCount", String(alerts));
+    const unread = getUnreadNotificationsCount();
+    const badge = document.querySelector<HTMLElement>("#notificationCount");
+
+    if (badge) {
+        badge.textContent = unread > 99 ? "99+" : String(unread);
+        badge.hidden = unread === 0;
+    }
 
     const alertsLink = document.querySelector<HTMLAnchorElement>("#alertsLink");
 
@@ -790,17 +797,7 @@ setupMoreMenu({
 });
 
 $("#notificationButton")?.addEventListener("click", () => {
-    const alerts = getStockSummary(0);
-
-    if (alerts.lowCount + alerts.outCount === 0) {
-        showToast("Aucune notification.");
-        return;
-    }
-
-    window.location.href =
-        alerts.outCount > 0 && alerts.lowCount === 0
-            ? "stock.html?filter=out"
-            : "stock.html?filter=low";
+    window.location.href = "notifications.html";
 });
 
 // Recherche du haut : ouvre la page Produits avec la recherche.

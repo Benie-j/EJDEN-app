@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'"
+    >
+    <meta name="referrer" content="no-referrer">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    >
+
+    <script src="js/theme.js"></script>
+    <title>Reçus | EJDEN</title>
+
+    <link rel="stylesheet" href="css/modules.css">
+    <link rel="stylesheet" href="css/achats.css">
+    <link rel="stylesheet" href="css/document.css">
+    <link rel="stylesheet" href="css/devis.css">
+    <link rel="stylesheet" href="css/factures.css">
+</head>
+
+<body>
+
+    <main class="module-page">
+
+        <header class="module-header">
+
+            <a href="dashboard.html" class="back-button" id="backButton" aria-label="Retour">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M15 18l-6-6 6-6"></path>
+                </svg>
+            </a>
+
+            <div class="module-title">
+                <span>DOCUMENTS</span>
+                <h1 id="pageTitle">Reçus</h1>
+            </div>
+
+        </header>
+
+        <!-- ================= LISTE ================= -->
+        <section id="listScreen">
+
+            <aside class="settings-notice no-print" id="settingsNotice" hidden>
+                <div class="settings-notice-text">
+                    <strong>Complétez votre entreprise</strong>
+                    <span>Adresse, e-mail, NIF, logo… apparaîtront sur vos reçus.</span>
+                </div>
+                <a class="settings-notice-link" href="parametres.html">Ouvrir les Paramètres</a>
+            </aside>
+
+            <section class="summary-grid" aria-live="polite">
+                <div class="summary-card">
+                    <span>Encaissé (tous reçus)</span>
+                    <strong id="summaryTotal">0 FCFA</strong>
+                    <small id="summaryCount">0 reçu</small>
+                </div>
+            </section>
+
+            <p class="form-note">
+                Un reçu est créé automatiquement à chaque paiement enregistré
+                sur une facture. Le montant entre aussi dans la caisse.
+            </p>
+
+            <input
+                type="search"
+                id="searchInput"
+                class="devis-search no-print"
+                placeholder="Rechercher (client, numéro…)"
+                maxlength="40"
+                autocomplete="off"
+            >
+
+            <section id="receiptsEmpty" class="empty-state" hidden>
+                <strong id="receiptsEmptyTitle">Aucun reçu</strong>
+                <p id="receiptsEmptyText">Enregistrez un paiement sur une facture émise pour créer un reçu.</p>
+            </section>
+
+            <section id="receiptsList"></section>
+
+        </section>
+
+        <!-- ================= APERÇU ================= -->
+        <section id="previewScreen" hidden>
+
+            <div class="devis-actions no-print">
+                <button type="button" class="primary-button" id="printReceiptButton">
+                    Imprimer / PDF
+                </button>
+
+                <button type="button" class="secondary-button" id="shareReceiptButton">Partager</button>
+
+                <a class="secondary-button devis-link" id="invoiceLink" href="factures.html">Voir la facture</a>
+            </div>
+
+            <div class="doc-wrap" id="docWrap"></div>
+
+        </section>
+
+    </main>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script type="module" src="js/recus.js"></script>
+
+</body>
+
+</html>

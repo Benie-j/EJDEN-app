@@ -15,6 +15,7 @@
         content="width=device-width, initial-scale=1.0, viewport-fit=cover"
     >
 
+    <script src="js/theme.js"></script>
     <title>Paramètres | EJDEN</title>
 
     <link rel="stylesheet" href="css/parametres.css">
@@ -94,6 +95,86 @@
             </section>
 
 
+            <!-- DOCUMENTS : devis, factures, reçus -->
+            <section class="settings-section">
+
+                <h2>Documents (devis, factures)</h2>
+
+                <p class="settings-help">
+                    Ces informations complètent l'en-tête de vos devis et
+                    factures imprimés. Toutes sont facultatives.
+                </p>
+
+                <div class="field">
+                    <label for="docLogoInput">Logo</label>
+                    <img id="docLogoPreview" class="doc-logo-preview" alt="" hidden>
+                    <input type="file" id="docLogoInput" accept="image/png,image/jpeg,image/webp">
+                    <button type="button" class="logo-remove" id="docLogoRemove" hidden>Retirer le logo</button>
+                </div>
+
+                <div class="field">
+                    <label for="docAddress">Adresse</label>
+                    <textarea id="docAddress" rows="2" maxlength="160" placeholder="Ex. : Marché de Cocody, Abidjan"></textarea>
+                </div>
+
+                <div class="field">
+                    <label for="docEmail">E-mail</label>
+                    <input type="email" id="docEmail" maxlength="80" inputmode="email" placeholder="Ex. : contact@maboutique.com">
+                </div>
+
+                <div class="field">
+                    <label for="docWebsite">Site web / réseau social</label>
+                    <input type="text" id="docWebsite" maxlength="80">
+                </div>
+
+                <div class="field">
+                    <label for="docTaxId">NIF / IFU</label>
+                    <input type="text" id="docTaxId" maxlength="40">
+                </div>
+
+                <div class="field">
+                    <label for="docRegistry">RCCM</label>
+                    <input type="text" id="docRegistry" maxlength="40">
+                </div>
+
+                <div class="field">
+                    <label for="docPayment">Moyens de paiement</label>
+                    <textarea id="docPayment" rows="3" maxlength="600" placeholder="Ex. : Mobile Money 07 00 00 00 00 (Awa Koné)"></textarea>
+                </div>
+
+                <div class="field">
+                    <label for="docTax">TVA par défaut (%)</label>
+                    <input type="text" id="docTax" inputmode="decimal" placeholder="0">
+                </div>
+
+                <div class="field">
+                    <label for="docValidity">Validité d'un devis (jours)</label>
+                    <input type="text" id="docValidity" inputmode="numeric" placeholder="30">
+                </div>
+
+                <div class="field">
+                    <label for="docTerms">Conditions générales des devis</label>
+                    <textarea id="docTerms" rows="4" maxlength="600"></textarea>
+                </div>
+
+                <div class="field">
+                    <label for="docDueDays">Délai de paiement d'une facture (jours)</label>
+                    <input type="text" id="docDueDays" inputmode="numeric" placeholder="30">
+                </div>
+
+                <div class="field">
+                    <label for="docInvoiceTerms">Mentions des factures</label>
+                    <textarea id="docInvoiceTerms" rows="4" maxlength="600"></textarea>
+                </div>
+
+                <div class="field">
+                    <label for="docFooter">Pied de page</label>
+                    <input type="text" id="docFooter" maxlength="160" placeholder="Ex. : Merci de votre confiance !">
+                </div>
+
+            </section>
+
+
             <!-- UTILISATEUR : jamais sur les reçus -->
             <section class="settings-section">
 
@@ -154,6 +235,82 @@
             </button>
 
         </form>
+
+        <!-- APPARENCE -->
+        <section class="settings-section">
+
+            <h2>Apparence</h2>
+
+            <p class="settings-help">
+                Le thème sombre est activé par défaut sur tous les appareils.
+                « Automatique » suit le réglage du téléphone.
+            </p>
+
+            <div class="choice-group" id="themeChoices" role="radiogroup" aria-label="Thème">
+                <button type="button" class="choice" role="radio" data-theme-choice="dark">Sombre</button>
+                <button type="button" class="choice" role="radio" data-theme-choice="light">Clair</button>
+                <button type="button" class="choice" role="radio" data-theme-choice="auto">Automatique</button>
+            </div>
+
+        </section>
+
+        <!-- LANGUE -->
+        <section class="settings-section">
+
+            <h2>Langue</h2>
+
+            <div class="field">
+                <label for="languageSelect">Langue de l'application</label>
+                <select id="languageSelect">
+                    <option value="fr" selected>Français</option>
+                    <option value="en" disabled>English (bientôt)</option>
+                </select>
+            </div>
+
+            <p class="settings-help">Devise : franc CFA (FCFA).</p>
+
+        </section>
+
+        <!-- ACCÈS RAPIDE -->
+        <section class="settings-section">
+
+            <h2>Application</h2>
+
+            <a class="settings-link" href="notifications.html">
+                <span><strong>Notifications</strong><small>Types d'alertes à recevoir</small></span>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg>
+            </a>
+
+            <a class="settings-link" href="sauvegarde.html">
+                <span><strong>Sauvegarde</strong><small>Google Drive et fichier</small></span>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg>
+            </a>
+
+        </section>
+
+        <!-- DONNÉES -->
+        <section class="settings-section">
+
+            <h2>Données</h2>
+
+            <p class="settings-help">
+                Toutes vos données sont stockées sur cet appareil.
+                Faites une sauvegarde avant de les effacer : cette action est définitive.
+            </p>
+
+            <div id="resetControl"></div>
+
+        </section>
+
+        <!-- À PROPOS -->
+        <section class="settings-section">
+
+            <h2>À propos</h2>
+
+            <p class="settings-about">EJDEN · gestion de boutique</p>
+            <p class="settings-about" id="appVersion"></p>
+
+        </section>
 
     </main>
 

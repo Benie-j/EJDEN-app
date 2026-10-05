@@ -1092,9 +1092,7 @@ a {
    DARK MODE
    ========================================================= */
 
-@media (prefers-color-scheme: dark) {
-
-    :root {
+:root[data-theme="dark"] {
         --background: #101719;
         --surface: #172126;
 
@@ -1106,19 +1104,16 @@ a {
         --primary-soft: #183640;
     }
 
-
-    .search-box input::placeholder {
+:root[data-theme="dark"] .search-box input::placeholder {
         color: #708187;
     }
 
-
-    .view-switcher {
+:root[data-theme="dark"] .view-switcher {
         background: #183944;
         border-color: #294852;
     }
 
-
-    .view-button.active {
+:root[data-theme="dark"] .view-button.active {
         color: #8FD0E4;
 
         background: #22343A;
@@ -1127,19 +1122,17 @@ a {
             0 2px 6px rgba(0, 0, 0, 0.20);
     }
 
-
-    .edit-product-button {
+:root[data-theme="dark"] .edit-product-button {
         color: #8FD0E4;
 
         background: #183944;
     }
 
-
-    .edit-product-button:active {
+:root[data-theme="dark"] .edit-product-button:active {
         background: #214853;
     }
 
-}
+
 
 /* =========================================================
    SCANNER CODE-BARRES (recherche)

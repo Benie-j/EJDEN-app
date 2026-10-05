@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'"
+    >
+    <meta name="referrer" content="no-referrer">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    >
+
+    <script src="js/theme.js"></script>
+    <title>Devis | EJDEN</title>
+
+    <link rel="stylesheet" href="css/modules.css">
+    <link rel="stylesheet" href="css/achats.css">
+    <link rel="stylesheet" href="css/document.css">
+    <link rel="stylesheet" href="css/devis.css">
+</head>
+
+<body>
+
+    <main class="module-page">
+
+        <header class="module-header">
+
+            <a
+                href="dashboard.html"
+                class="back-button"
+                id="backButton"
+                aria-label="Retour"
+            >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M15 18l-6-6 6-6"></path>
+                </svg>
+            </a>
+
+            <div class="module-title">
+                <span>DOCUMENTS</span>
+                <h1 id="pageTitle">Devis</h1>
+            </div>
+
+        </header>
+
+        <!-- ================= LISTE ================= -->
+        <section id="listScreen">
+
+            <aside class="settings-notice no-print" id="settingsNotice" hidden>
+                <div class="settings-notice-text">
+                    <strong>Complétez votre entreprise</strong>
+                    <span>Adresse, e-mail, NIF, logo… apparaîtront sur vos devis.</span>
+                </div>
+                <a class="settings-notice-link" href="parametres.html">Ouvrir les Paramètres</a>
+            </aside>
+
+            <section class="summary-grid" aria-live="polite">
+
+                <div class="summary-card">
+                    <span>En attente de réponse</span>
+                    <strong id="summaryPending">0 FCFA</strong>
+                    <small id="summaryPendingCount">0 devis</small>
+                </div>
+
+                <div class="summary-card">
+                    <span>Acceptés</span>
+                    <strong id="summaryAccepted">0 FCFA</strong>
+                    <small id="summaryAcceptedCount">0 devis</small>
+                </div>
+
+            </section>
+
+            <div class="devis-toolbar no-print">
+                <button type="button" class="primary-button" id="newQuoteButton">
+                    ＋ Nouveau devis
+                </button>
+
+                <button type="button" class="secondary-button" id="printListButton">
+                    Imprimer la liste
+                </button>
+            </div>
+
+            <div class="print-only" id="printListHeader"></div>
+
+            <div class="devis-filters no-print" role="group" aria-label="Filtrer les devis">
+                <button type="button" class="devis-filter is-active" data-filter="all">Tous</button>
+                <button type="button" class="devis-filter" data-filter="draft">Brouillons</button>
+                <button type="button" class="devis-filter" data-filter="sent">Envoyés</button>
+                <button type="button" class="devis-filter" data-filter="accepted">Acceptés</button>
+                <button type="button" class="devis-filter" data-filter="closed">Refusés / expirés</button>
+            </div>
+
+            <input
+                type="search"
+                id="searchInput"
+                class="devis-search no-print"
+                placeholder="Rechercher (client, numéro…)"
+                maxlength="40"
+                autocomplete="off"
+            >
+
+            <section id="quotesEmpty" class="empty-state" hidden>
+                <strong id="quotesEmptyTitle">Aucun devis</strong>
+                <p id="quotesEmptyText">Créez votre premier devis professionnel.</p>
+            </section>
+
+            <section id="quotesList"></section>
+
+        </section>
+
+        <!-- ================= ÉDITEUR ================= -->
+        <section id="editorScreen" hidden>
+
+            <form id="quoteForm" autocomplete="off" novalidate>
+
+                <section class="module-section">
+                    <h2>Client</h2>
+
+                    <div class="field">
+                        <label for="clientSelect">Client enregistré (facultatif)</label>
+                        <select id="clientSelect"></select>
+                    </div>
+
+                    <div class="field">
+                        <label for="clientName">Nom du client</label>
+                        <input type="text" id="clientName" maxlength="80" placeholder="Ex. : Société Koné SARL">
+                    </div>
+
+                    <div class="field">
+                        <label for="clientPhone">Téléphone (facultatif)</label>
+                        <input type="tel" id="clientPhone" maxlength="20" inputmode="tel" placeholder="Ex. : +225 07 00 00 00 00">
+                    </div>
+
+                    <div class="field">
+                        <label for="clientEmail">E-mail (facultatif)</label>
+                        <input type="email" id="clientEmail" maxlength="80" inputmode="email" placeholder="Ex. : contact@exemple.com">
+                    </div>
+
+                    <div class="field">
+                        <label for="clientAddress">Adresse (facultatif)</label>
+                        <textarea id="clientAddress" rows="2" maxlength="160" placeholder="Ex. : Cocody, Abidjan"></textarea>
+                    </div>
+                </section>
+
+                <section class="module-section">
+                    <h2>Devis</h2>
+
+                    <div class="field">
+                        <label for="quoteSubject">Objet (facultatif)</label>
+                        <input type="text" id="quoteSubject" maxlength="120" placeholder="Ex. : Fourniture de matériel de bureau">
+                    </div>
+
+                    <div class="field-row">
+                        <div class="field">
+                            <label for="issueDate">Date du devis</label>
+                            <input type="date" id="issueDate">
+                        </div>
+
+                        <div class="field">
+                            <label for="validUntil">Valable jusqu'au</label>
+                            <input type="date" id="validUntil">
+                        </div>
+                    </div>
+                </section>
+
+                <section class="module-section">
+                    <h2>Lignes du devis</h2>
+
+                    <div id="linesContainer"></div>
+
+                    <button type="button" class="secondary-button wide" id="addLineButton">
+                        ＋ Ajouter une ligne
+                    </button>
+                </section>
+
+                <section class="module-section">
+                    <h2>Montants</h2>
+
+                    <div class="field-row">
+                        <div class="field">
+                            <label for="quoteDiscount">Remise (FCFA)</label>
+                            <input type="text" id="quoteDiscount" inputmode="numeric" placeholder="0">
+                        </div>
+
+                        <div class="field">
+                            <label for="quoteTax">TVA (%)</label>
+                            <input type="text" id="quoteTax" inputmode="decimal" placeholder="0">
+                        </div>
+
+                        <div class="field">
+                            <label for="quoteDeposit">Acompte (%)</label>
+                            <input type="text" id="quoteDeposit" inputmode="decimal" placeholder="0">
+                        </div>
+                    </div>
+
+                    <div class="devis-totals" aria-live="polite">
+                        <div><span>Sous-total</span><strong id="tSubtotal">0 FCFA</strong></div>
+                        <div id="tDiscountRow" hidden><span>Remise</span><strong id="tDiscount">0 FCFA</strong></div>
+                        <div id="tTaxRow" hidden><span id="tTaxLabel">TVA</span><strong id="tTax">0 FCFA</strong></div>
+                        <div class="is-grand"><span>Total</span><strong id="tTotal">0 FCFA</strong></div>
+                        <div id="tDepositRow" hidden><span>Acompte</span><strong id="tDeposit">0 FCFA</strong></div>
+                    </div>
+                </section>
+
+                <section class="module-section">
+                    <h2>Conditions</h2>
+
+                    <div class="field">
+                        <label for="deliveryTerms">Délai de livraison / réalisation (facultatif)</label>
+                        <input type="text" id="deliveryTerms" maxlength="160" placeholder="Ex. : 7 jours après acceptation">
+                    </div>
+
+                    <div class="field">
+                        <label for="paymentTerms">Conditions de paiement (facultatif)</label>
+                        <input type="text" id="paymentTerms" maxlength="160" placeholder="Ex. : 50 % à la commande, solde à la livraison">
+                    </div>
+
+                    <div class="field">
+                        <label for="quoteNotes">Notes (facultatif)</label>
+                        <textarea id="quoteNotes" rows="2" maxlength="600"></textarea>
+                    </div>
+
+                    <div class="field">
+                        <label for="quoteTerms">Conditions générales</label>
+                        <textarea id="quoteTerms" rows="4" maxlength="600"></textarea>
+                    </div>
+                </section>
+
+                <div class="form-actions">
+                    <button type="submit" class="primary-button" id="saveQuoteButton">
+                        Enregistrer le devis
+                    </button>
+
+                    <button type="button" class="secondary-button" id="cancelEditButton">
+                        Annuler
+                    </button>
+                </div>
+
+            </form>
+
+        </section>
+
+        <!-- ================= APERÇU ================= -->
+        <section id="previewScreen" hidden>
+
+            <div class="devis-actions no-print">
+
+                <button type="button" class="primary-button" id="printQuoteButton">
+                    Imprimer / PDF
+                </button>
+
+                <div class="devis-actions-row">
+                    <button type="button" class="secondary-button" id="editQuoteButton">Modifier</button>
+                    <button type="button" class="secondary-button" id="duplicateQuoteButton">Dupliquer</button>
+                    <button type="button" class="secondary-button" id="shareQuoteButton">Partager</button>
+                </div>
+
+                <button type="button" class="primary-button" id="invoiceQuoteButton" hidden>
+                    Créer la facture à partir de ce devis
+                </button>
+                <a class="secondary-button devis-link" id="invoiceLink" href="factures.html" hidden>
+                    Voir la facture liée
+                </a>
+
+                <div class="status-switch" id="statusSwitch" role="group" aria-label="Statut du devis"></div>
+
+            </div>
+
+            <div class="doc-wrap" id="docWrap"></div>
+
+            <div class="no-print" id="deleteHost"></div>
+
+        </section>
+
+    </main>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script type="module" src="js/devis.js"></script>
+
+</body>
+
+</html>

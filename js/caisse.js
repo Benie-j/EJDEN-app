@@ -31,7 +31,8 @@ const SOURCE_LABELS = {
     exit: "Sortie de caisse",
     expense: "Dépense",
     purchase: "Achat fournisseur",
-    supplier_payment: "Paiement fournisseur"
+    supplier_payment: "Paiement fournisseur",
+    invoice_payment: "Paiement de facture"
 };
 /* =========================================================
    Formulaire
@@ -110,7 +111,9 @@ function format(value) {
 function createMovementRow(movement) {
     const date = new Date(movement.createdAt);
     const isIn = movement.amount > 0;
-    const subtitle = (movement.source === "sale" || movement.source === "credit_payment") &&
+    const subtitle = (movement.source === "sale" ||
+        movement.source === "credit_payment" ||
+        movement.source === "invoice_payment") &&
         movement.method
         ? `${SOURCE_LABELS[movement.source]} · ${METHOD_LABELS[movement.method]} · ${timeLabel(date)}`
         : `${SOURCE_LABELS[movement.source]} · ${timeLabel(date)}`;
