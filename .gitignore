@@ -4,3 +4,6 @@ node_modules/
 
 www/
 android/
+
+!native/android/
+!native/android/**
