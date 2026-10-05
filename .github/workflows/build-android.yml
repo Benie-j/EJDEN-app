@@ -89,7 +89,6 @@ jobs:
         run: |
           test -n "$EJDEN_KEYSTORE_BASE64"
           printf '%s' "$EJDEN_KEYSTORE_BASE64" | base64 --decode > android/ejden-upload.jks
-
       - name: Vérifier le keystore
         env:
           KEYSTORE_PASSWORD: ${{ secrets.EJDEN_KEYSTORE_PASSWORD }}
@@ -104,14 +103,11 @@ jobs:
           echo "SHA-256 du keystore reconstruit :"
           sha256sum android/ejden-upload.jks
 
-          echo "Vérification de l'intégrité :"
-          echo "34d51ecd2ab28b09d92be922f11929f250126d00545857120570483c26b58aa  android/ejden-upload.jks" | sha256sum -c -
-
-          echo "Keystore identique au fichier local de référence."
           keytool -list \
             -keystore android/ejden-upload.jks \
             -alias "$KEY_ALIAS" \
             -storepass "$KEYSTORE_PASSWORD"
+
       - name: Configurer la signature Release
         env:
           KEYSTORE_PASSWORD: ${{ secrets.EJDEN_KEYSTORE_PASSWORD }}
