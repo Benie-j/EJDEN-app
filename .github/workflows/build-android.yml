@@ -52,38 +52,20 @@ jobs:
           mkdir -p android/app/src/main/res/values
           mkdir -p android/app/src/main/res/values-night
 
-          cp native/android/drawable/ejden_logo.xml \
-            android/app/src/main/res/drawable/ejden_logo.xml
+          cp native/android/drawable/ejden_logo.xml android/app/src/main/res/drawable/ejden_logo.xml
+          cp native/android/drawable/ejden_icon_foreground.xml android/app/src/main/res/drawable/ejden_icon_foreground.xml
+          cp native/android/drawable/ejden_icon_monochrome.xml android/app/src/main/res/drawable/ejden_icon_monochrome.xml
+          cp native/android/drawable-night/ejden_icon_foreground.xml android/app/src/main/res/drawable-night/ejden_icon_foreground.xml
 
-          cp native/android/drawable/ejden_icon_foreground.xml \
-            android/app/src/main/res/drawable/ejden_icon_foreground.xml
+          cp native/android/mipmap-anydpi/ic_launcher.xml android/app/src/main/res/mipmap-anydpi/ic_launcher.xml
+          cp native/android/mipmap-anydpi/ic_launcher_round.xml android/app/src/main/res/mipmap-anydpi/ic_launcher_round.xml
+          cp native/android/mipmap-anydpi-v26/ic_launcher.xml android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml
+          cp native/android/mipmap-anydpi-v26/ic_launcher_round.xml android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml
 
-          cp native/android/drawable/ejden_icon_monochrome.xml \
-            android/app/src/main/res/drawable/ejden_icon_monochrome.xml
-
-          cp native/android/drawable-night/ejden_icon_foreground.xml \
-            android/app/src/main/res/drawable-night/ejden_icon_foreground.xml
-
-          cp native/android/mipmap-anydpi/ic_launcher.xml \
-            android/app/src/main/res/mipmap-anydpi/ic_launcher.xml
-
-          cp native/android/mipmap-anydpi/ic_launcher_round.xml \
-            android/app/src/main/res/mipmap-anydpi/ic_launcher_round.xml
-
-          cp native/android/mipmap-anydpi-v26/ic_launcher.xml \
-            android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml
-
-          cp native/android/mipmap-anydpi-v26/ic_launcher_round.xml \
-            android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml
-
-          cp native/android/values/ejden_icon_colors.xml \
-            android/app/src/main/res/values/ejden_icon_colors.xml
-
-          cp native/android/values-night/ejden_icon_colors.xml \
-            android/app/src/main/res/values-night/ejden_icon_colors.xml
-
-          cp native/android/values/styles.xml \
-            android/app/src/main/res/values/styles.xml
+          cp native/android/values/ejden_icon_colors.xml android/app/src/main/res/values/ejden_icon_colors.xml
+          cp native/android/values-night/ejden_icon_colors.xml android/app/src/main/res/values-night/ejden_icon_colors.xml
+          cp native/android/values/styles.xml android/app/src/main/res/values/styles.xml
+          cp native/android/values-night/styles.xml android/app/src/main/res/values-night/styles.xml
 
       - name: Installer Java
         uses: actions/setup-java@v6
@@ -103,47 +85,45 @@ jobs:
         env:
           EJDEN_KEYSTORE_BASE64: ${{ secrets.EJDEN_KEYSTORE_BASE64 }}
         run: |
-          echo "$EJDEN_KEYSTORE_BASE64" | base64 --decode > android/ejden-upload.jks
+          printf '%s' "$EJDEN_KEYSTORE_BASE64" | base64 --decode > android/ejden-upload.jks
 
       - name: Configurer la signature Release
         env:
           KEYSTORE_PASSWORD: ${{ secrets.EJDEN_KEYSTORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.EJDEN_KEY_PASSWORD }}
           KEY_ALIAS: ${{ secrets.EJDEN_KEY_ALIAS }}
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          import re
 
           path = Path("android/app/build.gradle")
           text = path.read_text()
 
-          signing_block = """    signingConfigs {
-              release {
-                  storeFile file("../ejden-upload.jks")
-                  storePassword System.getenv("KEYSTORE_PASSWORD")
-                  keyAlias System.getenv("KEY_ALIAS")
-                  keyPassword System.getenv("KEYSTORE_PASSWORD")
+          signing = """    signingConfigs {
+                  release {
+                      storeFile file("../ejden-upload.jks")
+                      storePassword System.getenv("KEYSTORE_PASSWORD")
+                      keyAlias System.getenv("KEY_ALIAS")
+                      keyPassword System.getenv("KEY_PASSWORD")
+                  }
               }
-          }
 
           """
 
-          if "signingConfigs {" not in text:
-              text = text.replace(
-                  "android {\n",
-                  "android {\n" + signing_block,
-                  1
-              )
+          marker = "    buildTypes {"
 
-          pattern = r"(buildTypes\s*\{\s*release\s*\{)"
+          if "signingConfigs {" not in text:
+              text = text.replace(marker, signing + marker, 1)
+
+          old = """        release {
+            minifyEnabled false"""
+
+          new = """        release {
+            signingConfig signingConfigs.release
+            minifyEnabled false"""
 
           if "signingConfig signingConfigs.release" not in text:
-              text = re.sub(
-                  pattern,
-                  r"\1\n            signingConfig signingConfigs.release",
-                  text,
-                  count=1
-              )
+              text = text.replace(old, new, 1)
 
           path.write_text(text)
           PY
@@ -152,6 +132,7 @@ jobs:
         working-directory: android
         env:
           KEYSTORE_PASSWORD: ${{ secrets.EJDEN_KEYSTORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.EJDEN_KEY_PASSWORD }}
           KEY_ALIAS: ${{ secrets.EJDEN_KEY_ALIAS }}
         run: ./gradlew assembleRelease --no-daemon
 
