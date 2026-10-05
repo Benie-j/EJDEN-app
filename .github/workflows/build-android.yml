@@ -42,7 +42,10 @@ jobs:
 
       - name: Synchroniser Capacitor
         run: npx cap sync android
-
+      - name: Appliquer la personnalisation EJDEN
+        run: |
+          cp native/android/drawable/ejden_logo.xml android/app/src/main/res/drawable/ejden_logo.xml
+          cp native/android/values/styles.xml android/app/src/main/res/values/styles.xml
       - name: Installer Java
         uses: actions/setup-java@v6
         with:
