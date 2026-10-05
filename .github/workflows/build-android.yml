@@ -120,43 +120,53 @@ jobs:
           path = Path("android/app/build.gradle")
           text = path.read_text()
 
-          if "signingConfigs {" not in text:
-              signing = """    signingConfigs {
-                  release {
-                      storeFile file("../ejden-upload.jks")
-                      storePassword System.getenv("KEYSTORE_PASSWORD")
-                      keyAlias System.getenv("KEY_ALIAS")
-                      keyPassword System.getenv("KEY_PASSWORD")
-                  }
+          signing_block = """    signingConfigs {
+              release {
+                  storeFile file("../ejden-upload.jks")
+                  storePassword System.getenv("KEYSTORE_PASSWORD")
+                  keyAlias System.getenv("KEY_ALIAS")
+                  keyPassword System.getenv("KEY_PASSWORD")
               }
+          }
 
           """
 
-              marker = "    buildTypes {"
+          if "signingConfigs {" not in text:
+              build_types_marker = "    buildTypes {"
 
-              if marker not in text:
-                  raise SystemExit(
-                      "Bloc buildTypes introuvable dans android/app/build.gradle"
-                  )
+              if build_types_marker not in text:
+                  raise SystemExit("Bloc buildTypes introuvable")
 
               text = text.replace(
-                  marker,
-                  signing + marker,
+                  build_types_marker,
+                  signing_block + build_types_marker,
                   1
               )
 
-          if "signingConfig signingConfigs.release" not in text:
-              marker = "        release {"
+          build_types_pos = text.find("    buildTypes {")
 
-              if marker not in text:
-                  raise SystemExit(
-                      "Bloc release introuvable dans android/app/build.gradle"
-                  )
+          if build_types_pos == -1:
+              raise SystemExit("Bloc buildTypes introuvable")
 
-              text = text.replace(
-                  marker,
-                  marker + "\n            signingConfig signingConfigs.release",
-                  1
+          release_pos = text.find(
+              "        release {",
+              build_types_pos
+          )
+
+          if release_pos == -1:
+              raise SystemExit(
+                  "Bloc release introuvable dans buildTypes"
+              )
+
+          release_end = release_pos + len("        release {")
+
+          if "signingConfig signingConfigs.release" not in text[
+              release_pos:release_end + 200
+          ]:
+              text = (
+                  text[:release_end]
+                  + "\n            signingConfig signingConfigs.release"
+                  + text[release_end:]
               )
 
           path.write_text(text)
