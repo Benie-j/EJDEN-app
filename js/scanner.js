@@ -10,17 +10,9 @@ const CapacitorGlobal = window.Capacitor;
 const NativeBarcodeScanner = (CapacitorGlobal?.Plugins?.["BarcodeScanner"] ?? {});
 // Valeurs identiques à celles du plugin @capacitor-mlkit/barcode-scanning
 const BarcodeFormat = {
-    Ean13: "EAN_13",
-    Ean8: "EAN_8",
-    UpcA: "UPC_A",
-    UpcE: "UPC_E",
-    Code128: "CODE_128",
-    Code39: "CODE_39",
-    Itf: "ITF",
-    QrCode: "QR_CODE"
+    All: 17
 };
-const LensFacing = { Front: 0, Back: 1 };
-const Resolution = { "1280x720": 1 };
+const LensFacing = { Back: 1 };
 const PREFERRED_FORMATS = [
     "ean_13",
     "ean_8",
@@ -30,16 +22,6 @@ const PREFERRED_FORMATS = [
     "code_39",
     "itf",
     "qr_code"
-];
-const NATIVE_FORMATS = [
-    BarcodeFormat.Ean13,
-    BarcodeFormat.Ean8,
-    BarcodeFormat.UpcA,
-    BarcodeFormat.UpcE,
-    BarcodeFormat.Code128,
-    BarcodeFormat.Code39,
-    BarcodeFormat.Itf,
-    BarcodeFormat.QrCode
 ];
 const DETECTION_INTERVAL = 150;
 const SAME_CODE_COOLDOWN = 1800;
@@ -105,12 +87,6 @@ export class BarcodeScanner {
             this.nativeListener = null;
         }
         if (this.nativeRunning) {
-            try {
-                await NativeBarcodeScanner.stopScan();
-            }
-            catch {
-                // Le scanner était peut-être déjà arrêté.
-            }
             this.nativeRunning = false;
         }
         this.restoreNativeWebView();
@@ -120,34 +96,26 @@ export class BarcodeScanner {
     ======================================== */
     async startNative(session) {
         try {
-            const supported = await NativeBarcodeScanner.isSupported();
-            if (!supported.supported) {
-                this.options.onError("no-camera", "Aucune caméra compatible avec le scanner n'a été trouvée.");
-                return;
-            }
             if (session !== this.session) {
                 return;
             }
-            // TEST DIAGNOSTIQUE :
-            // scan() utilise l'interface native prête à l'emploi.
-            // Il permet de vérifier que ML Kit + caméra + détection
-            // fonctionnent indépendamment du rendu caméra derrière la WebView.
             this.nativeRunning = true;
-            const result = await NativeBarcodeScanner.scan({
-                formats: NATIVE_FORMATS,
-                autoZoom: true
+            const result = await NativeBarcodeScanner.scanBarcode({
+                hint: BarcodeFormat.All,
+                cameraDirection: LensFacing.Back,
+                scanInstructions: "Placez le code-barres dans le cadre",
+                android: {
+                    scanningLibrary: "zxing"
+                }
             });
             if (session !== this.session) {
                 return;
             }
-            const barcode = result.barcodes[0];
-            if (barcode) {
-                const code = normalizeBarcode(barcode.rawValue ?? barcode.displayValue ?? "");
-                if (code) {
-                    this.lastCode = code;
-                    this.lastCodeTime = Date.now();
-                    this.options.onDetect(code);
-                }
+            const code = normalizeBarcode(result.ScanResult ?? "");
+            if (code) {
+                this.lastCode = code;
+                this.lastCodeTime = Date.now();
+                this.options.onDetect(code);
             }
             this.nativeRunning = false;
         }
@@ -278,21 +246,7 @@ export class BarcodeScanner {
     }
     async setTorch(on) {
         if (isNativePlatform()) {
-            if (!this.nativeRunning) {
-                return false;
-            }
-            try {
-                if (on) {
-                    await NativeBarcodeScanner.enableTorch();
-                }
-                else {
-                    await NativeBarcodeScanner.disableTorch();
-                }
-                return true;
-            }
-            catch {
-                return false;
-            }
+            return false;
         }
         const track = this.stream?.getVideoTracks()[0];
         if (!track || !this.isTorchSupported()) {

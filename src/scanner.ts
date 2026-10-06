@@ -16,31 +16,21 @@ interface NativeBarcode {
     displayValue?: string;
 }
 
-interface NativeScanEvent {
-    barcodes: NativeBarcode[];
+interface NativeScanResult {
+    ScanResult?: string;
 }
 
 interface NativeScannerPlugin {
-    isSupported(): Promise<{ supported: boolean }>;
-    checkPermissions(): Promise<{ camera: string }>;
-    requestPermissions(): Promise<{ camera: string }>;
-    addListener(
-        eventName: "barcodesScanned",
-        listener: (event: NativeScanEvent) => void | Promise<void>
-    ): Promise<{ remove: () => Promise<void> }>;
-    startScan(options: {
-        formats: string[];
-        lensFacing: number;
-        resolution: number;
-    }): Promise<void>;
-    scan(options: {
-        formats: string[];
-        autoZoom?: boolean;
-    }): Promise<{ barcodes: NativeBarcode[] }>;
-    stopScan(): Promise<void>;
-    enableTorch(): Promise<void>;
-    disableTorch(): Promise<void>;
+    scanBarcode(options: {
+        hint: number;
+        cameraDirection: number;
+        scanInstructions?: string;
+        android?: {
+            scanningLibrary: "zxing" | "mlkit";
+        };
+    }): Promise<NativeScanResult>;
 }
+
 
 interface CapacitorGlobal {
     isNativePlatform(): boolean;
@@ -57,18 +47,12 @@ const NativeBarcodeScanner = (
 
 // Valeurs identiques à celles du plugin @capacitor-mlkit/barcode-scanning
 const BarcodeFormat = {
-    Ean13: "EAN_13",
-    Ean8: "EAN_8",
-    UpcA: "UPC_A",
-    UpcE: "UPC_E",
-    Code128: "CODE_128",
-    Code39: "CODE_39",
-    Itf: "ITF",
-    QrCode: "QR_CODE"
+    All: 17
 } as const;
 
-const LensFacing = { Front: 0, Back: 1 } as const;
-const Resolution = { "1280x720": 1 } as const;
+
+const LensFacing = { Back: 1 } as const;
+
 
 export type ScannerErrorCode =
     | "unsupported"
@@ -111,16 +95,7 @@ const PREFERRED_FORMATS = [
     "qr_code"
 ];
 
-const NATIVE_FORMATS: string[] = [
-    BarcodeFormat.Ean13,
-    BarcodeFormat.Ean8,
-    BarcodeFormat.UpcA,
-    BarcodeFormat.UpcE,
-    BarcodeFormat.Code128,
-    BarcodeFormat.Code39,
-    BarcodeFormat.Itf,
-    BarcodeFormat.QrCode
-];
+
 
 const DETECTION_INTERVAL = 150;
 const SAME_CODE_COOLDOWN = 1800;
@@ -213,12 +188,6 @@ export class BarcodeScanner {
         }
 
         if (this.nativeRunning) {
-            try {
-                await NativeBarcodeScanner.stopScan();
-            } catch {
-                // Le scanner était peut-être déjà arrêté.
-            }
-
             this.nativeRunning = false;
         }
 
@@ -231,48 +200,33 @@ export class BarcodeScanner {
 
     private async startNative(session: number): Promise<void> {
         try {
-            const supported = await NativeBarcodeScanner.isSupported();
-
-            if (!supported.supported) {
-                this.options.onError(
-                    "no-camera",
-                    "Aucune caméra compatible avec le scanner n'a été trouvée."
-                );
-                return;
-            }
-
             if (session !== this.session) {
                 return;
             }
 
-            // TEST DIAGNOSTIQUE :
-            // scan() utilise l'interface native prête à l'emploi.
-            // Il permet de vérifier que ML Kit + caméra + détection
-            // fonctionnent indépendamment du rendu caméra derrière la WebView.
-
             this.nativeRunning = true;
 
-            const result = await NativeBarcodeScanner.scan({
-                formats: NATIVE_FORMATS,
-                autoZoom: true
+            const result = await NativeBarcodeScanner.scanBarcode({
+                hint: BarcodeFormat.All,
+                cameraDirection: LensFacing.Back,
+                scanInstructions: "Placez le code-barres dans le cadre",
+                android: {
+                    scanningLibrary: "zxing"
+                }
             });
 
             if (session !== this.session) {
                 return;
             }
 
-            const barcode = result.barcodes[0];
+            const code = normalizeBarcode(
+                result.ScanResult ?? ""
+            );
 
-            if (barcode) {
-                const code = normalizeBarcode(
-                    barcode.rawValue ?? barcode.displayValue ?? ""
-                );
-
-                if (code) {
-                    this.lastCode = code;
-                    this.lastCodeTime = Date.now();
-                    this.options.onDetect(code);
-                }
+            if (code) {
+                this.lastCode = code;
+                this.lastCodeTime = Date.now();
+                this.options.onDetect(code);
             }
 
             this.nativeRunning = false;
@@ -305,6 +259,7 @@ export class BarcodeScanner {
             );
         }
     }
+
 
     private prepareNativeWebView(): void {
         document.documentElement.style.background = "transparent";
@@ -464,21 +419,7 @@ export class BarcodeScanner {
 
     async setTorch(on: boolean): Promise<boolean> {
         if (isNativePlatform()) {
-            if (!this.nativeRunning) {
-                return false;
-            }
-
-            try {
-                if (on) {
-                    await NativeBarcodeScanner.enableTorch();
-                } else {
-                    await NativeBarcodeScanner.disableTorch();
-                }
-
-                return true;
-            } catch {
-                return false;
-            }
+            return false;
         }
 
         const track = this.stream?.getVideoTracks()[0];
