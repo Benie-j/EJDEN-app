@@ -9,7 +9,7 @@ import {
 import { setupCategoryField } from "./category-field.js";
 import { setupBarcodeScanner } from "./barcode-field.js";
 import { preparePhoto } from "./photo.js";
-
+import { captureProductPhoto } from "./photo-capture.js";
 
 /* =========================================================
    Éléments du formulaire
@@ -67,45 +67,46 @@ function showNotification(message: string): void {
 
 let photoData: string | null = null;
 
-productPhoto?.addEventListener("change", async () => {
-    const file = productPhoto.files?.[0];
-
-    if (!file) {
-        photoData = null;
-        return;
-    }
-
+async function selectProductPhoto(): Promise<void> {
     try {
+        const file = await captureProductPhoto();
+
+        if (!file) {
+            return;
+        }
+
         photoData = await preparePhoto(file);
+
+        if (photoPreview) {
+            const image = document.createElement("img");
+
+            image.src = photoData;
+            image.alt = "Aperçu du produit";
+
+            photoPreview.replaceChildren(image);
+        }
+
+        if (photoTitle) {
+            photoTitle.textContent = "Photo sélectionnée";
+        }
+
+        if (photoDescription) {
+            photoDescription.textContent = "Photo prête à être enregistrée";
+        }
     } catch (error) {
-        photoData = null;
-        productPhoto.value = "";
         showNotification(
             error instanceof Error
                 ? error.message
-                : "Impossible de lire cette photo."
+                : "Impossible de prendre la photo."
         );
-        return;
     }
+}
 
-    if (photoPreview) {
-        const image = document.createElement("img");
-
-        image.src = photoData;
-        image.alt = "Aperçu du produit";
-
-        photoPreview.replaceChildren(image);
-    }
-
-    if (photoTitle) {
-        photoTitle.textContent = "Photo sélectionnée";
-    }
-
-    if (photoDescription) {
-        photoDescription.textContent = file.name;
-    }
-});
-
+document
+    .querySelector<HTMLElement>("#photoUpload")
+    ?.addEventListener("click", () => {
+        void selectProductPhoto();
+    });
 
 /* =========================================================
    Scanner

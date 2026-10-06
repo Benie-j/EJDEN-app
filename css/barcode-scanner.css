@@ -212,3 +212,33 @@
 .scanner-torch.is-on {
     background: #D98A16;
 }
+
+/* =========================================================
+   Scanner natif Capacitor / ML Kit
+   La caméra native est rendue derrière la WebView.
+   ========================================================= */
+
+html.ejden-native-scanner-active,
+body.ejden-native-scanner-active {
+    background: transparent !important;
+}
+
+.ejden-native-scanner-active .barcode-scanner {
+    background: transparent;
+}
+
+.ejden-native-scanner-active .scanner-view {
+    background: transparent;
+}
+
+.ejden-native-scanner-active .scanner-view video {
+    visibility: hidden;
+}
+
+.ejden-native-scanner-active .scanner-header {
+    background: rgba(0, 0, 0, 0.45);
+}
+
+.ejden-native-scanner-active .scanner-status {
+    background: rgba(0, 0, 0, 0.45);
+}

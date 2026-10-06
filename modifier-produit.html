@@ -21,6 +21,7 @@
         href="css/modifier-produit.css"
     >
     <link rel="stylesheet" href="css/category-field.css">
+  <link rel="stylesheet" href="css/barcode-scanner.css">
 </head>
 
 <body>
@@ -143,10 +144,11 @@
 
 
         <!-- Sélection d'une photo -->
-        <label
-            for="productPhoto"
-            class="photo-upload"
-        >
+        <button
+    type="button"
+    class="photo-upload"
+    id="photoUpload"
+>
 
             <div class="photo-icon">
 
@@ -177,14 +179,8 @@
 
             </div>
 
-            <input
-                type="file"
-                id="productPhoto"
-                name="photo"
-                accept="image/*"
-            >
-
-        </label>
+            
+        </button>
 
 
         <!-- Suppression -->

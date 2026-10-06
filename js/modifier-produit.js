@@ -5,6 +5,7 @@ import { LIMITS, getProductById, findProductByBarcode, updateProduct, deleteProd
 import { setupCategoryField } from "./category-field.js";
 import { setupBarcodeScanner } from "./barcode-field.js";
 import { preparePhoto } from "./photo.js";
+import { captureProductPhoto } from "./photo-capture.js";
 /* =========================================================
    Éléments du formulaire
    ========================================================= */
@@ -73,21 +74,24 @@ function renderPhoto(photo) {
         removePhotoButton.hidden = photo === null;
     }
 }
-productPhoto?.addEventListener("change", async () => {
-    const file = productPhoto.files?.[0];
-    if (!file) {
-        return;
-    }
+async function selectProductPhoto() {
     try {
+        const file = await captureProductPhoto();
+        if (!file) {
+            return;
+        }
         renderPhoto(await preparePhoto(file));
     }
     catch (error) {
         showNotification(error instanceof Error
             ? error.message
-            : "Impossible de lire cette photo.");
+            : "Impossible de prendre la photo.");
     }
-    // Permet de rechoisir le même fichier plus tard.
-    productPhoto.value = "";
+}
+document
+    .querySelector("#photoUpload")
+    ?.addEventListener("click", () => {
+    void selectProductPhoto();
 });
 removePhotoButton?.addEventListener("click", () => {
     renderPhoto(null);
