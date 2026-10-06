@@ -193,9 +193,14 @@ jobs:
           KEY_ALIAS: ${{ secrets.EJDEN_KEY_ALIAS }}
         run: ./gradlew assembleRelease --no-daemon --stacktrace
 
+      - name: Renommer l'APK EJDEN
+        run: |
+          mv android/app/build/outputs/apk/release/app-release.apk \
+             android/app/build/outputs/apk/release/EJDEN.apk
+
       - name: Vérifier la signature APK
         run: |
-          APK="android/app/build/outputs/apk/release/app-release.apk"
+          APK="android/app/build/outputs/apk/release/EJDEN.apk"
           APKSIGNER="$ANDROID_HOME/build-tools/36.0.0/apksigner"
 
           test -f "$APK"
@@ -214,14 +219,14 @@ jobs:
 
       - name: Vérifier l'APK
         run: |
-          test -s android/app/build/outputs/apk/release/app-release.apk
-          ls -lh android/app/build/outputs/apk/release/app-release.apk
+          test -s android/app/build/outputs/apk/release/EJDEN.apk
+          ls -lh android/app/build/outputs/apk/release/EJDEN.apk
 
       - name: Publier l'APK Release
         uses: actions/upload-artifact@v4
         with:
           name: EJDEN-release-apk
-          path: android/app/build/outputs/apk/release/app-release.apk
+          path: android/app/build/outputs/apk/release/EJDEN.apk
           if-no-files-found: error
 
 
