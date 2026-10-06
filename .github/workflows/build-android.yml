@@ -180,6 +180,25 @@ jobs:
           KEY_ALIAS: ${{ secrets.EJDEN_KEY_ALIAS }}
         run: ./gradlew assembleRelease --no-daemon --stacktrace
 
+      - name: Vérifier la signature APK
+        run: |
+          APK="android/app/build/outputs/apk/release/app-release.apk"
+          APKSIGNER="$ANDROID_HOME/build-tools/36.0.0/apksigner"
+
+          test -f "$APK"
+          test -x "$APKSIGNER"
+
+          echo "=== Vérification de la signature ==="
+          "$APKSIGNER" verify --verbose "$APK"
+
+          echo ""
+          echo "=== Certificat utilisé ==="
+          "$APKSIGNER" verify --print-certs "$APK"
+
+          echo ""
+          echo "=== SHA-256 de l'APK ==="
+          sha256sum "$APK"
+
       - name: Vérifier l'APK
         run: |
           test -s android/app/build/outputs/apk/release/app-release.apk
@@ -191,3 +210,6 @@ jobs:
           name: EJDEN-release-apk
           path: android/app/build/outputs/apk/release/app-release.apk
           if-no-files-found: error
+
+
+
