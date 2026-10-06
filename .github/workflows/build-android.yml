@@ -48,6 +48,11 @@ jobs:
       - name: Synchroniser Capacitor
         run: npx cap sync android
 
+      - name: Configurer le SDK Android minimum EJDEN
+        run: |
+          sed -i 's/minSdkVersion = 24/minSdkVersion = 26/' android/variables.gradle
+          grep "minSdkVersion" android/variables.gradle
+
       - name: Configurer les permissions Android EJDEN
         run: |
           python3 scripts/configure-android.py
