@@ -33,6 +33,10 @@ interface NativeScannerPlugin {
         lensFacing: number;
         resolution: number;
     }): Promise<void>;
+    scan(options: {
+        formats: string[];
+        autoZoom?: boolean;
+    }): Promise<{ barcodes: NativeBarcode[] }>;
     stopScan(): Promise<void>;
     enableTorch(): Promise<void>;
     disableTorch(): Promise<void>;
@@ -237,90 +241,47 @@ export class BarcodeScanner {
                 return;
             }
 
-            const permission = await NativeBarcodeScanner.checkPermissions();
-
-            if (permission.camera !== "granted") {
-                const requested =
-                    await NativeBarcodeScanner.requestPermissions();
-
-                if (requested.camera !== "granted") {
-                    this.options.onError(
-                        "permission-denied",
-                        "Accès à la caméra refusé. Autorisez-le dans les réglages."
-                    );
-                    return;
-                }
+            if (session !== this.session) {
+                return;
             }
+
+            // TEST DIAGNOSTIQUE :
+            // scan() utilise l'interface native prête à l'emploi.
+            // Il permet de vérifier que ML Kit + caméra + détection
+            // fonctionnent indépendamment du rendu caméra derrière la WebView.
+
+            this.nativeRunning = true;
+
+            const result = await NativeBarcodeScanner.scan({
+                formats: NATIVE_FORMATS,
+                autoZoom: true
+            });
 
             if (session !== this.session) {
                 return;
             }
 
-            this.prepareNativeWebView();
+            const barcode = result.barcodes[0];
 
-            this.nativeListener =
-                await NativeBarcodeScanner.addListener(
-                    "barcodesScanned",
-                    async (event: NativeScanEvent) => {
-                        if (session !== this.session || !this.nativeRunning) {
-                            return;
-                        }
-
-                        const barcode = event.barcodes[0];
-
-                        if (!barcode) {
-                            return;
-                        }
-
-                        const code = normalizeBarcode(
-                            barcode.rawValue ?? barcode.displayValue ?? ""
-                        );
-
-                        if (!code) {
-                            return;
-                        }
-
-                        const now = Date.now();
-
-                        if (
-                            code === this.lastCode &&
-                            now - this.lastCodeTime < SAME_CODE_COOLDOWN
-                        ) {
-                            return;
-                        }
-
-                        this.lastCode = code;
-                        this.lastCodeTime = now;
-
-                        this.options.onDetect(code);
-                    }
+            if (barcode) {
+                const code = normalizeBarcode(
+                    barcode.rawValue ?? barcode.displayValue ?? ""
                 );
 
-            this.nativeRunning = true;
+                if (code) {
+                    this.lastCode = code;
+                    this.lastCodeTime = Date.now();
+                    this.options.onDetect(code);
+                }
+            }
 
-            await NativeBarcodeScanner.startScan({
-                formats: NATIVE_FORMATS,
-                lensFacing: LensFacing.Back,
-                resolution: Resolution["1280x720"]
-            });
+            this.nativeRunning = false;
         } catch (error) {
             if (session !== this.session) {
                 return;
             }
 
             this.nativeRunning = false;
-
-            if (this.nativeListener) {
-                try {
-                    await this.nativeListener.remove();
-                } catch {
-                    // Rien à faire.
-                }
-
-                this.nativeListener = null;
-            }
-
-            this.restoreNativeWebView();
 
             const message =
                 error instanceof Error && error.message
@@ -340,7 +301,7 @@ export class BarcodeScanner {
 
             this.options.onError(
                 "camera-error",
-                "Impossible de démarrer le scanner caméra."
+                message || "Impossible de démarrer le scanner caméra."
             );
         }
     }

@@ -125,62 +125,37 @@ export class BarcodeScanner {
                 this.options.onError("no-camera", "Aucune caméra compatible avec le scanner n'a été trouvée.");
                 return;
             }
-            const permission = await NativeBarcodeScanner.checkPermissions();
-            if (permission.camera !== "granted") {
-                const requested = await NativeBarcodeScanner.requestPermissions();
-                if (requested.camera !== "granted") {
-                    this.options.onError("permission-denied", "Accès à la caméra refusé. Autorisez-le dans les réglages.");
-                    return;
-                }
-            }
             if (session !== this.session) {
                 return;
             }
-            this.prepareNativeWebView();
-            this.nativeListener =
-                await NativeBarcodeScanner.addListener("barcodesScanned", async (event) => {
-                    if (session !== this.session || !this.nativeRunning) {
-                        return;
-                    }
-                    const barcode = event.barcodes[0];
-                    if (!barcode) {
-                        return;
-                    }
-                    const code = normalizeBarcode(barcode.rawValue ?? barcode.displayValue ?? "");
-                    if (!code) {
-                        return;
-                    }
-                    const now = Date.now();
-                    if (code === this.lastCode &&
-                        now - this.lastCodeTime < SAME_CODE_COOLDOWN) {
-                        return;
-                    }
-                    this.lastCode = code;
-                    this.lastCodeTime = now;
-                    this.options.onDetect(code);
-                });
+            // TEST DIAGNOSTIQUE :
+            // scan() utilise l'interface native prête à l'emploi.
+            // Il permet de vérifier que ML Kit + caméra + détection
+            // fonctionnent indépendamment du rendu caméra derrière la WebView.
             this.nativeRunning = true;
-            await NativeBarcodeScanner.startScan({
+            const result = await NativeBarcodeScanner.scan({
                 formats: NATIVE_FORMATS,
-                lensFacing: LensFacing.Back,
-                resolution: Resolution["1280x720"]
+                autoZoom: true
             });
+            if (session !== this.session) {
+                return;
+            }
+            const barcode = result.barcodes[0];
+            if (barcode) {
+                const code = normalizeBarcode(barcode.rawValue ?? barcode.displayValue ?? "");
+                if (code) {
+                    this.lastCode = code;
+                    this.lastCodeTime = Date.now();
+                    this.options.onDetect(code);
+                }
+            }
+            this.nativeRunning = false;
         }
         catch (error) {
             if (session !== this.session) {
                 return;
             }
             this.nativeRunning = false;
-            if (this.nativeListener) {
-                try {
-                    await this.nativeListener.remove();
-                }
-                catch {
-                    // Rien à faire.
-                }
-                this.nativeListener = null;
-            }
-            this.restoreNativeWebView();
             const message = error instanceof Error && error.message
                 ? error.message
                 : "";
@@ -189,7 +164,7 @@ export class BarcodeScanner {
                 this.options.onError("permission-denied", "Accès à la caméra refusé. Autorisez-le dans les réglages.");
                 return;
             }
-            this.options.onError("camera-error", "Impossible de démarrer le scanner caméra.");
+            this.options.onError("camera-error", message || "Impossible de démarrer le scanner caméra.");
         }
     }
     prepareNativeWebView() {
