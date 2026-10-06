@@ -7,7 +7,7 @@
 // L'interface publique reste volontairement simple :
 // start() / stop() / isRunning / isTorchSupported() / setTorch()
 const CapacitorGlobal = window.Capacitor;
-const NativeBarcodeScanner = (CapacitorGlobal?.Plugins?.["BarcodeScanner"] ?? {});
+const NativeBarcodeScanner = (CapacitorGlobal?.Plugins?.["CapacitorBarcodeScanner"] ?? {});
 // Valeurs identiques à celles du plugin @capacitor-mlkit/barcode-scanning
 const BarcodeFormat = {
     All: 17

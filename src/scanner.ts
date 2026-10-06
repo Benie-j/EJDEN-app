@@ -42,7 +42,7 @@ const CapacitorGlobal: CapacitorGlobal | undefined = (
 ).Capacitor;
 
 const NativeBarcodeScanner = (
-    CapacitorGlobal?.Plugins?.["BarcodeScanner"] ?? {}
+    CapacitorGlobal?.Plugins?.["CapacitorBarcodeScanner"] ?? {}
 ) as NativeScannerPlugin;
 
 // Valeurs identiques à celles du plugin @capacitor-mlkit/barcode-scanning
