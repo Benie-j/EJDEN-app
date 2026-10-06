@@ -44,8 +44,21 @@ jobs:
       - name: Créer le projet Android Capacitor
         run: npx cap add android
 
+
       - name: Synchroniser Capacitor
         run: npx cap sync android
+
+      - name: Configurer les permissions Android EJDEN
+        run: |
+          python3 scripts/configure-android.py
+
+          echo ""
+          echo "=== Vérification AndroidManifest.xml ==="
+          grep -n "android.permission.CAMERA" \
+            android/app/src/main/AndroidManifest.xml
+
+          grep -n "com.google.mlkit.vision.DEPENDENCIES" \
+            android/app/src/main/AndroidManifest.xml
 
       - name: Installer Java
         uses: actions/setup-java@v6
