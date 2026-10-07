@@ -4,9 +4,3 @@ node_modules/
 
 www/
 android/
-
-!native/android/
-!native/android/**
-# Fichiers générés localement
-*.apk
-__pycache__/

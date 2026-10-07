@@ -9,13 +9,9 @@ on:
 permissions:
   contents: read
 
-concurrency:
-  group: ejden-android-build
-  cancel-in-progress: true
-
 jobs:
   build:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     timeout-minutes: 30
 
     steps:
@@ -25,7 +21,7 @@ jobs:
       - name: Installer Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: '22'
+          node-version: 24
           cache: npm
 
       - name: Installer les dépendances
@@ -41,198 +37,33 @@ jobs:
           cp ./*.html www/
           cp -r css js www/
 
-      - name: Créer le projet Android Capacitor
+      - name: Créer le projet Android
         run: npx cap add android
-
 
       - name: Synchroniser Capacitor
         run: npx cap sync android
-
-      - name: Configurer le SDK Android minimum EJDEN
-        run: |
-          sed -i 's/minSdkVersion = 24/minSdkVersion = 26/' android/variables.gradle
-          grep "minSdkVersion" android/variables.gradle
-
-      - name: Configurer les permissions Android EJDEN
-        run: |
-          python3 scripts/configure-android.py
-
-          echo ""
-          echo "=== Vérification AndroidManifest.xml ==="
-          grep -n "android.permission.CAMERA" \
-            android/app/src/main/AndroidManifest.xml
-
-          grep -n "com.google.mlkit.vision.DEPENDENCIES" \
-            android/app/src/main/AndroidManifest.xml
 
       - name: Installer Java
         uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: '21'
-          cache: gradle
 
       - name: Installer Android SDK
         uses: android-actions/setup-android@v4
         with:
           packages: 'platforms;android-36 build-tools;36.0.0'
 
-      - name: Appliquer la personnalisation native EJDEN
-        run: |
-          mkdir -p android/app/src/main/res/drawable
-          mkdir -p android/app/src/main/res/drawable-night
-          mkdir -p android/app/src/main/res/mipmap-anydpi
-          mkdir -p android/app/src/main/res/mipmap-anydpi-v26
-          mkdir -p android/app/src/main/res/values
-          mkdir -p android/app/src/main/res/values-night
+      - name: Configurer Gradle
+        uses: gradle/actions/setup-gradle@v6
 
-          cp native/android/drawable/ejden_logo.xml android/app/src/main/res/drawable/ejden_logo.xml
-          cp native/android/drawable/ejden_icon_foreground.xml android/app/src/main/res/drawable/ejden_icon_foreground.xml
-          cp native/android/drawable/ejden_icon_monochrome.xml android/app/src/main/res/drawable/ejden_icon_monochrome.xml
-          cp native/android/drawable-night/ejden_icon_foreground.xml android/app/src/main/res/drawable-night/ejden_icon_foreground.xml
-
-          cp native/android/mipmap-anydpi/ic_launcher.xml android/app/src/main/res/mipmap-anydpi/ic_launcher.xml
-          cp native/android/mipmap-anydpi/ic_launcher_round.xml android/app/src/main/res/mipmap-anydpi/ic_launcher_round.xml
-          cp native/android/mipmap-anydpi-v26/ic_launcher.xml android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml
-          cp native/android/mipmap-anydpi-v26/ic_launcher_round.xml android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml
-
-          cp native/android/values/ejden_icon_colors.xml android/app/src/main/res/values/ejden_icon_colors.xml
-          cp native/android/values-night/ejden_icon_colors.xml android/app/src/main/res/values-night/ejden_icon_colors.xml
-          cp native/android/values/styles.xml android/app/src/main/res/values/styles.xml
-          cp native/android/values-night/styles.xml android/app/src/main/res/values-night/styles.xml
-
-      - name: Préparer le keystore
-        env:
-          EJDEN_KEYSTORE_BASE64: ${{ secrets.EJDEN_KEYSTORE_BASE64 }}
-        run: |
-          test -n "$EJDEN_KEYSTORE_BASE64"
-          printf '%s' "$EJDEN_KEYSTORE_BASE64" | base64 --decode > android/ejden-upload.jks
-      - name: Vérifier le keystore
-        env:
-          KEYSTORE_PASSWORD: ${{ secrets.EJDEN_KEYSTORE_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.EJDEN_KEY_ALIAS }}
-        run: |
-          test -n "$KEYSTORE_PASSWORD"
-          test -n "$KEY_ALIAS"
-
-          echo "Taille du keystore reconstruit :"
-          wc -c android/ejden-upload.jks
-
-          echo "SHA-256 du keystore reconstruit :"
-          sha256sum android/ejden-upload.jks
-
-          keytool -list \
-            -keystore android/ejden-upload.jks \
-            -alias "$KEY_ALIAS" \
-            -storepass "$KEYSTORE_PASSWORD"
-
-      - name: Configurer la signature Release
-        env:
-          KEYSTORE_PASSWORD: ${{ secrets.EJDEN_KEYSTORE_PASSWORD }}
-          KEY_PASSWORD: ${{ secrets.EJDEN_KEY_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.EJDEN_KEY_ALIAS }}
-        run: |
-          python3 - <<'PY'
-          from pathlib import Path
-
-          path = Path("android/app/build.gradle")
-          text = path.read_text()
-
-          signing_block = """    signingConfigs {
-              release {
-                  storeFile file("../ejden-upload.jks")
-                  storePassword System.getenv("KEYSTORE_PASSWORD")
-                  keyAlias System.getenv("KEY_ALIAS")
-                  keyPassword System.getenv("KEY_PASSWORD")
-              }
-          }
-
-          """
-
-          if "signingConfigs {" not in text:
-              build_types_marker = "    buildTypes {"
-
-              if build_types_marker not in text:
-                  raise SystemExit("Bloc buildTypes introuvable")
-
-              text = text.replace(
-                  build_types_marker,
-                  signing_block + build_types_marker,
-                  1
-              )
-
-          build_types_pos = text.find("    buildTypes {")
-
-          if build_types_pos == -1:
-              raise SystemExit("Bloc buildTypes introuvable")
-
-          release_pos = text.find(
-              "        release {",
-              build_types_pos
-          )
-
-          if release_pos == -1:
-              raise SystemExit(
-                  "Bloc release introuvable dans buildTypes"
-              )
-
-          release_end = release_pos + len("        release {")
-
-          if "signingConfig signingConfigs.release" not in text[
-              release_pos:release_end + 200
-          ]:
-              text = (
-                  text[:release_end]
-                  + "\n            signingConfig signingConfigs.release"
-                  + text[release_end:]
-              )
-
-          path.write_text(text)
-          PY
-
-      - name: Construire APK Release signé
+      - name: Construire APK Debug
         working-directory: android
-        env:
-          KEYSTORE_PASSWORD: ${{ secrets.EJDEN_KEYSTORE_PASSWORD }}
-          KEY_PASSWORD: ${{ secrets.EJDEN_KEY_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.EJDEN_KEY_ALIAS }}
-        run: ./gradlew assembleRelease --no-daemon --stacktrace
+        run: ./gradlew assembleDebug --no-daemon
 
-      - name: Renommer l'APK EJDEN
-        run: |
-          mv android/app/build/outputs/apk/release/app-release.apk \
-             android/app/build/outputs/apk/release/EJDEN.apk
-
-      - name: Vérifier la signature APK
-        run: |
-          APK="android/app/build/outputs/apk/release/EJDEN.apk"
-          APKSIGNER="$ANDROID_HOME/build-tools/36.0.0/apksigner"
-
-          test -f "$APK"
-          test -x "$APKSIGNER"
-
-          echo "=== Vérification de la signature ==="
-          "$APKSIGNER" verify --verbose "$APK"
-
-          echo ""
-          echo "=== Certificat utilisé ==="
-          "$APKSIGNER" verify --print-certs "$APK"
-
-          echo ""
-          echo "=== SHA-256 de l'APK ==="
-          sha256sum "$APK"
-
-      - name: Vérifier l'APK
-        run: |
-          test -s android/app/build/outputs/apk/release/EJDEN.apk
-          ls -lh android/app/build/outputs/apk/release/EJDEN.apk
-
-      - name: Publier l'APK Release
+      - name: Publier l'APK
         uses: actions/upload-artifact@v4
         with:
-          name: EJDEN-release-apk
-          path: android/app/build/outputs/apk/release/EJDEN.apk
+          name: EJDEN-debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
-
-
-

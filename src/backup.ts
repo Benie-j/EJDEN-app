@@ -29,7 +29,11 @@ export const BACKUP_KEYS = [
     "ejden_dashboard_period",
     "ejden_finances_period",
     "ejden_theme",
-    "ejden_lang"
+    "ejden_lang",
+    "ejden_text_size",
+    "ejden_reduce_motion",
+    "ejden_default_threshold",
+    "ejden_allow_credit"
 ] as const;
 
 const KEY_SET = new Set<string>(BACKUP_KEYS);
@@ -250,7 +254,12 @@ export function saveBackupMeta(patch: Partial<BackupMeta>): boolean {
 export function resetAllData(): boolean {
     try {
         for (const key of BACKUP_KEYS) {
-            if (key !== "ejden_theme" && key !== "ejden_lang") {
+            if (
+                key !== "ejden_theme" &&
+                key !== "ejden_lang" &&
+                key !== "ejden_text_size" &&
+                key !== "ejden_reduce_motion"
+            ) {
                 localStorage.removeItem(key);
             }
         }

@@ -28,7 +28,11 @@ export const BACKUP_KEYS = [
     "ejden_dashboard_period",
     "ejden_finances_period",
     "ejden_theme",
-    "ejden_lang"
+    "ejden_lang",
+    "ejden_text_size",
+    "ejden_reduce_motion",
+    "ejden_default_threshold",
+    "ejden_allow_credit"
 ];
 const KEY_SET = new Set(BACKUP_KEYS);
 const VALUE_MAX = 5_000_000;
@@ -187,7 +191,10 @@ export function saveBackupMeta(patch) {
 export function resetAllData() {
     try {
         for (const key of BACKUP_KEYS) {
-            if (key !== "ejden_theme" && key !== "ejden_lang") {
+            if (key !== "ejden_theme" &&
+                key !== "ejden_lang" &&
+                key !== "ejden_text_size" &&
+                key !== "ejden_reduce_motion") {
                 localStorage.removeItem(key);
             }
         }

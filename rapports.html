@@ -21,12 +21,12 @@
     <link rel="stylesheet" href="css/modules.css">
     <link rel="stylesheet" href="css/achats.css">
     <link rel="stylesheet" href="css/document.css">
-    <link rel="stylesheet" href="css/rapports.css">
+    <link rel="stylesheet" href="css/rapports-centre.css">
 </head>
 
 <body>
 
-    <main class="module-page">
+    <main class="module-page rc-app">
 
         <header class="module-header">
             <a href="dashboard.html" class="back-button" aria-label="Retour">
@@ -38,26 +38,58 @@
             </div>
         </header>
 
-        <div class="rp-modes no-print" role="group" aria-label="Type de rapport">
-            <button type="button" class="rp-mode is-active" data-mode="day">Jour</button>
-            <button type="button" class="rp-mode" data-mode="month">Mois</button>
-            <button type="button" class="rp-mode" data-mode="year">Année</button>
-        </div>
+        <section class="rc-controls" aria-label="Période et filtres">
+            <div class="rc-grid2">
+                <div class="field">
+                    <label for="periodSelect">Période</label>
+                    <select id="periodSelect"></select>
+                </div>
+                <div class="field">
+                    <label for="compareSelect">Comparer avec</label>
+                    <select id="compareSelect"></select>
+                </div>
+            </div>
 
-        <div class="rp-nav no-print">
-            <button type="button" class="rp-step" id="prevButton" aria-label="Période précédente">‹</button>
-            <strong id="periodLabel" aria-live="polite"></strong>
-            <button type="button" class="rp-step" id="nextButton" aria-label="Période suivante">›</button>
-        </div>
+            <div class="rc-grid2" id="customRange" hidden>
+                <div class="field"><label for="dateFrom">Du</label><input type="date" id="dateFrom"></div>
+                <div class="field"><label for="dateTo">Au</label><input type="date" id="dateTo"></div>
+            </div>
 
-        <div class="rp-actions no-print">
-            <button type="button" class="primary-button" id="printButton">Imprimer / PDF</button>
-            <button type="button" class="secondary-button" id="shareButton">Partager</button>
-        </div>
+            <div class="rc-grid2" id="customCompare" hidden>
+                <div class="field"><label for="cmpFrom">Comparer du</label><input type="date" id="cmpFrom"></div>
+                <div class="field"><label for="cmpTo">Au</label><input type="date" id="cmpTo"></div>
+            </div>
 
-        <article class="rp-sheet" id="report"></article>
+            <button type="button" class="secondary-button rc-filter-toggle" id="filtersToggle" aria-expanded="false">Filtres</button>
+
+            <div class="rc-filters" id="filtersPanel" hidden>
+                <div class="field"><label for="fProduct">Produit</label><select id="fProduct"></select></div>
+                <div class="field"><label for="fCategory">Catégorie</label><select id="fCategory"></select></div>
+                <div class="field"><label for="fClient">Client</label><select id="fClient"></select></div>
+                <div class="field"><label for="fMethod">Moyen de paiement</label><select id="fMethod"></select></div>
+                <div class="field"><label for="fStatus">Statut / type</label><select id="fStatus"></select></div>
+                <div class="field"><label for="fUser">Utilisateur</label><select id="fUser" disabled><option>Utilisateur principal</option></select></div>
+                <button type="button" class="secondary-button" id="resetFilters">Réinitialiser les filtres</button>
+            </div>
+
+            <p class="rc-period" id="periodInfo" aria-live="polite"></p>
+        </section>
+
+        <nav class="rc-tabs" id="tabs" role="tablist" aria-label="Sections du module">
+            <button type="button" class="rc-tab is-active" data-tab="overview" role="tab">Vue d'ensemble</button>
+            <button type="button" class="rc-tab" data-tab="reports" role="tab">Rapports</button>
+            <button type="button" class="rc-tab" data-tab="analyses" role="tab">Analyses</button>
+            <button type="button" class="rc-tab" data-tab="custom" role="tab">Personnalisé</button>
+            <button type="button" class="rc-tab" data-tab="export" role="tab">Export</button>
+        </nav>
+
+        <div class="rc-chips" id="subtabs"></div>
+
+        <div class="rc-view" id="view" aria-live="polite"></div>
 
     </main>
+
+    <div class="rc-print" id="printArea" hidden></div>
 
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
 

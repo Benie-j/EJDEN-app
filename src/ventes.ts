@@ -13,6 +13,7 @@ import {
     addClient,
     newId
 } from "./storage.js";
+import { getAllowCredit } from "./preferences.js";
 import {
     BarcodeScanner,
     normalizeBarcode,
@@ -83,6 +84,16 @@ const closeCheckoutButton = $<HTMLButtonElement>("#closeCheckoutButton");
 const checkoutPanelTotal = $<HTMLElement>("#checkoutPanelTotal");
 const paymentMethodButtons =
     document.querySelectorAll<HTMLButtonElement>(".payment-method");
+// Réglage « Ventes à crédit » (Paramètres > Ventes) : bouton masqué si désactivé.
+if (!getAllowCredit()) {
+    paymentMethodButtons.forEach((button) => {
+        if (button.dataset.paymentMethod === "credit") {
+            button.hidden = true;
+            button.style.setProperty("display", "none");
+        }
+    });
+}
+
 const borrowerSection = $<HTMLElement>("#borrowerSection");
 const borrowerName = $<HTMLInputElement>("#borrowerName");
 const borrowerClient = $<HTMLSelectElement>("#borrowerClient");

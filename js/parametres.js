@@ -3,8 +3,8 @@
 // et informations de l'utilisateur (salutation seulement, jamais les reçus).
 import { DEFAULT_INVOICE_TERMS, DEFAULT_QUOTE_TERMS, SHOP_LIMITS, USER_LIMITS, getDocumentSettings, getShopSettings, getUserProfile, isValidEmail, isValidPhone, saveDocumentSettings, saveShopSettings, saveUserProfile } from "./storage.js";
 import { greetingFor } from "./greeting.js";
-import { resetAllData } from "./backup.js";
-import { APP_VERSION, getLanguage, getThemeChoice, saveLanguage, saveThemeChoice } from "./preferences.js";
+import { getBackupMeta, resetAllData } from "./backup.js";
+import { APP_VERSION, getAllowCredit, getDefaultThreshold, getLanguage, getReduceMotion, getTextSize, getThemeChoice, saveAllowCredit, saveDefaultThreshold, saveLanguage, saveReduceMotion, saveTextSize, saveThemeChoice } from "./preferences.js";
 import { preparePhoto } from "./photo.js";
 const form = document.querySelector("#shopForm");
 const nameInput = document.querySelector("#shopName");
@@ -292,4 +292,110 @@ if (resetControl) {
     box.append(question, yes, no);
     resetControl.append(start, box);
 }
+/* ---------- Navigation par catégories ---------- */
+const hubNav = document.querySelector("#hub");
+const backLink = document.querySelector("#backLink");
+const pageTitle = document.querySelector("#pageTitle");
+const pageKicker = document.querySelector("#pageKicker");
+const settingsPanels = document.querySelectorAll(".settings-panel");
+function showPanelFromHash() {
+    const id = window.location.hash.replace("#", "");
+    const panel = id === "" ? null : document.getElementById(`panel-${id}`);
+    if (hubNav) {
+        hubNav.hidden = panel !== null;
+    }
+    for (const item of settingsPanels) {
+        item.hidden = item !== panel;
+    }
+    if (pageTitle) {
+        pageTitle.textContent = panel?.dataset.title ?? "Paramètres";
+    }
+    if (pageKicker) {
+        pageKicker.textContent = panel ? "PARAMÈTRES" : "CONFIGURATION";
+    }
+    window.scrollTo(0, 0);
+}
+window.addEventListener("hashchange", showPanelFromHash);
+showPanelFromHash();
+// Dans une catégorie, la flèche retour ramène à la liste des catégories.
+backLink?.addEventListener("click", (event) => {
+    if (window.location.hash !== "") {
+        event.preventDefault();
+        window.history.replaceState(null, "", window.location.pathname);
+        showPanelFromHash();
+    }
+});
+/* ---------- Réglages réels : ventes, stock, apparence ---------- */
+function bindSwitch(id, read, write, message) {
+    const node = document.querySelector(`#${id}`);
+    if (!node) {
+        return;
+    }
+    node.setAttribute("aria-checked", String(read()));
+    node.addEventListener("click", () => {
+        const next = node.getAttribute("aria-checked") !== "true";
+        if (write(next)) {
+            node.setAttribute("aria-checked", String(next));
+            showToast(message);
+        }
+        else {
+            showToast("Impossible d'enregistrer ce réglage.");
+        }
+    });
+}
+bindSwitch("allowCreditSwitch", getAllowCredit, saveAllowCredit, "Réglage enregistré.");
+bindSwitch("reduceMotionSwitch", getReduceMotion, saveReduceMotion, "Réglage enregistré.");
+const sizeButtons = document.querySelectorAll("[data-size-choice]");
+function renderTextSize() {
+    const current = getTextSize();
+    for (const button of sizeButtons) {
+        button.setAttribute("aria-checked", String(button.dataset.sizeChoice === current));
+    }
+}
+for (const button of sizeButtons) {
+    button.addEventListener("click", () => {
+        if (saveTextSize(button.dataset.sizeChoice)) {
+            renderTextSize();
+            showToast("Taille du texte enregistrée.");
+        }
+        else {
+            showToast("Impossible d'enregistrer ce réglage.");
+        }
+    });
+}
+renderTextSize();
+const thresholdInput = document.querySelector("#defaultThreshold");
+if (thresholdInput) {
+    thresholdInput.value = getDefaultThreshold() > 0 ? String(getDefaultThreshold()) : "";
+    thresholdInput.addEventListener("change", () => {
+        const raw = thresholdInput.value.trim();
+        const value = raw === "" ? 0 : Number(raw);
+        if (saveDefaultThreshold(value)) {
+            showToast("Seuil enregistré.");
+        }
+        else {
+            showToast("Seuil invalide : entrez un nombre entier.");
+            thresholdInput.value = getDefaultThreshold() > 0 ? String(getDefaultThreshold()) : "";
+        }
+    });
+}
+/* ---------- Équipe et sauvegarde : informations réelles ---------- */
+const teamSelf = document.querySelector("#teamSelf");
+if (teamSelf) {
+    const profile = getUserProfile();
+    const name = `${profile.firstName} ${profile.lastName}`.trim();
+    teamSelf.textContent = name === "" ? "Vous" : name;
+}
+function dateLabel(iso) {
+    return iso === null
+        ? "Jamais"
+        : new Date(iso).toLocaleString("fr-FR", { dateStyle: "medium", timeStyle: "short" });
+}
+const lastFileNode = document.querySelector("#lastFileBackup");
+const lastDriveNode = document.querySelector("#lastDriveBackup");
+const backupMeta = getBackupMeta();
+if (lastFileNode)
+    lastFileNode.textContent = dateLabel(backupMeta.lastFile);
+if (lastDriveNode)
+    lastDriveNode.textContent = dateLabel(backupMeta.lastDrive);
 //# sourceMappingURL=parametres.js.map

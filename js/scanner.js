@@ -7,12 +7,20 @@
 // L'interface publique reste volontairement simple :
 // start() / stop() / isRunning / isTorchSupported() / setTorch()
 const CapacitorGlobal = window.Capacitor;
-const NativeBarcodeScanner = (CapacitorGlobal?.Plugins?.["CapacitorBarcodeScanner"] ?? {});
+const NativeBarcodeScanner = (CapacitorGlobal?.Plugins?.["BarcodeScanner"] ?? {});
 // Valeurs identiques à celles du plugin @capacitor-mlkit/barcode-scanning
 const BarcodeFormat = {
-    All: 17
+    Ean13: "EAN_13",
+    Ean8: "EAN_8",
+    UpcA: "UPC_A",
+    UpcE: "UPC_E",
+    Code128: "CODE_128",
+    Code39: "CODE_39",
+    Itf: "ITF",
+    QrCode: "QR_CODE"
 };
-const LensFacing = { Back: 1 };
+const LensFacing = { Front: 0, Back: 1 };
+const Resolution = { "1280x720": 1 };
 const PREFERRED_FORMATS = [
     "ean_13",
     "ean_8",
@@ -22,6 +30,16 @@ const PREFERRED_FORMATS = [
     "code_39",
     "itf",
     "qr_code"
+];
+const NATIVE_FORMATS = [
+    BarcodeFormat.Ean13,
+    BarcodeFormat.Ean8,
+    BarcodeFormat.UpcA,
+    BarcodeFormat.UpcE,
+    BarcodeFormat.Code128,
+    BarcodeFormat.Code39,
+    BarcodeFormat.Itf,
+    BarcodeFormat.QrCode
 ];
 const DETECTION_INTERVAL = 150;
 const SAME_CODE_COOLDOWN = 1800;
@@ -87,6 +105,12 @@ export class BarcodeScanner {
             this.nativeListener = null;
         }
         if (this.nativeRunning) {
+            try {
+                await NativeBarcodeScanner.stopScan();
+            }
+            catch {
+                // Le scanner était peut-être déjà arrêté.
+            }
             this.nativeRunning = false;
         }
         this.restoreNativeWebView();
@@ -96,34 +120,67 @@ export class BarcodeScanner {
     ======================================== */
     async startNative(session) {
         try {
-            if (session !== this.session) {
+            const supported = await NativeBarcodeScanner.isSupported();
+            if (!supported.supported) {
+                this.options.onError("no-camera", "Aucune caméra compatible avec le scanner n'a été trouvée.");
                 return;
             }
-            this.nativeRunning = true;
-            const result = await NativeBarcodeScanner.scanBarcode({
-                hint: BarcodeFormat.All,
-                cameraDirection: LensFacing.Back,
-                scanInstructions: "Placez le code-barres dans le cadre",
-                android: {
-                    scanningLibrary: "zxing"
+            const permission = await NativeBarcodeScanner.checkPermissions();
+            if (permission.camera !== "granted") {
+                const requested = await NativeBarcodeScanner.requestPermissions();
+                if (requested.camera !== "granted") {
+                    this.options.onError("permission-denied", "Accès à la caméra refusé. Autorisez-le dans les réglages.");
+                    return;
                 }
-            });
+            }
             if (session !== this.session) {
                 return;
             }
-            const code = normalizeBarcode(result.ScanResult ?? "");
-            if (code) {
-                this.lastCode = code;
-                this.lastCodeTime = Date.now();
-                this.options.onDetect(code);
-            }
-            this.nativeRunning = false;
+            this.prepareNativeWebView();
+            this.nativeListener =
+                await NativeBarcodeScanner.addListener("barcodesScanned", async (event) => {
+                    if (session !== this.session || !this.nativeRunning) {
+                        return;
+                    }
+                    const barcode = event.barcodes[0];
+                    if (!barcode) {
+                        return;
+                    }
+                    const code = normalizeBarcode(barcode.rawValue ?? barcode.displayValue ?? "");
+                    if (!code) {
+                        return;
+                    }
+                    const now = Date.now();
+                    if (code === this.lastCode &&
+                        now - this.lastCodeTime < SAME_CODE_COOLDOWN) {
+                        return;
+                    }
+                    this.lastCode = code;
+                    this.lastCodeTime = now;
+                    this.options.onDetect(code);
+                });
+            this.nativeRunning = true;
+            await NativeBarcodeScanner.startScan({
+                formats: NATIVE_FORMATS,
+                lensFacing: LensFacing.Back,
+                resolution: Resolution["1280x720"]
+            });
         }
         catch (error) {
             if (session !== this.session) {
                 return;
             }
             this.nativeRunning = false;
+            if (this.nativeListener) {
+                try {
+                    await this.nativeListener.remove();
+                }
+                catch {
+                    // Rien à faire.
+                }
+                this.nativeListener = null;
+            }
+            this.restoreNativeWebView();
             const message = error instanceof Error && error.message
                 ? error.message
                 : "";
@@ -132,7 +189,7 @@ export class BarcodeScanner {
                 this.options.onError("permission-denied", "Accès à la caméra refusé. Autorisez-le dans les réglages.");
                 return;
             }
-            this.options.onError("camera-error", message || "Impossible de démarrer le scanner caméra.");
+            this.options.onError("camera-error", "Impossible de démarrer le scanner caméra.");
         }
     }
     prepareNativeWebView() {
@@ -246,7 +303,21 @@ export class BarcodeScanner {
     }
     async setTorch(on) {
         if (isNativePlatform()) {
-            return false;
+            if (!this.nativeRunning) {
+                return false;
+            }
+            try {
+                if (on) {
+                    await NativeBarcodeScanner.enableTorch();
+                }
+                else {
+                    await NativeBarcodeScanner.disableTorch();
+                }
+                return true;
+            }
+            catch {
+                return false;
+            }
         }
         const track = this.stream?.getVideoTracks()[0];
         if (!track || !this.isTorchSupported()) {

@@ -3,6 +3,7 @@ import { setupCategoryField } from "./category-field.js";
 import { setupBarcodeScanner } from "./barcode-field.js";
 import { preparePhoto } from "./photo.js";
 import { captureProductPhoto } from "./photo-capture.js";
+import { getDefaultThreshold } from "./preferences.js";
 /* =========================================================
    Éléments du formulaire
    ========================================================= */
@@ -18,6 +19,10 @@ const salePrice = document.querySelector("#salePrice");
 // L'identifiant dans le HTML est "initialStock" (et non "stock").
 const initialStock = document.querySelector("#initialStock");
 const stockThreshold = document.querySelector("#stockThreshold");
+// Seuil d'alerte proposé par défaut (Paramètres > Produits & stock).
+if (stockThreshold && stockThreshold.value === "" && getDefaultThreshold() > 0) {
+    stockThreshold.value = String(getDefaultThreshold());
+}
 const barcode = document.querySelector("#barcode");
 const scanBarcode = document.querySelector("#scanBarcode");
 const notification = document.querySelector("#notification");

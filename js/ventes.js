@@ -1,4 +1,5 @@
 import { MODULE_LIMITS, getProducts, findProductByBarcode, recordSale, getClients, getClientDebt, addClient, newId } from "./storage.js";
+import { getAllowCredit } from "./preferences.js";
 import { BarcodeScanner, normalizeBarcode } from "./scanner.js";
 let products = [];
 let cart = [];
@@ -45,6 +46,15 @@ const checkoutPanel = $("#checkoutPanel");
 const closeCheckoutButton = $("#closeCheckoutButton");
 const checkoutPanelTotal = $("#checkoutPanelTotal");
 const paymentMethodButtons = document.querySelectorAll(".payment-method");
+// Réglage « Ventes à crédit » (Paramètres > Ventes) : bouton masqué si désactivé.
+if (!getAllowCredit()) {
+    paymentMethodButtons.forEach((button) => {
+        if (button.dataset.paymentMethod === "credit") {
+            button.hidden = true;
+            button.style.setProperty("display", "none");
+        }
+    });
+}
 const borrowerSection = $("#borrowerSection");
 const borrowerName = $("#borrowerName");
 const borrowerClient = $("#borrowerClient");

@@ -30,7 +30,8 @@
             <a
                 href="dashboard.html"
                 class="back-button"
-                aria-label="Retour au tableau de bord"
+                id="backLink"
+                aria-label="Retour"
             >
                 <svg viewBox="0 0 24 24" aria-hidden="true">
                     <path d="M15 18l-6-6 6-6"></path>
@@ -38,12 +39,61 @@
             </a>
 
             <div class="settings-title">
-                <span>CONFIGURATION</span>
-                <h1>Paramètres</h1>
+                <span id="pageKicker">CONFIGURATION</span>
+                <h1 id="pageTitle">Paramètres</h1>
             </div>
 
         </header>
 
+        <nav class="hub" id="hub" aria-label="Catégories de paramètres">
+            <a class="hub-row" href="#mon-espace">
+                <span class="hub-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10l9-7 9 7v10a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"></path></svg></span>
+                <span class="hub-text"><strong>Mon espace</strong><small>Activité, coordonnées et documents</small></span>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg>
+            </a>
+            <a class="hub-row" href="#equipe">
+                <span class="hub-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.2"></circle><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"></path><path d="M16 5.2a3.2 3.2 0 0 1 0 5.6M18 14.4c1.8.8 3 2.6 3 4.6"></path></svg></span>
+                <span class="hub-text"><strong>Équipe & accès</strong><small>Membres, rôles et appareils</small></span>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg>
+            </a>
+            <a class="hub-row" href="#ventes">
+                <span class="hub-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 7h14l-1.5 8H8z"></path><path d="M6 7L5 3H2"></path><circle cx="9" cy="19" r="1.4"></circle><circle cx="17" cy="19" r="1.4"></circle></svg></span>
+                <span class="hub-text"><strong>Ventes</strong><small>Paiements et crédits</small></span>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg>
+            </a>
+            <a class="hub-row" href="#stock">
+                <span class="hub-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 8l-9-5-9 5 9 5z"></path><path d="M3 8v8l9 5 9-5V8"></path><path d="M12 13v8"></path></svg></span>
+                <span class="hub-text"><strong>Produits & stock</strong><small>Alertes, codes-barres et photos</small></span>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg>
+            </a>
+            <a class="hub-row" href="#clients">
+                <span class="hub-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"></circle><path d="M5 20c0-3.9 3.1-7 7-7s7 3.1 7 7"></path></svg></span>
+                <span class="hub-text"><strong>Clients</strong><small>Fiches et historique</small></span>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg>
+            </a>
+            <a class="hub-row" href="#apparence">
+                <span class="hub-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg></span>
+                <span class="hub-text"><strong>Apparence</strong><small>Thème, texte et animations</small></span>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg>
+            </a>
+            <a class="hub-row" href="#donnees">
+                <span class="hub-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="6" rx="8" ry="3"></ellipse><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6"></path><path d="M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"></path></svg></span>
+                <span class="hub-text"><strong>Données & sauvegarde</strong><small>Sauvegarde, restauration et export</small></span>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg>
+            </a>
+            <a class="hub-row" href="#securite">
+                <span class="hub-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.2 8.2-8 9-4.8-.8-8-4.5-8-9V6z"></path></svg></span>
+                <span class="hub-text"><strong>Sécurité</strong><small>Protection et accès</small></span>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg>
+            </a>
+            <a class="hub-row" href="#apropos">
+                <span class="hub-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5M12 8h.01"></path></svg></span>
+                <span class="hub-text"><strong>À propos</strong><small>Version, aide et confidentialité</small></span>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg>
+            </a>
+        </nav>
+
+        <div class="settings-panel" id="panel-mon-espace" data-title="Mon espace" hidden>
         <form id="shopForm" autocomplete="off" novalidate>
 
             <!-- ENTREPRISE : utilisée sur les reçus -->
@@ -236,29 +286,101 @@
 
         </form>
 
-        <!-- APPARENCE -->
         <section class="settings-section">
+            <h2>Devise</h2>
+            <p class="settings-help">Tous les montants sont en franc CFA (FCFA). Une autre devise n'est pas encore disponible.</p>
+        </section>
+        </div>
 
-            <h2>Apparence</h2>
+        <div class="settings-panel" id="panel-equipe" data-title="Équipe & accès" hidden>
+        <section class="settings-section">
+            <h2>Utilisateurs de cet espace</h2>
+            <p class="settings-help">Aujourd'hui, EJDEN fonctionne pour une seule personne sur cet appareil. Le travail en équipe demandera des comptes et un espace en ligne : il n'est pas encore disponible.</p>
+            <div class="soon-row"><span><strong id="teamSelf">Vous</strong><small>Utilisateur de cet appareil</small></span><em class="soon-badge is-ok">Actif</em></div>
+                <div class="soon-row"><span><strong>Membres de l'équipe</strong><small>Ajouter et retirer des personnes</small></span><em class="soon-badge">Bientôt</em></div>
+                <div class="soon-row"><span><strong>Inviter un membre</strong><small>Envoyer une invitation</small></span><em class="soon-badge">Bientôt</em></div>
+        </section>
+        <section class="settings-section">
+            <h2>Rôles prévus</h2>
+            <p class="settings-help">Aperçu des rôles à venir. Aucune permission n'est appliquée pour le moment.</p>
+            <div class="role-list">
+                <div class="role"><strong>Administrateur</strong><small>Gère l'activité, l'équipe et toutes les données.</small></div>
+                <div class="role"><strong>Gérant</strong><small>Suit les ventes, le stock et les finances.</small></div>
+                <div class="role"><strong>Vendeur</strong><small>Enregistre les ventes et consulte les produits.</small></div>
+                <div class="role"><strong>Gestionnaire de stock</strong><small>Gère les produits, achats et mouvements de stock.</small></div>
+            </div>
+        </section>
+        <section class="settings-section">
+            <h2>Accès</h2>
+                <div class="soon-row"><span><strong>Permissions</strong><small>Choisir ce que chaque rôle peut faire</small></span><em class="soon-badge">Bientôt</em></div>
+                <div class="soon-row"><span><strong>Appareils connectés</strong><small>Voir les appareils autorisés</small></span><em class="soon-badge">Bientôt</em></div>
+                <div class="soon-row"><span><strong>Sessions</strong><small>Fermer un accès à distance</small></span><em class="soon-badge">Bientôt</em></div>
+        </section>
+        </div>
 
-            <p class="settings-help">
-                Le thème sombre est activé par défaut sur tous les appareils.
-                « Automatique » suit le réglage du téléphone.
-            </p>
+        <div class="settings-panel" id="panel-ventes" data-title="Ventes" hidden>
+        <section class="settings-section">
+            <h2>Paiements</h2>
+                <div class="switch-row"><span><strong>Ventes à crédit</strong><small>Propose « Crédit » comme moyen de paiement à la caisse. Les crédits déjà enregistrés restent visibles.</small></span><button type="button" class="switch" id="allowCreditSwitch" role="switch" aria-checked="false" aria-label="Ventes à crédit"></button></div>
+            <p class="settings-help">Moyens de paiement disponibles : espèces, Mobile Money, carte, autre et crédit.</p>
+        </section>
+        <section class="settings-section">
+            <h2>Raccourcis</h2>
+                <a class="settings-link" href="historique-ventes.html"><span><strong>Historique des ventes</strong><small>Consulter et partager les reçus</small></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></a>
+                <a class="settings-link" href="credits.html"><span><strong>Crédits</strong><small>Sommes à encaisser</small></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></a>
+        </section>
+        </div>
 
+        <div class="settings-panel" id="panel-stock" data-title="Produits & stock" hidden>
+        <section class="settings-section">
+            <h2>Alertes de stock faible</h2>
+            <p class="settings-help">Seuil proposé pour chaque nouveau produit. Vous pouvez le modifier produit par produit. Laissez vide pour ne rien proposer.</p>
+            <div class="field">
+                <label for="defaultThreshold">Seuil par défaut</label>
+                <input type="number" id="defaultThreshold" min="0" max="1000000" step="1" inputmode="numeric" placeholder="Ex. 5">
+            </div>
+        </section>
+        <section class="settings-section">
+            <h2>Raccourcis</h2>
+                <a class="settings-link" href="produits.html"><span><strong>Produits</strong><small>Catalogue, photos et codes-barres</small></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></a>
+                <a class="settings-link" href="stock.html"><span><strong>Stock</strong><small>Niveaux et mouvements</small></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></a>
+                <a class="settings-link" href="notifications.html"><span><strong>Notifications</strong><small>Choisir les alertes à recevoir</small></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></a>
+        </section>
+        </div>
+
+        <div class="settings-panel" id="panel-clients" data-title="Clients" hidden>
+        <section class="settings-section">
+            <h2>Clients</h2>
+            <p class="settings-help">Les informations et l'historique d'un client se consultent dans sa fiche.</p>
+                <a class="settings-link" href="clients.html"><span><strong>Fiches clients</strong><small>Coordonnées, achats et dettes</small></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></a>
+                <a class="settings-link" href="credits.html"><span><strong>Crédits</strong><small>Sommes à encaisser</small></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></a>
+        </section>
+        </div>
+
+        <div class="settings-panel" id="panel-apparence" data-title="Apparence" hidden>
+        <section class="settings-section">
+            <h2>Thème</h2>
+            <p class="settings-help">Le thème sombre est activé par défaut. « Automatique » suit le réglage du téléphone.</p>
             <div class="choice-group" id="themeChoices" role="radiogroup" aria-label="Thème">
                 <button type="button" class="choice" role="radio" data-theme-choice="dark">Sombre</button>
                 <button type="button" class="choice" role="radio" data-theme-choice="light">Clair</button>
                 <button type="button" class="choice" role="radio" data-theme-choice="auto">Automatique</button>
             </div>
-
         </section>
-
-        <!-- LANGUE -->
         <section class="settings-section">
-
+            <h2>Taille du texte</h2>
+            <div class="choice-group" id="textSizeChoices" role="radiogroup" aria-label="Taille du texte">
+                <button type="button" class="choice" role="radio" data-size-choice="normal">Normal</button>
+                <button type="button" class="choice" role="radio" data-size-choice="large">Grand</button>
+                <button type="button" class="choice" role="radio" data-size-choice="xlarge">Très grand</button>
+            </div>
+        </section>
+        <section class="settings-section">
+            <h2>Animations</h2>
+                <div class="switch-row"><span><strong>Réduire les animations</strong><small>Supprime les transitions et mouvements de l'interface.</small></span><button type="button" class="switch" id="reduceMotionSwitch" role="switch" aria-checked="false" aria-label="Réduire les animations"></button></div>
+        </section>
+        <section class="settings-section">
             <h2>Langue</h2>
-
             <div class="field">
                 <label for="languageSelect">Langue de l'application</label>
                 <select id="languageSelect">
@@ -266,51 +388,60 @@
                     <option value="en" disabled>English (bientôt)</option>
                 </select>
             </div>
-
-            <p class="settings-help">Devise : franc CFA (FCFA).</p>
-
         </section>
+        </div>
 
-        <!-- ACCÈS RAPIDE -->
+        <div class="settings-panel" id="panel-donnees" data-title="Données & sauvegarde" hidden>
         <section class="settings-section">
-
-            <h2>Application</h2>
-
-            <a class="settings-link" href="notifications.html">
-                <span><strong>Notifications</strong><small>Types d'alertes à recevoir</small></span>
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg>
-            </a>
-
-            <a class="settings-link" href="sauvegarde.html">
-                <span><strong>Sauvegarde</strong><small>Google Drive et fichier</small></span>
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg>
-            </a>
-
+            <h2>Vos données vous appartiennent</h2>
+            <p class="settings-help">EJDEN est pensée local-first : vos données sont stockées sur cet appareil et l'application fonctionne sans connexion. Rien n'est envoyé à EJDEN. La sauvegarde Google Drive est facultative et se fait vers votre propre compte.</p>
         </section>
-
-        <!-- DONNÉES -->
         <section class="settings-section">
-
-            <h2>Données</h2>
-
-            <p class="settings-help">
-                Toutes vos données sont stockées sur cet appareil.
-                Faites une sauvegarde avant de les effacer : cette action est définitive.
-            </p>
-
+            <h2>Dernière sauvegarde</h2>
+            <div class="info-row"><span>Fichier de sauvegarde</span><strong id="lastFileBackup">—</strong></div>
+            <div class="info-row"><span>Google Drive</span><strong id="lastDriveBackup">—</strong></div>
+                <a class="settings-link" href="sauvegarde.html"><span><strong>Sauvegarder, restaurer, exporter, importer</strong><small>Fichier de sauvegarde et Google Drive</small></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg></a>
+        </section>
+        <section class="settings-section">
+            <h2>Supprimer toutes les données</h2>
+            <p class="settings-help">Efface les produits, ventes, clients et finances de cet appareil. Cette action est définitive : faites une sauvegarde avant.</p>
             <div id="resetControl"></div>
-
         </section>
+        </div>
 
-        <!-- À PROPOS -->
+        <div class="settings-panel" id="panel-securite" data-title="Sécurité" hidden>
         <section class="settings-section">
-
-            <h2>À propos</h2>
-
-            <p class="settings-about">EJDEN · gestion de boutique</p>
-            <p class="settings-about" id="appVersion"></p>
-
+            <h2>Protection de l'application</h2>
+            <p class="settings-help">Ces protections ne sont pas encore disponibles : l'application s'ouvre sans code. En attendant, verrouillez l'écran de votre téléphone.</p>
+                <div class="soon-row"><span><strong>Verrouillage de l'application</strong><small>Demander un code à l'ouverture</small></span><em class="soon-badge">Bientôt</em></div>
+                <div class="soon-row"><span><strong>Code PIN</strong><small>Choisir un code à 4 chiffres ou plus</small></span><em class="soon-badge">Bientôt</em></div>
+                <div class="soon-row"><span><strong>Biométrie</strong><small>Empreinte ou reconnaissance du visage</small></span><em class="soon-badge">Bientôt</em></div>
         </section>
+        <section class="settings-section">
+            <h2>Accès</h2>
+                <div class="soon-row"><span><strong>Sessions</strong><small>Voir et fermer les accès</small></span><em class="soon-badge">Bientôt</em></div>
+                <div class="soon-row"><span><strong>Appareils connectés</strong><small>Gérer les appareils autorisés</small></span><em class="soon-badge">Bientôt</em></div>
+        </section>
+        </div>
+
+        <div class="settings-panel" id="panel-apropos" data-title="À propos d'EJDEN" hidden>
+        <section class="settings-section">
+            <h2>EJDEN</h2>
+            <p class="settings-about">Gestion de boutique pour commerçants, artisans et petites entreprises.</p>
+            <div class="info-row"><span>Version</span><strong id="appVersion"></strong></div>
+        </section>
+        <section class="settings-section">
+            <h2>Confidentialité</h2>
+            <p class="settings-help">Vos données commerciales restent sur votre appareil. EJDEN ne les collecte pas. Si vous activez la sauvegarde Google Drive, une copie est placée dans l'espace privé de l'application de votre propre compte Google.</p>
+        </section>
+        <section class="settings-section">
+            <h2>Assistance</h2>
+                <div class="soon-row"><span><strong>Aide</strong><small>Guide d'utilisation</small></span><em class="soon-badge">Bientôt</em></div>
+                <div class="soon-row"><span><strong>Contacter EJDEN</strong><small>Poser une question</small></span><em class="soon-badge">Bientôt</em></div>
+                <div class="soon-row"><span><strong>Signaler un problème</strong><small>Décrire un souci rencontré</small></span><em class="soon-badge">Bientôt</em></div>
+                <div class="soon-row"><span><strong>Conditions d'utilisation</strong><small>Règles d'usage de l'application</small></span><em class="soon-badge">Bientôt</em></div>
+        </section>
+        </div>
 
     </main>
 

@@ -16,21 +16,27 @@ interface NativeBarcode {
     displayValue?: string;
 }
 
-interface NativeScanResult {
-    ScanResult?: string;
+interface NativeScanEvent {
+    barcodes: NativeBarcode[];
 }
 
 interface NativeScannerPlugin {
-    scanBarcode(options: {
-        hint: number;
-        cameraDirection: number;
-        scanInstructions?: string;
-        android?: {
-            scanningLibrary: "zxing" | "mlkit";
-        };
-    }): Promise<NativeScanResult>;
+    isSupported(): Promise<{ supported: boolean }>;
+    checkPermissions(): Promise<{ camera: string }>;
+    requestPermissions(): Promise<{ camera: string }>;
+    addListener(
+        eventName: "barcodesScanned",
+        listener: (event: NativeScanEvent) => void | Promise<void>
+    ): Promise<{ remove: () => Promise<void> }>;
+    startScan(options: {
+        formats: string[];
+        lensFacing: number;
+        resolution: number;
+    }): Promise<void>;
+    stopScan(): Promise<void>;
+    enableTorch(): Promise<void>;
+    disableTorch(): Promise<void>;
 }
-
 
 interface CapacitorGlobal {
     isNativePlatform(): boolean;
@@ -42,17 +48,23 @@ const CapacitorGlobal: CapacitorGlobal | undefined = (
 ).Capacitor;
 
 const NativeBarcodeScanner = (
-    CapacitorGlobal?.Plugins?.["CapacitorBarcodeScanner"] ?? {}
+    CapacitorGlobal?.Plugins?.["BarcodeScanner"] ?? {}
 ) as NativeScannerPlugin;
 
 // Valeurs identiques à celles du plugin @capacitor-mlkit/barcode-scanning
 const BarcodeFormat = {
-    All: 17
+    Ean13: "EAN_13",
+    Ean8: "EAN_8",
+    UpcA: "UPC_A",
+    UpcE: "UPC_E",
+    Code128: "CODE_128",
+    Code39: "CODE_39",
+    Itf: "ITF",
+    QrCode: "QR_CODE"
 } as const;
 
-
-const LensFacing = { Back: 1 } as const;
-
+const LensFacing = { Front: 0, Back: 1 } as const;
+const Resolution = { "1280x720": 1 } as const;
 
 export type ScannerErrorCode =
     | "unsupported"
@@ -95,7 +107,16 @@ const PREFERRED_FORMATS = [
     "qr_code"
 ];
 
-
+const NATIVE_FORMATS: string[] = [
+    BarcodeFormat.Ean13,
+    BarcodeFormat.Ean8,
+    BarcodeFormat.UpcA,
+    BarcodeFormat.UpcE,
+    BarcodeFormat.Code128,
+    BarcodeFormat.Code39,
+    BarcodeFormat.Itf,
+    BarcodeFormat.QrCode
+];
 
 const DETECTION_INTERVAL = 150;
 const SAME_CODE_COOLDOWN = 1800;
@@ -188,6 +209,12 @@ export class BarcodeScanner {
         }
 
         if (this.nativeRunning) {
+            try {
+                await NativeBarcodeScanner.stopScan();
+            } catch {
+                // Le scanner était peut-être déjà arrêté.
+            }
+
             this.nativeRunning = false;
         }
 
@@ -200,42 +227,100 @@ export class BarcodeScanner {
 
     private async startNative(session: number): Promise<void> {
         try {
+            const supported = await NativeBarcodeScanner.isSupported();
+
+            if (!supported.supported) {
+                this.options.onError(
+                    "no-camera",
+                    "Aucune caméra compatible avec le scanner n'a été trouvée."
+                );
+                return;
+            }
+
+            const permission = await NativeBarcodeScanner.checkPermissions();
+
+            if (permission.camera !== "granted") {
+                const requested =
+                    await NativeBarcodeScanner.requestPermissions();
+
+                if (requested.camera !== "granted") {
+                    this.options.onError(
+                        "permission-denied",
+                        "Accès à la caméra refusé. Autorisez-le dans les réglages."
+                    );
+                    return;
+                }
+            }
+
             if (session !== this.session) {
                 return;
             }
+
+            this.prepareNativeWebView();
+
+            this.nativeListener =
+                await NativeBarcodeScanner.addListener(
+                    "barcodesScanned",
+                    async (event: NativeScanEvent) => {
+                        if (session !== this.session || !this.nativeRunning) {
+                            return;
+                        }
+
+                        const barcode = event.barcodes[0];
+
+                        if (!barcode) {
+                            return;
+                        }
+
+                        const code = normalizeBarcode(
+                            barcode.rawValue ?? barcode.displayValue ?? ""
+                        );
+
+                        if (!code) {
+                            return;
+                        }
+
+                        const now = Date.now();
+
+                        if (
+                            code === this.lastCode &&
+                            now - this.lastCodeTime < SAME_CODE_COOLDOWN
+                        ) {
+                            return;
+                        }
+
+                        this.lastCode = code;
+                        this.lastCodeTime = now;
+
+                        this.options.onDetect(code);
+                    }
+                );
 
             this.nativeRunning = true;
 
-            const result = await NativeBarcodeScanner.scanBarcode({
-                hint: BarcodeFormat.All,
-                cameraDirection: LensFacing.Back,
-                scanInstructions: "Placez le code-barres dans le cadre",
-                android: {
-                    scanningLibrary: "zxing"
-                }
+            await NativeBarcodeScanner.startScan({
+                formats: NATIVE_FORMATS,
+                lensFacing: LensFacing.Back,
+                resolution: Resolution["1280x720"]
             });
-
-            if (session !== this.session) {
-                return;
-            }
-
-            const code = normalizeBarcode(
-                result.ScanResult ?? ""
-            );
-
-            if (code) {
-                this.lastCode = code;
-                this.lastCodeTime = Date.now();
-                this.options.onDetect(code);
-            }
-
-            this.nativeRunning = false;
         } catch (error) {
             if (session !== this.session) {
                 return;
             }
 
             this.nativeRunning = false;
+
+            if (this.nativeListener) {
+                try {
+                    await this.nativeListener.remove();
+                } catch {
+                    // Rien à faire.
+                }
+
+                this.nativeListener = null;
+            }
+
+            this.restoreNativeWebView();
 
             const message =
                 error instanceof Error && error.message
@@ -255,11 +340,10 @@ export class BarcodeScanner {
 
             this.options.onError(
                 "camera-error",
-                message || "Impossible de démarrer le scanner caméra."
+                "Impossible de démarrer le scanner caméra."
             );
         }
     }
-
 
     private prepareNativeWebView(): void {
         document.documentElement.style.background = "transparent";
@@ -419,7 +503,21 @@ export class BarcodeScanner {
 
     async setTorch(on: boolean): Promise<boolean> {
         if (isNativePlatform()) {
-            return false;
+            if (!this.nativeRunning) {
+                return false;
+            }
+
+            try {
+                if (on) {
+                    await NativeBarcodeScanner.enableTorch();
+                } else {
+                    await NativeBarcodeScanner.disableTorch();
+                }
+
+                return true;
+            } catch {
+                return false;
+            }
         }
 
         const track = this.stream?.getVideoTracks()[0];
