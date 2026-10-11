@@ -1330,7 +1330,7 @@ private fun DashboardMiniPanel(
 }
 
 @Composable
-private fun BottomDashboardItem(
+private fun androidx.compose.foundation.layout.RowScope.BottomDashboardItem(
     label: String,
     active: Boolean,
     icon: @Composable () -> Unit,
