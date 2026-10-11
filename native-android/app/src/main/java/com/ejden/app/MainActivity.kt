@@ -33,6 +33,8 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.AlertDialog
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.compose.material3.TextButton
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.foundation.layout.Arrangement
@@ -426,6 +428,8 @@ private fun DashboardScreen(
     onOpenModule: (String) -> Unit
 ) {
     var infoDialog by remember { mutableStateOf<String?>(null) }
+    var showMoreModules by remember { mutableStateOf(false) }
+    var showQuickActions by remember { mutableStateOf(false) }
 
     val primary = Color(0xFF176B87)
     val background = Color(0xFFF5F7F8)
@@ -1052,7 +1056,7 @@ private fun DashboardScreen(
                     modifier = Modifier
                         .size(52.dp)
                         .clickable {
-                            infoDialog = "Les actions rapides seront activées au fil de la migration des modules."
+                            showQuickActions = true
                         }
                 ) {
                     Box(contentAlignment = Alignment.Center) {
@@ -1080,9 +1084,286 @@ private fun DashboardScreen(
                     primary = primary,
                     secondary = secondary,
                     onClick = {
-                        onOpenModule("achats")
+                        showMoreModules = true
                     }
                 )
+            }
+        }
+    }
+
+    if (showQuickActions) {
+        Dialog(
+            onDismissRequest = { showQuickActions = false },
+            properties = DialogProperties(usePlatformDefaultWidth = false)
+        ) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.BottomCenter
+            ) {
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(0.86f),
+                    shape = RoundedCornerShape(
+                        topStart = 22.dp,
+                        topEnd = 22.dp
+                    ),
+                    color = surface,
+                    shadowElevation = 16.dp
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
+                            .padding(18.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    "ACTION RAPIDE",
+                                    color = primary,
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    letterSpacing = 1.2.sp
+                                )
+                                Spacer(Modifier.height(5.dp))
+                                Text(
+                                    "Que souhaitez-vous faire ?",
+                                    color = text,
+                                    fontSize = 19.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                            TextButton(
+                                onClick = { showQuickActions = false }
+                            ) {
+                                Text("Fermer")
+                            }
+                        }
+
+                        Spacer(Modifier.height(14.dp))
+
+                        listOf(
+                            Triple("Nouvelle vente", "Enregistrer une vente", "ventes"),
+                            Triple("Ajouter un produit", "Enregistrer un produit", "produits"),
+                            Triple("Ajouter un client", "Créer une fiche client", "clients"),
+                            Triple("Nouvelle dépense", "Enregistrer une charge", "depenses"),
+                            Triple("Entrée de caisse", "Accéder aux mouvements de caisse", "caisse")
+                        ).forEach { (label, description, route) ->
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 8.dp)
+                                    .clickable {
+                                        showQuickActions = false
+                                        when (route) {
+                                            "produits" -> onOpenProducts()
+                                            "ventes", "clients", "caisse" ->
+                                                onOpenModule(route)
+                                            else ->
+                                                infoDialog =
+                                                    "Le module Dépenses n'est pas encore disponible dans l'application Android."
+                                        }
+                                    },
+                                shape = RoundedCornerShape(13.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = surface
+                                ),
+                                border = androidx.compose.foundation.BorderStroke(
+                                    1.dp, border
+                                )
+                            ) {
+                                Column(
+                                    modifier = Modifier.padding(14.dp)
+                                ) {
+                                    Text(
+                                        label,
+                                        color = text,
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    Spacer(Modifier.height(3.dp))
+                                    Text(
+                                        description,
+                                        color = secondary,
+                                        fontSize = 11.sp
+                                    )
+                                    if (route == "depenses") {
+                                        Text(
+                                            "Bientôt",
+                                            color = warning,
+                                            fontSize = 10.sp,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    if (showMoreModules) {
+        val moduleCategories:
+            List<Pair<String, List<Triple<String, String, String?>>>> =
+            listOf(
+                "Gestion" to listOf(
+                    Triple("Produits", "Catalogue et prix", "produits"),
+                    Triple("Clients", "Fiches et crédits", "clients"),
+                    Triple("Stock", "Niveaux et mouvements", null),
+                    Triple("Fournisseurs", "Achats et dettes", "fournisseurs"),
+                    Triple("Commandes", "Clients et fournisseurs", null)
+                ),
+                "Finances" to listOf(
+                    Triple("Caisse", "Solde et mouvements", "caisse"),
+                    Triple("Dépenses", "Charges du commerce", null),
+                    Triple("Crédits", "Sommes à encaisser", null),
+                    Triple("Finances", "Vue d'ensemble", null)
+                ),
+                "Documents" to listOf(
+                    Triple("Devis", "Propositions de prix", null),
+                    Triple("Factures", "Documents de vente", null),
+                    Triple("Reçus", "Preuves de paiement", null)
+                ),
+                "Analyse" to listOf(
+                    Triple("Rapports", "Jour, mois, année", null),
+                    Triple("Statistiques", "Prévisions et analyses", null)
+                ),
+                "Système" to listOf(
+                    Triple("Notifications", "Alertes et rappels", null),
+                    Triple("Sauvegarde", "Copie des données", null),
+                    Triple("Paramètres", "Boutique et reçus", null),
+                    Triple("Aide", "Questions fréquentes", null)
+                )
+            )
+
+        Dialog(
+            onDismissRequest = { showMoreModules = false },
+            properties = DialogProperties(usePlatformDefaultWidth = false)
+        ) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.BottomCenter
+            ) {
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(0.86f),
+                    shape = RoundedCornerShape(
+                        topStart = 22.dp,
+                        topEnd = 22.dp
+                    ),
+                    color = surface,
+                    shadowElevation = 16.dp
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
+                            .padding(18.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                "Tous les modules",
+                                color = text,
+                                fontSize = 19.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                            TextButton(
+                                onClick = { showMoreModules = false }
+                            ) {
+                                Text("Fermer")
+                            }
+                        }
+
+                        moduleCategories.forEach { (category, modules) ->
+                            Spacer(Modifier.height(12.dp))
+                            Text(
+                                category.uppercase(),
+                                color = secondary,
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                letterSpacing = 1.1.sp
+                            )
+                            Spacer(Modifier.height(7.dp))
+
+                            modules.chunked(2).forEach { pair ->
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(bottom = 8.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    pair.forEach { (label, description, route) ->
+                                        Card(
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .clickable(enabled = route != null) {
+                                                    showMoreModules = false
+                                                    if (route == "produits") {
+                                                        onOpenProducts()
+                                                    } else if (route != null) {
+                                                        onOpenModule(route)
+                                                    }
+                                                },
+                                            shape = RoundedCornerShape(12.dp),
+                                            colors = CardDefaults.cardColors(
+                                                containerColor = surface
+                                            ),
+                                            border = androidx.compose.foundation.BorderStroke(
+                                                1.dp, border
+                                            )
+                                        ) {
+                                            Column(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .padding(10.dp)
+                                            ) {
+                                                Text(
+                                                    label,
+                                                    color = text,
+                                                    fontSize = 12.sp,
+                                                    fontWeight = FontWeight.Bold
+                                                )
+                                                Spacer(Modifier.height(4.dp))
+                                                Text(
+                                                    description,
+                                                    color = secondary,
+                                                    fontSize = 10.sp,
+                                                    lineHeight = 13.sp
+                                                )
+                                                if (route == null) {
+                                                    Spacer(Modifier.height(5.dp))
+                                                    Text(
+                                                        "Bientôt",
+                                                        color = warning,
+                                                        fontSize = 9.sp,
+                                                        fontWeight = FontWeight.Bold
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    }
+                                    if (pair.size == 1) {
+                                        Spacer(Modifier.weight(1f))
+                                    }
+                                }
+                            }
+                        }
+
+                        Spacer(Modifier.height(8.dp))
+                    }
+                }
             }
         }
     }
