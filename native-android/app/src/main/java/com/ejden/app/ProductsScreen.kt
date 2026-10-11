@@ -150,7 +150,7 @@ internal fun ProductsScreen(onBack: () -> Unit) {
 
     Column(Modifier.fillMaxSize().background(page)) {
         Row(
-            Modifier.fillMaxWidth().background(Color.White).padding(12.dp),
+            Modifier.fillMaxWidth().background(Color.White).padding(10.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(onClick = onBack) {
@@ -158,7 +158,7 @@ internal fun ProductsScreen(onBack: () -> Unit) {
             }
             Column(Modifier.weight(1f)) {
                 Text("GESTION", color = blue, fontSize = 10.sp, fontWeight = FontWeight.Bold)
-                Text("Produits", color = ink, fontSize = 24.sp, fontWeight = FontWeight.ExtraBold)
+                Text("Produits", color = ink, fontSize = 22.sp, fontWeight = FontWeight.ExtraBold)
             }
             IconButton(onClick = { editing = null; formOpen = true }) {
                 Icon(Icons.Default.Add, "Ajouter un produit", tint = blue)
@@ -167,8 +167,8 @@ internal fun ProductsScreen(onBack: () -> Unit) {
 
         Column(
             Modifier.weight(1f).verticalScroll(rememberScrollState())
-                .padding(14.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+                .padding(12.dp),
+            verticalArrangement = Arrangement.spacedBy(9.dp)
         ) {
             Row(horizontalArrangement = Arrangement.spacedBy(7.dp)) {
                 Summary("Produits", products.size.toString(), blue, Modifier.weight(1f))
@@ -268,9 +268,9 @@ internal fun ProductsScreen(onBack: () -> Unit) {
                         colors = CardDefaults.cardColors(containerColor = Color.White),
                         border = androidx.compose.foundation.BorderStroke(1.dp, border)
                     ) {
-                        Column(Modifier.padding(13.dp)) {
+                        Column(Modifier.padding(11.dp)) {
                             Row(verticalAlignment = Alignment.Top) {
-                                Icon(Icons.Default.Inventory2, null, tint = blue, modifier = Modifier.padding(5.dp).size(28.dp))
+                                Icon(Icons.Default.Inventory2, null, tint = blue, modifier = Modifier.padding(4.dp).size(24.dp))
                                 Column(Modifier.weight(1f)) {
                                     Text(p.name, color = ink, fontWeight = FontWeight.Bold, fontSize = 15.sp)
                                     Text(p.category.ifBlank { "Sans catégorie" }, color = muted, fontSize = 11.sp)
@@ -284,7 +284,7 @@ internal fun ProductsScreen(onBack: () -> Unit) {
                                 }
                             }
                             HorizontalDivider(color = border)
-                            Spacer(Modifier.height(8.dp))
+                            Spacer(Modifier.height(6.dp))
                             Text("Prix de vente : ${p.sale} FCFA", color = ink, fontSize = 12.sp)
                             Text("Stock : ${p.stock}    •    Seuil d'alerte : ${p.threshold}", color = muted, fontSize = 12.sp)
                             if (p.barcode.isNotBlank()) Text("Code-barres : ${p.barcode}", color = muted, fontSize = 11.sp)
@@ -351,9 +351,9 @@ private fun Summary(label: String, value: String, accent: Color, modifier: Modif
         colors = CardDefaults.cardColors(containerColor = Color.White),
         border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8EA))
     ) {
-        Column(Modifier.padding(8.dp)) {
-            Text(label, color = Color(0xFF68777D), fontSize = 9.sp, minLines = 2)
-            Text(value, color = accent, fontSize = 22.sp, fontWeight = FontWeight.ExtraBold)
+        Column(Modifier.padding(7.dp)) {
+            Text(label, color = Color(0xFF68777D), fontSize = 10.sp, minLines = 2)
+            Text(value, color = accent, fontSize = 20.sp, fontWeight = FontWeight.ExtraBold)
         }
     }
 }
@@ -378,8 +378,8 @@ private fun ProductDialog(
         title = { Text(if (initial == null) "Ajouter un produit" else "Modifier le produit") },
         text = {
             Column(
-                Modifier.fillMaxWidth().heightIn(max = 450.dp).verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(7.dp)
+                Modifier.fillMaxWidth().heightIn(max = 420.dp).verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 OutlinedTextField(name, { name = it }, Modifier.fillMaxWidth(), label = { Text("Nom du produit *") }, singleLine = true)
                 OutlinedTextField(category, { if (it.length <= 40) category = it }, Modifier.fillMaxWidth(), label = { Text("Catégorie") }, singleLine = true)

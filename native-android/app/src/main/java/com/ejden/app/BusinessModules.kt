@@ -531,7 +531,7 @@ internal fun BusinessModuleScreen(module: String, onBack: () -> Unit) {
 
     Column(
         Modifier.fillMaxSize().background(BusinessBg)
-            .verticalScroll(rememberScrollState()).padding(16.dp)
+            .verticalScroll(rememberScrollState()).padding(12.dp)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             IconButton(onClick = onBack) {
@@ -540,7 +540,7 @@ internal fun BusinessModuleScreen(module: String, onBack: () -> Unit) {
             Column(Modifier.weight(1f)) {
                 Text("EJDEN · GESTION", color = BusinessBlue, fontSize = 10.sp,
                     fontWeight = FontWeight.ExtraBold, letterSpacing = 1.2.sp)
-                Text(title, color = BusinessInk, fontSize = 25.sp, fontWeight = FontWeight.ExtraBold)
+                Text(title, color = BusinessInk, fontSize = 22.sp, fontWeight = FontWeight.ExtraBold)
             }
             if (current == "ventes") {
                 TextButton(onClick = {
@@ -552,8 +552,7 @@ internal fun BusinessModuleScreen(module: String, onBack: () -> Unit) {
             }
         }
 
-        Spacer(Modifier.height(10.dp))
-        Spacer(Modifier.height(14.dp))
+        Spacer(Modifier.height(8.dp))
 
         when (current) {
             "ventes" -> {
@@ -642,7 +641,7 @@ internal fun BusinessModuleScreen(module: String, onBack: () -> Unit) {
                             border = BorderStroke(1.dp, BusinessBorder)
                         ) {
                             Row(
-                                Modifier.fillMaxWidth().padding(12.dp),
+                                Modifier.fillMaxWidth().padding(10.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Column(Modifier.weight(1f)) {
@@ -1077,7 +1076,7 @@ internal fun BusinessModuleScreen(module: String, onBack: () -> Unit) {
                 Text(msg, Modifier.padding(12.dp), color = BusinessInk, fontSize = 13.sp)
             }
         }
-        Spacer(Modifier.height(28.dp))
+        Spacer(Modifier.height(18.dp))
     }
 }
 
@@ -1088,7 +1087,7 @@ private fun SummaryCard(label: String, value: String, modifier: Modifier = Modif
         colors = CardDefaults.cardColors(containerColor = Color.White),
         border = BorderStroke(1.dp, BusinessBorder)
     ) {
-        Column(Modifier.padding(14.dp)) {
+        Column(Modifier.padding(11.dp)) {
             Text(label, color = BusinessMuted, fontSize = 11.sp)
             Spacer(Modifier.height(4.dp))
             Text(value, color = BusinessInk, fontSize = 19.sp, fontWeight = FontWeight.ExtraBold)
@@ -1098,9 +1097,9 @@ private fun SummaryCard(label: String, value: String, modifier: Modifier = Modif
 
 @Composable
 private fun SectionTitle(value: String) {
-    Spacer(Modifier.height(14.dp))
-    Text(value, color = BusinessInk, fontSize = 17.sp, fontWeight = FontWeight.Bold)
-    Spacer(Modifier.height(8.dp))
+    Spacer(Modifier.height(10.dp))
+    Text(value, color = BusinessInk, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+    Spacer(Modifier.height(6.dp))
 }
 
 @Composable
@@ -1125,7 +1124,7 @@ private fun RecordList(records: List<BRecord>) {
             colors = CardDefaults.cardColors(containerColor = Color.White),
             border = BorderStroke(1.dp, BusinessBorder)
         ) {
-            Text("Aucun enregistrement pour le moment.", Modifier.padding(18.dp),
+            Text("Aucun enregistrement pour le moment.", Modifier.padding(14.dp),
                 color = BusinessMuted, fontSize = 12.sp)
         }
     } else {
@@ -1136,7 +1135,7 @@ private fun RecordList(records: List<BRecord>) {
                 border = BorderStroke(1.dp, BusinessBorder)
             ) {
                 Row(
-                    Modifier.fillMaxWidth().padding(14.dp),
+                    Modifier.fillMaxWidth().padding(11.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column(Modifier.weight(1f)) {
