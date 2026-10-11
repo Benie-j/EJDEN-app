@@ -1,6 +1,8 @@
 package com.ejden.app
 
 import android.os.Bundle
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.width
 import kotlinx.coroutines.delay
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.drawscope.withTransform
