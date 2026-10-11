@@ -126,9 +126,14 @@ private fun EjdenApp(
     var showSplash by remember { mutableStateOf(true) }
     var showDashboard by remember { mutableStateOf(false) }
     var showProducts by remember { mutableStateOf(false) }
+    var businessModule by remember { mutableStateOf<String?>(null) }
 
-    BackHandler(enabled = showProducts || (showDashboard && !showSplash)) {
-        if (showProducts) showProducts = false else showDashboard = false
+    BackHandler(enabled = businessModule != null || showProducts || (showDashboard && !showSplash)) {
+        when {
+            businessModule != null -> businessModule = null
+            showProducts -> showProducts = false
+            else -> showDashboard = false
+        }
     }
 
     LaunchedEffect(Unit) {
@@ -138,11 +143,16 @@ private fun EjdenApp(
 
     when {
         showSplash -> SplashScreen()
+        businessModule != null -> BusinessModuleScreen(
+            module = businessModule!!,
+            onBack = { businessModule = null }
+        )
         showProducts -> ProductsScreen(onBack = { showProducts = false })
         showDashboard -> DashboardScreen(
             darkMode = darkMode,
             onThemeChange = onThemeChange,
-            onOpenProducts = { showProducts = true }
+            onOpenProducts = { showProducts = true },
+            onOpenModule = { businessModule = it }
         )
         else -> WelcomeScreen(
             onContinue = { showDashboard = true }
@@ -412,7 +422,8 @@ private fun WelcomeScreen(onContinue: () -> Unit) {
 private fun DashboardScreen(
     darkMode: Boolean,
     onThemeChange: (Boolean) -> Unit,
-    onOpenProducts: () -> Unit
+    onOpenProducts: () -> Unit,
+    onOpenModule: (String) -> Unit
 ) {
     var infoDialog by remember { mutableStateOf<String?>(null) }
 
@@ -554,7 +565,7 @@ private fun DashboardScreen(
 
                     Button(
                         onClick = {
-                            infoDialog = "Le module Nouvelle vente sera migré après validation du tableau de bord."
+                            onOpenModule("ventes")
                         },
                         modifier = Modifier.weight(1.25f).height(42.dp),
                         shape = RoundedCornerShape(9.dp),
@@ -778,7 +789,7 @@ private fun DashboardScreen(
                             fontSize = 11.sp,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.clickable {
-                                infoDialog = "Le détail de la caisse sera disponible après la migration de ce module."
+                                onOpenModule("caisse")
                             }
                         )
                     }
@@ -927,7 +938,7 @@ private fun DashboardScreen(
                     secondary = secondary,
                     border = border,
                     onClick = {
-                        infoDialog = "Le module Clients sera migré après validation du tableau de bord."
+                        onOpenModule("clients")
                     }
                 )
 
@@ -1031,7 +1042,7 @@ private fun DashboardScreen(
                     primary = primary,
                     secondary = secondary,
                     onClick = {
-                        infoDialog = "Le module Ventes sera migré après validation du tableau de bord."
+                        onOpenModule("ventes")
                     }
                 )
 
@@ -1069,7 +1080,7 @@ private fun DashboardScreen(
                     primary = primary,
                     secondary = secondary,
                     onClick = {
-                        infoDialog = "Le menu Plus sera ajouté lors de la migration de la navigation."
+                        onOpenModule("achats")
                     }
                 )
             }
