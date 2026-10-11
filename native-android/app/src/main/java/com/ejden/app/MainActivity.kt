@@ -1,6 +1,7 @@
 package com.ejden.app
 
 import android.os.Bundle
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.width
 import kotlinx.coroutines.delay
