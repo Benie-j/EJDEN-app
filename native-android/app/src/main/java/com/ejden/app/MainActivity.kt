@@ -1341,7 +1341,6 @@ private fun androidx.compose.foundation.layout.RowScope.BottomDashboardItem(
     Column(
         modifier = Modifier
             .weight(1f)
-            .fillMaxHeight()
             .clickable(onClick = onClick)
             .padding(vertical = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
