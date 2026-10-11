@@ -217,7 +217,7 @@ private class EjdenBusinessDb(context: Context) :
     }
 
     fun cashBalance(): Long {
-        readableDatabase.rawQuery(
+        return readableDatabase.rawQuery(
             "SELECT COALESCE(SUM(CASE WHEN type='in' THEN amount ELSE -amount END),0) FROM ejden_cash_entries",
             null
         ).use { c -> if (c.moveToFirst()) c.getLong(0) else 0L }
@@ -230,7 +230,7 @@ private class EjdenBusinessDb(context: Context) :
             set(java.util.Calendar.SECOND, 0)
             set(java.util.Calendar.MILLISECOND, 0)
         }.timeInMillis
-        readableDatabase.rawQuery(
+        return readableDatabase.rawQuery(
             "SELECT COALESCE(SUM(amount),0) FROM ejden_cash_entries WHERE type=? AND created_at>=?",
             arrayOf(type, start.toString())
         ).use { c -> if (c.moveToFirst()) c.getLong(0) else 0L }
