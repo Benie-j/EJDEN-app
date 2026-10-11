@@ -125,10 +125,10 @@ private fun EjdenApp(
 ) {
     var showSplash by remember { mutableStateOf(true) }
     var showDashboard by remember { mutableStateOf(false) }
+    var showProducts by remember { mutableStateOf(false) }
 
-
-    BackHandler(enabled = showDashboard && !showSplash) {
-        showDashboard = false
+    BackHandler(enabled = showProducts || (showDashboard && !showSplash)) {
+        if (showProducts) showProducts = false else showDashboard = false
     }
 
     LaunchedEffect(Unit) {
@@ -138,9 +138,11 @@ private fun EjdenApp(
 
     when {
         showSplash -> SplashScreen()
+        showProducts -> ProductsScreen(onBack = { showProducts = false })
         showDashboard -> DashboardScreen(
             darkMode = darkMode,
-            onThemeChange = onThemeChange
+            onThemeChange = onThemeChange,
+            onOpenProducts = { showProducts = true }
         )
         else -> WelcomeScreen(
             onContinue = { showDashboard = true }
@@ -409,7 +411,8 @@ private fun WelcomeScreen(onContinue: () -> Unit) {
 @Composable
 private fun DashboardScreen(
     darkMode: Boolean,
-    onThemeChange: (Boolean) -> Unit
+    onThemeChange: (Boolean) -> Unit,
+    onOpenProducts: () -> Unit
 ) {
     var infoDialog by remember { mutableStateOf<String?>(null) }
 
@@ -885,9 +888,7 @@ private fun DashboardScreen(
                             color = primary,
                             fontSize = 11.sp,
                             fontWeight = FontWeight.Bold,
-                            modifier = Modifier.clickable {
-                                infoDialog = "Le module Stock sera migré après validation du tableau de bord."
-                            }
+                            modifier = Modifier.clickable(onClick = onOpenProducts)
                         )
                     }
 
@@ -1059,9 +1060,7 @@ private fun DashboardScreen(
                     icon = { Icon(Icons.Default.Inventory2, null) },
                     primary = primary,
                     secondary = secondary,
-                    onClick = {
-                        infoDialog = "Le module Produits sera développé après validation du tableau de bord."
-                    }
+                    onClick = onOpenProducts
                 )
                 BottomDashboardItem(
                     label = "Plus",
