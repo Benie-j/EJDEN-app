@@ -17,6 +17,7 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.RepeatMode
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -108,6 +109,11 @@ private fun EjdenApp(
 ) {
     var showSplash by remember { mutableStateOf(true) }
     var showDashboard by remember { mutableStateOf(false) }
+
+
+    BackHandler(enabled = showDashboard && !showSplash) {
+        showDashboard = false
+    }
 
     LaunchedEffect(Unit) {
         delay(5000)
@@ -325,14 +331,7 @@ private fun WelcomeScreen(onContinue: () -> Unit) {
 
             Spacer(modifier = Modifier.height(17.dp))
 
-            Text(
-                text = "Commencez à enregistrer vos produits, vos ventes et vos clients.",
-                fontSize = 15.sp,
-                lineHeight = 25.sp,
-                color = Color(0xFF68777D),
-                textAlign = TextAlign.Center,
-                modifier = Modifier.widthIn(max = 330.dp)
-            )
+
         }
 
         // Les trois blocs Produits, Ventes et Clients
@@ -387,14 +386,6 @@ private fun WelcomeScreen(onContinue: () -> Unit) {
             }
         }
 
-        Spacer(modifier = Modifier.height(18.dp))
-
-        Text(
-            text = "Gestion simple • Espace professionnel",
-            color = Color(0xFF68777D),
-            fontSize = 12.sp,
-            textAlign = TextAlign.Center
-        )
     }
 }
 
