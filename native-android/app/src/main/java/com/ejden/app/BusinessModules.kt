@@ -42,7 +42,8 @@ private data class BProduct(
     val name: String,
     val purchase: Long,
     val sale: Long,
-    val stock: Int
+    val stock: Int,
+    val barcode: String = ""
 )
 
 private data class BContact(
@@ -118,9 +119,19 @@ private class EjdenBusinessDb(context: Context) :
                 total INTEGER NOT NULL,
                 paid INTEGER NOT NULL,
                 client_name TEXT NOT NULL DEFAULT '',
-                created_at INTEGER NOT NULL
+                created_at INTEGER NOT NULL,
+                payment_method TEXT NOT NULL DEFAULT 'cash'
             )
         """.trimIndent())
+
+        // Migration sans suppression des ventes déjà enregistrées.
+        try {
+            db.execSQL(
+                "ALTER TABLE ejden_sales ADD COLUMN payment_method TEXT NOT NULL DEFAULT 'cash'"
+            )
+        } catch (_: Exception) {
+            // La colonne existe déjà.
+        }
 
         db.execSQL("""
             CREATE TABLE IF NOT EXISTS ejden_cash_entries (
@@ -151,11 +162,11 @@ private class EjdenBusinessDb(context: Context) :
     fun products(): List<BProduct> {
         val result = mutableListOf<BProduct>()
         readableDatabase.rawQuery(
-            "SELECT id,name,purchase_price,sale_price,stock FROM products ORDER BY name COLLATE NOCASE",
+            "SELECT id,name,purchase_price,sale_price,stock,barcode FROM products ORDER BY name COLLATE NOCASE",
             null
         ).use { c ->
             while (c.moveToNext()) result += BProduct(
-                c.getLong(0), c.getString(1), c.getLong(2), c.getLong(3), c.getInt(4)
+                c.getLong(0), c.getString(1), c.getLong(2), c.getLong(3), c.getInt(4), c.getString(5)
             )
         }
         return result
@@ -315,6 +326,100 @@ private class EjdenBusinessDb(context: Context) :
         return null
     }
 
+    fun saveSaleCart(
+        lines: List<Pair<BProduct, Int>>,
+        paid: Long,
+        client: String,
+        discount: Long,
+        paymentMethod: String
+    ): String? {
+        if (lines.isEmpty()) return "Ajoute au moins un produit."
+        if (lines.any { it.second < 1 }) return "Vérifie les quantités."
+
+        val allowedMethods = setOf("cash", "mobile_money", "card", "other", "credit")
+        if (paymentMethod !in allowedMethods) return "Moyen de paiement invalide."
+
+        val subtotal = lines.sumOf { (product, quantity) -> product.sale * quantity }
+        if (discount < 0 || discount >= subtotal) {
+            return "La remise doit être inférieure au sous-total."
+        }
+
+        val total = subtotal - discount
+        if (paid < 0 || paid > total) return "Vérifie le montant payé."
+
+        val db = writableDatabase
+        val now = System.currentTimeMillis()
+        db.beginTransaction()
+        try {
+            var remainingDiscount = discount
+            var remainingPaid = paid
+            var remainingNet = total
+
+            lines.forEachIndexed { index, (product, quantity) ->
+                val changed = db.update(
+                    "products",
+                    ContentValues().apply {
+                        put("stock", product.stock - quantity)
+                    },
+                    "id=? AND stock>=?",
+                    arrayOf(product.id.toString(), quantity.toString())
+                )
+                if (changed != 1) {
+                    throw IllegalStateException("Stock insuffisant pour ${product.name}.")
+                }
+
+                val lineGross = product.sale * quantity
+                val lineDiscount = if (index == lines.lastIndex) {
+                    remainingDiscount
+                } else {
+                    (discount * lineGross / subtotal).coerceAtMost(remainingDiscount)
+                }
+                remainingDiscount -= lineDiscount
+                val lineNet = lineGross - lineDiscount
+
+                val linePaid = if (index == lines.lastIndex) {
+                    remainingPaid
+                } else if (remainingNet > 0) {
+                    (remainingPaid * lineNet / remainingNet).coerceAtMost(remainingPaid)
+                } else {
+                    0L
+                }
+                remainingPaid -= linePaid
+                remainingNet -= lineNet
+
+                val values = ContentValues().apply {
+                    put("product_id", product.id)
+                    put("product_name", product.name)
+                    put("quantity", quantity)
+                    put("total", lineNet)
+                    put("paid", linePaid)
+                    put("client_name", client.trim())
+                    put("created_at", now)
+                    put("payment_method", paymentMethod)
+                }
+                db.insertOrThrow("ejden_sales", null, values)
+            }
+
+            if (paid > 0) {
+                val cash = ContentValues().apply {
+                    put("type", "in")
+                    put("amount", paid)
+                    put("reason", "Encaissement d'une vente")
+                    put("source", "sale")
+                    put("created_at", now)
+                }
+                db.insertOrThrow("ejden_cash_entries", null, cash)
+            }
+
+            db.setTransactionSuccessful()
+        } catch (e: Exception) {
+            return e.message ?: "Impossible d'enregistrer la vente."
+        } finally {
+            if (db.inTransaction()) db.endTransaction()
+        }
+        return null
+    }
+
     fun savePurchase(
         supplier: BContact, product: BProduct, quantity: Int, paid: Long
     ): String? {
@@ -374,7 +479,7 @@ private class EjdenBusinessDb(context: Context) :
 internal fun BusinessModuleScreen(module: String, onBack: () -> Unit) {
     val context = LocalContext.current
     val db = remember { EjdenBusinessDb(context.applicationContext) }
-    var current by remember(module) { mutableStateOf(module) }
+    val current = module
     var revision by remember { mutableIntStateOf(0) }
     var search by remember { mutableStateOf("") }
     var name by remember { mutableStateOf("") }
@@ -391,18 +496,36 @@ internal fun BusinessModuleScreen(module: String, onBack: () -> Unit) {
     var cashType by remember { mutableStateOf("in") }
     var message by remember { mutableStateOf<String?>(null) }
     var editing by remember { mutableStateOf<BContact?>(null) }
+    var cart by remember { mutableStateOf<List<Pair<BProduct, Int>>>(emptyList()) }
+    var showCart by remember { mutableStateOf(false) }
+    var showCheckout by remember { mutableStateOf(false) }
+    var showSalesHistory by remember { mutableStateOf(false) }
+    var showScannerDialog by remember { mutableStateOf(false) }
+    var barcodeQuery by remember { mutableStateOf("") }
+    var discountText by remember { mutableStateOf("0") }
+    var paymentMethod by remember { mutableStateOf("cash") }
+
 
     val products = remember(revision) { db.products() }
     val clients = remember(revision) { db.contacts("ejden_clients") }
     val suppliers = remember(revision) { db.contacts("ejden_suppliers") }
-    val title = when (current) {
-        "ventes" -> "Ventes"
-        "caisse" -> "Caisse"
-        "clients" -> "Clients"
-        "achats" -> "Achats"
+    val title = when {
+        current == "ventes" && showSalesHistory -> "Historique des ventes"
+        current == "ventes" -> "Nouvelle vente"
+        current == "caisse" -> "Caisse"
+        current == "clients" -> "Clients"
+        current == "achats" -> "Achats"
         else -> "Fournisseurs"
     }
+    /*
+    val oldTitle = when (current) {
+        "ventes" -> "Ventes"
+    */
     val contactTable = if (current == "clients") "ejden_clients" else "ejden_suppliers"
+    val cartSubtotal = cart.sumOf { (product, quantity) -> product.sale * quantity }
+    val cartDiscount = (discountText.toLongOrNull() ?: 0L).coerceIn(0L, cartSubtotal)
+    val cartTotal = (cartSubtotal - cartDiscount).coerceAtLeast(0L)
+
 
     BackHandler(onBack = onBack)
 
@@ -419,78 +542,171 @@ internal fun BusinessModuleScreen(module: String, onBack: () -> Unit) {
                     fontWeight = FontWeight.ExtraBold, letterSpacing = 1.2.sp)
                 Text(title, color = BusinessInk, fontSize = 25.sp, fontWeight = FontWeight.ExtraBold)
             }
+            if (current == "ventes") {
+                TextButton(onClick = {
+                    showSalesHistory = !showSalesHistory
+                    search = ""
+                }) {
+                    Text(if (showSalesHistory) "Nouvelle vente" else "Historique")
+                }
+            }
         }
 
         Spacer(Modifier.height(10.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-            listOf("ventes" to "Ventes", "caisse" to "Caisse", "clients" to "Clients").forEach { (key, label) ->
-                FilterChip(
-                    selected = current == key, onClick = { current = key; message = null },
-                    label = { Text(label, fontSize = 11.sp) }
-                )
-            }
-        }
-        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-            listOf("achats" to "Achats", "fournisseurs" to "Fournisseurs").forEach { (key, label) ->
-                FilterChip(
-                    selected = current == key, onClick = { current = key; message = null },
-                    label = { Text(label, fontSize = 11.sp) }
-                )
-            }
-        }
         Spacer(Modifier.height(14.dp))
 
         when (current) {
             "ventes" -> {
-                SummaryCard("Produits disponibles", products.size.toString())
-                SectionTitle("Nouvelle vente")
-                Box {
+                if (showSalesHistory) {
                     OutlinedTextField(
-                        value = selectedProduct?.name.orEmpty(),
-                        onValueChange = { search = it; showProductMenu = true },
+                        value = search,
+                        onValueChange = { search = it },
                         modifier = Modifier.fillMaxWidth(),
-                        label = { Text("Produit") }, singleLine = true
+                        label = { Text("Produit ou client") },
+                        singleLine = true
                     )
-                    DropdownMenu(
-                        expanded = showProductMenu,
-                        onDismissRequest = { showProductMenu = false }
-                    ) {
-                        products.filter { it.stock > 0 && (search.isBlank() || it.name.contains(search, true)) }
-                            .forEach { p ->
-                                DropdownMenuItem(
-                                    text = { Text("${p.name} · ${p.stock} en stock") },
-                                    onClick = { selectedProduct = p; search = ""; showProductMenu = false }
-                                )
-                            }
+                    val history = db.sales().filter {
+                        search.isBlank() ||
+                            it.title.contains(search, true) ||
+                            it.subtitle.contains(search, true)
                     }
-                }
-                OutlinedTextField(quantity, { quantity = it.filter(Char::isDigit) },
-                    Modifier.fillMaxWidth(), label = { Text("Quantité") }, singleLine = true)
-                OutlinedTextField(clientName, { clientName = it },
-                    Modifier.fillMaxWidth(), label = { Text("Client (facultatif)") }, singleLine = true)
-                OutlinedTextField(paid, { paid = it.filter(Char::isDigit) },
-                    Modifier.fillMaxWidth(), label = { Text("Montant payé (FCFA)") }, singleLine = true)
-                selectedProduct?.let { p ->
-                    Text("Prix unitaire : ${businessMoney(p.sale)} · Stock : ${p.stock}",
-                        color = BusinessMuted, fontSize = 12.sp)
-                    Text("Total : ${businessMoney(p.sale * (quantity.toIntOrNull() ?: 0))}",
-                        color = BusinessBlue, fontWeight = FontWeight.Bold)
-                }
-                PrimaryAction("Enregistrer la vente") {
-                    val p = selectedProduct
-                    val q = quantity.toIntOrNull() ?: 0
-                    if (p == null) message = "Choisis un produit."
-                    else {
-                        message = db.saveSale(p, q, paid.toLongOrNull() ?: 0L, clientName)
-                        if (message == null) {
-                            message = "Vente enregistrée."
-                            selectedProduct = null; quantity = "1"; paid = ""; clientName = ""
-                            revision++
+                    SectionTitle("Ventes enregistrées")
+                    RecordList(history)
+                    TextButton(onClick = {
+                        showSalesHistory = false
+                        search = ""
+                    }) {
+                        Text("Nouvelle vente")
+                    }
+                } else {
+                    Row(
+                        Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        OutlinedTextField(
+                            value = search,
+                            onValueChange = { search = it },
+                            modifier = Modifier.weight(1f),
+                            label = { Text("Rechercher un produit") },
+                            singleLine = true
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        OutlinedButton(onClick = {
+                            barcodeQuery = ""
+                            showScannerDialog = true
+                        }) {
+                            Text("Scanner")
                         }
                     }
+
+                    val availableProducts = products.filter {
+                        it.stock > 0 && (
+                            search.isBlank() ||
+                            it.name.contains(search, true) ||
+                            it.barcode.contains(search, true)
+                        )
+                    }
+
+                    Text(
+                        "${availableProducts.size} produit(s)",
+                        color = BusinessMuted,
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(vertical = 10.dp)
+                    )
+
+                    if (availableProducts.isEmpty()) {
+                        Card(
+                            Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(containerColor = Color.White),
+                            border = BorderStroke(1.dp, BusinessBorder)
+                        ) {
+                            Column(Modifier.padding(18.dp)) {
+                                Text(
+                                    "Aucun produit disponible",
+                                    color = BusinessInk,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Text(
+                                    "Ajoute des produits dans le catalogue pour commencer une vente.",
+                                    color = BusinessMuted,
+                                    fontSize = 12.sp
+                                )
+                            }
+                        }
+                    }
+
+                    availableProducts.forEach { product ->
+                        Card(
+                            Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                            colors = CardDefaults.cardColors(containerColor = Color.White),
+                            border = BorderStroke(1.dp, BusinessBorder)
+                        ) {
+                            Row(
+                                Modifier.fillMaxWidth().padding(12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(Modifier.weight(1f)) {
+                                    Text(
+                                        product.name,
+                                        color = BusinessInk,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    Text(
+                                        "Stock : ${product.stock}",
+                                        color = BusinessMuted,
+                                        fontSize = 11.sp
+                                    )
+                                    Text(
+                                        businessMoney(product.sale),
+                                        color = BusinessBlue,
+                                        fontWeight = FontWeight.ExtraBold
+                                    )
+                                }
+                                Button(
+                                    onClick = {
+                                        val existing = cart.find { it.first.id == product.id }
+                                        if (existing != null) {
+                                            cart = cart.map {
+                                                if (it.first.id == product.id && it.second < product.stock)
+                                                    it.first to (it.second + 1)
+                                                else it
+                                            }
+                                        } else {
+                                            cart = cart + (product to 1)
+                                        }
+                                        message = null
+                                    },
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = BusinessBlue
+                                    )
+                                ) {
+                                    Icon(Icons.Default.Add, contentDescription = null)
+                                    Text("Ajouter")
+                                }
+                            }
+                        }
+                    }
+
+                    Spacer(Modifier.height(10.dp))
+                    Button(
+                        onClick = { showCart = true },
+                        modifier = Modifier.fillMaxWidth().height(54.dp),
+                        enabled = cart.isNotEmpty(),
+                        shape = RoundedCornerShape(14.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = BusinessBlue
+                        )
+                    ) {
+                        val count = cart.sumOf { it.second }
+                        val total = cart.sumOf { (product, quantity) ->
+                            product.sale * quantity
+                        }
+                        Text("Panier · $count article(s) · ${businessMoney(total)}")
+                    }
+                    TextButton(onClick = { showSalesHistory = true }) {
+                        Text("Historique des ventes")
+                    }
                 }
-                SectionTitle("Historique des ventes")
-                RecordList(db.sales())
             }
 
             "caisse" -> {
@@ -632,6 +848,227 @@ internal fun BusinessModuleScreen(module: String, onBack: () -> Unit) {
                 SectionTitle("Historique des achats")
                 RecordList(db.purchases())
             }
+        }
+
+        if (showCart && current == "ventes") {
+            AlertDialog(
+                onDismissRequest = { showCart = false },
+                title = { Text("Panier") },
+                text = {
+                    Column(
+                        Modifier.fillMaxWidth().heightIn(max = 360.dp)
+                            .verticalScroll(rememberScrollState())
+                    ) {
+                        if (cart.isEmpty()) {
+                            Text("Votre panier est vide.", color = BusinessMuted)
+                        }
+                        cart.forEach { (product, quantity) ->
+                            Row(
+                                Modifier.fillMaxWidth().padding(vertical = 7.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(Modifier.weight(1f)) {
+                                    Text(product.name, fontWeight = FontWeight.Bold)
+                                    Text(
+                                        "$quantity × ${businessMoney(product.sale)}",
+                                        color = BusinessMuted,
+                                        fontSize = 12.sp
+                                    )
+                                }
+                                Text(
+                                    businessMoney(product.sale * quantity),
+                                    color = BusinessBlue,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                IconButton(onClick = {
+                                    cart = cart.filterNot { it.first.id == product.id }
+                                }) {
+                                    Icon(
+                                        Icons.Default.Delete,
+                                        contentDescription = "Retirer ${product.name}"
+                                    )
+                                }
+                            }
+                            Divider()
+                        }
+                        Spacer(Modifier.height(8.dp))
+                        Text("Sous-total : ${businessMoney(cartSubtotal)}")
+                        OutlinedTextField(
+                            value = discountText,
+                            onValueChange = { discountText = it.filter(Char::isDigit) },
+                            modifier = Modifier.fillMaxWidth(),
+                            label = { Text("Remise (FCFA)") },
+                            singleLine = true
+                        )
+                        Text(
+                            "Total : ${businessMoney(cartTotal)}",
+                            color = BusinessBlue,
+                            fontWeight = FontWeight.ExtraBold
+                        )
+                    }
+                },
+                confirmButton = {
+                    Button(
+                        enabled = cart.isNotEmpty() && cartTotal > 0,
+                        onClick = {
+                            paid = cartTotal.toString()
+                            showCart = false
+                            showCheckout = true
+                        }
+                    ) { Text("Encaisser") }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showCart = false }) {
+                        Text("Continuer les achats")
+                    }
+                }
+            )
+        }
+
+        if (showCheckout && current == "ventes") {
+            AlertDialog(
+                onDismissRequest = { showCheckout = false },
+                title = { Text("Encaissement") },
+                text = {
+                    Column(
+                        Modifier.fillMaxWidth().heightIn(max = 420.dp)
+                            .verticalScroll(rememberScrollState())
+                    ) {
+                        Text("Total à payer", color = BusinessMuted, fontSize = 12.sp)
+                        Text(
+                            businessMoney(cartTotal),
+                            color = BusinessBlue,
+                            fontWeight = FontWeight.ExtraBold,
+                            fontSize = 22.sp
+                        )
+                        Spacer(Modifier.height(12.dp))
+                        Text("Moyen de paiement", fontWeight = FontWeight.Bold)
+                        listOf(
+                            "cash" to "Espèces",
+                            "mobile_money" to "Mobile Money",
+                            "card" to "Carte",
+                            "other" to "Autre",
+                            "credit" to "Crédit"
+                        ).forEach { (key, label) ->
+                            Row(
+                                Modifier.fillMaxWidth().clickable {
+                                    paymentMethod = key
+                                    if (key == "credit" && paid == cartTotal.toString()) paid = "0"
+                                }.padding(vertical = 4.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                RadioButton(
+                                    selected = paymentMethod == key,
+                                    onClick = {
+                                        paymentMethod = key
+                                        if (key == "credit" && paid == cartTotal.toString()) paid = "0"
+                                    }
+                                )
+                                Text(label)
+                            }
+                        }
+                        OutlinedTextField(
+                            value = clientName,
+                            onValueChange = { clientName = it },
+                            modifier = Modifier.fillMaxWidth(),
+                            label = { Text("Client (facultatif)") },
+                            singleLine = true
+                        )
+                        OutlinedTextField(
+                            value = paid,
+                            onValueChange = { paid = it.filter(Char::isDigit) },
+                            modifier = Modifier.fillMaxWidth(),
+                            label = { Text("Montant reçu (FCFA)") },
+                            singleLine = true
+                        )
+                        Text(
+                            "Reste à payer : ${businessMoney((cartTotal - (paid.toLongOrNull() ?: 0L)).coerceAtLeast(0L))}",
+                            color = BusinessMuted,
+                            fontSize = 12.sp
+                        )
+                    }
+                },
+                confirmButton = {
+                    Button(
+                        enabled = cart.isNotEmpty() &&
+                            (paid.toLongOrNull() ?: -1L) in 0..cartTotal &&
+                            cartTotal > 0,
+                        onClick = {
+                            val error = db.saveSaleCart(
+                                cart,
+                                paid.toLongOrNull() ?: 0L,
+                                clientName,
+                                cartDiscount,
+                                paymentMethod
+                            )
+                            message = error ?: "Vente enregistrée."
+                            if (error == null) {
+                                cart = emptyList()
+                                clientName = ""
+                                paid = ""
+                                discountText = "0"
+                                paymentMethod = "cash"
+                                revision++
+                                showCheckout = false
+                            }
+                        }
+                    ) { Text("Confirmer la vente") }
+                },
+                dismissButton = {
+                    TextButton(onClick = {
+                        showCheckout = false
+                        showCart = true
+                    }) { Text("Retour au panier") }
+                }
+            )
+        }
+
+        if (showScannerDialog && current == "ventes") {
+            AlertDialog(
+                onDismissRequest = { showScannerDialog = false },
+                title = { Text("Scanner un produit") },
+                text = {
+                    Column {
+                        Text(
+                            "La lecture caméra n'est pas encore intégrée. Tu peux rechercher un produit par son code-barres.",
+                            color = BusinessMuted,
+                            fontSize = 12.sp
+                        )
+                        OutlinedTextField(
+                            value = barcodeQuery,
+                            onValueChange = { barcodeQuery = it },
+                            modifier = Modifier.fillMaxWidth(),
+                            label = { Text("Code-barres") },
+                            singleLine = true
+                        )
+                    }
+                },
+                confirmButton = {
+                    Button(onClick = {
+                        val found = products.firstOrNull {
+                            it.barcode.isNotBlank() && it.barcode == barcodeQuery.trim()
+                        }
+                        if (found == null || found.stock <= 0) {
+                            message = "Aucun produit disponible pour ce code-barres."
+                        } else {
+                            val existing = cart.find { it.first.id == found.id }
+                            cart = if (existing == null) cart + (found to 1) else cart.map {
+                                if (it.first.id == found.id && it.second < found.stock)
+                                    it.first to (it.second + 1)
+                                else it
+                            }
+                            search = found.name
+                            message = "${found.name} ajouté au panier."
+                            showScannerDialog = false
+                        }
+                    }) { Text("Rechercher") }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showScannerDialog = false }) {
+                        Text("Annuler")
+                    }
+                }
+            )
         }
 
         message?.let { msg ->
